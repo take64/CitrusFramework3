@@ -9,13 +9,14 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Migration
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Migration;
 
 
 use Citrus\Database\CitrusDatabaseDSN;
+use PDO;
 
 abstract class CitrusMigrationItem
 {
@@ -57,7 +58,7 @@ abstract class CitrusMigrationItem
         // 実行開始タイム
         $timestamp = microtime(true);
 
-        $db = new \PDO($this->dsn->toStringWithAuth());
+        $db = new PDO($this->dsn->toStringWithAuth());
         $count = $db->exec($query);
 
         // 実行終了時間
@@ -71,8 +72,8 @@ abstract class CitrusMigrationItem
         {
             echo get_class($this) . ' executed ' . $execute_microsecond . 'µs' . PHP_EOL;
         }
-        // 正常実行
-        else
+        // 異常実行
+        else if (is_null($error_info) === false)
         {
             echo get_class($this) . ' has error.' . PHP_EOL;
             echo sprintf('    %s %s %s' . PHP_EOL,

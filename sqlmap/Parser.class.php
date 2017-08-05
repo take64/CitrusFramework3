@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Sqlmap
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
@@ -120,7 +120,7 @@ class CitrusSqlmapParser
                 // query in pattern
                 if (is_array($_parameter_list[$replace_code]) === true)
                 {
-                    $array_replace_codes = array();
+                    $array_replace_codes = [];
                     foreach($_parameter_list[$replace_code] as $ary_ky => $ary_vl)
                     {
                         $array_replace_codes[] = $replace_code.'_'.$ary_ky;

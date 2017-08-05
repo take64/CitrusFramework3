@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -36,10 +36,10 @@ class CitrusConfigure
     public static $PATH_FRAMEWORK;
 
     /** @var bool */
-    private static $INITIALIZED_CONFIGURE = false;
+    private static $IS_INITIALIZED_CONFIGURE = false;
 
     /** @var bool */
-    private static $INITIALIZED_FRAMEWORK = false;
+    private static $IS_INITIALIZED_FRAMEWORK = false;
 
     /**
      * configure initilize
@@ -52,7 +52,7 @@ class CitrusConfigure
         self::autoloadFramework();
 
         // framework initialize
-        self::fremework();
+        self::fremework(dirname($path_configure));
 
         // configure initialize
         self::configure($path_configure);
@@ -63,11 +63,13 @@ class CitrusConfigure
 
     /**
      * fremework initialize
+     *
+     * @param string $path_application_dir
      */
-    public static function fremework()
+    public static function fremework(string $path_application_dir)
     {
         // is initialized
-        if (self::$INITIALIZED_FRAMEWORK === true)
+        if (self::$IS_INITIALIZED_FRAMEWORK === true)
         {
             return ;
         }
@@ -76,10 +78,10 @@ class CitrusConfigure
         self::$PATH_FRAMEWORK = dirname(__FILE__).'/Citrus.class.php';
 
         // citrus intialize
-        Citrus::initialize();
+        Citrus::initialize($path_application_dir);
 
         // initialized
-        self::$INITIALIZED_FRAMEWORK = true;
+        self::$IS_INITIALIZED_FRAMEWORK = true;
     }
 
 
@@ -92,7 +94,7 @@ class CitrusConfigure
     public static function configure(string $path_configure)
     {
         // is initialized
-        if (self::$INITIALIZED_CONFIGURE === true)
+        if (self::$IS_INITIALIZED_CONFIGURE === true)
         {
             return ;
         }
@@ -131,6 +133,8 @@ class CitrusConfigure
 
         // ルーティング処理
         CitrusDocumentRouter::initialize($default_configure, $configures);
+        // ロガー処理
+//        CitrusLogger::initialize($default_configure, $configures);
     }
 
 
@@ -235,6 +239,20 @@ class CitrusConfigure
                 }
             }
 
+            // パスに含まれる重複文字列の除去
+            $_use_class_paths = $use_class_paths;
+            $_use_class = array_pop($_use_class_paths);
+            foreach ($_use_class_paths as $one)
+            {
+                if (strpos($_use_class, $one) === 0)
+                {
+                    $_use_class = str_replace($one, '', $_use_class);
+                }
+            }
+            $_use_class_paths[] = $_use_class;
+            $use_class_paths = $_use_class_paths;
+
+            // パス確定
             $is_load_class = false;
             $extentions = [ 'class', 'interface', 'abstract', 'trait' ];
             foreach ($extentions as $extention)
@@ -255,7 +273,7 @@ class CitrusConfigure
             if ($is_load_class === false)
             {
                 $error_message = 'load faild = ' . $class_file_path;
-                var_dump($error_message);
+                var_dump([$error_message,$use_class_paths]);
                 // TODO:
                 throw new \Exception($error_message);
             }

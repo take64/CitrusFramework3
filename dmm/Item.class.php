@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Dmm
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Dmm;
@@ -61,6 +61,7 @@ class CitrusDmmItem
     public $date = null;
     public $iteminfo = [
         'genre' => [],
+        'series' => [],
         'maker' => [],
         'label' => [],
     ];

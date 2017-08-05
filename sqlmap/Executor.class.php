@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Sqlmap
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
@@ -17,6 +17,7 @@ namespace Citrus\Sqlmap;
 
 use Citrus\CitrusConfigure;
 use Citrus\Database\CitrusDatabaseColumn;
+use Citrus\Database\CitrusDatabaseResult;
 use PDO;
 use PDOException;
 
@@ -32,10 +33,10 @@ class CitrusSqlmapExecutor
     private static $IS_CONNECTION = false;
 
     /** @var array db prepare cache */
-    private static $_prepareQueries = array();
+    private static $_prepareQueries = [];
 
     /** @var array db prepare cache */
-    private static $_prepareStatements = array();
+    private static $_prepareStatements = [];
 
 
 
@@ -134,6 +135,7 @@ class CitrusSqlmapExecutor
      * @param CitrusSqlmapStatement     $statement
      * @param CitrusDatabaseColumn|null $parameter
      * @return bool
+     * @deprecated
      */
     private static function _validate(CitrusSqlmapStatement $statement, CitrusDatabaseColumn $parameter = null) : bool
     {
@@ -165,11 +167,11 @@ class CitrusSqlmapExecutor
      * select query executor
      *
      * @param CitrusSqlmapStatement $statement
-     * @param array|null            $parameter_list
+     * @param array|null            $parameters
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public static function select(CitrusSqlmapStatement $statement, array $parameter_list = null) : array
+    public static function select(CitrusSqlmapStatement $statement, array $parameters = null) : array
     {
         // 結果クラス
         $instance = null;
@@ -180,9 +182,10 @@ class CitrusSqlmapExecutor
         }
         else
         {
-            $instance = new CitrusDatabaseColumn();
+            $instance = new CitrusDatabaseResult();
         }
-        self::_validate($statement, $parameter_list);
+//        self::_validate($statement, $parameters);
+
 
         // クエリ実行
         try
@@ -205,7 +208,7 @@ class CitrusSqlmapExecutor
             }
 
             // execute
-            if ($sth->execute($parameter_list) === false)
+            if ($sth->execute($parameters) === false)
             {
                 $errorInfo = $sth->errorInfo();
                 throw new CitrusSqlmapException($errorInfo[0].':'.$errorInfo[2], 0);
@@ -215,10 +218,10 @@ class CitrusSqlmapExecutor
             $is_method_exist_bintColumn = method_exists($instance, 'bindColumn');
 
             // ganerate_flags
-            $generate_flags = array();
+            $generate_flags = [];
 
             // result
-            $result = array();
+            $result = [];
             while ($row = $sth->fetch(PDO::FETCH_ASSOC))
             {
                 $copyEntity = clone $instance;
@@ -265,11 +268,11 @@ class CitrusSqlmapExecutor
      * insert query executor
      *
      * @param CitrusSqlmapStatement $statement
-     * @param array|null            $parameter_list
-     * @return bool
+     * @param array|null            $parameters
+     * @return int
      * @throws CitrusSqlmapException
      */
-    public static function insert(CitrusSqlmapStatement $statement, array $parameter_list = null) : bool
+    public static function insert(CitrusSqlmapStatement $statement, array $parameters = null) : int
     {
         // クエリ実行
         try
@@ -292,7 +295,7 @@ class CitrusSqlmapExecutor
             }
 
             // execute
-            $result = $sth->execute($parameter_list);
+            $result = $sth->execute($parameters);
 
             if ($result === false)
             {
@@ -300,7 +303,7 @@ class CitrusSqlmapExecutor
                 throw CitrusSqlmapException::pdoErrorInfo($sth->errorInfo());
             }
 
-            return $result;
+            return $sth->rowCount();
         }
         catch (PDOException $e)
         {
@@ -312,7 +315,7 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return false;
+        return 0;
     }
 
 
@@ -321,11 +324,11 @@ class CitrusSqlmapExecutor
      * update query executor
      *
      * @param CitrusSqlmapStatement $statement
-     * @param array|null            $parameter_list
-     * @return bool
+     * @param array|null            $parameters
+     * @return int
      * @throws CitrusSqlmapException
      */
-    public static function update(CitrusSqlmapStatement $statement, array $parameter_list = null) : bool
+    public static function update(CitrusSqlmapStatement $statement, array $parameters = null) : int
     {
         // クエリ実行
         try
@@ -348,7 +351,7 @@ class CitrusSqlmapExecutor
             }
 
             // execute
-            $result = $sth->execute($parameter_list);
+            $result = $sth->execute($parameters);
 
             if ($result === false)
             {
@@ -356,7 +359,7 @@ class CitrusSqlmapExecutor
                 throw CitrusSqlmapException::pdoErrorInfo($sth->errorInfo());
             }
 
-            return $result;
+            return $sth->rowCount();
         }
         catch (PDOException $e)
         {
@@ -368,7 +371,7 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return false;
+        return 0;
     }
 
 
@@ -377,17 +380,17 @@ class CitrusSqlmapExecutor
      * delete query executor
      *
      * @param CitrusSqlmapStatement $statement
-     * @param array|null            $parameter_list
-     * @return bool
+     * @param array|null            $parameters
+     * @return int
      * @throws CitrusSqlmapException
      */
-    public static function delete(CitrusSqlmapStatement $statement, array $parameter_list = null) : bool
+    public static function delete(CitrusSqlmapStatement $statement, array $parameters = null) : int
     {
         // クエリ実行
         try
         {
             // 削除の条件がない場合は、削除をしない。(全件削除回避のため。)
-            if (empty($parameter_list) === true)
+            if (empty($parameters) === true)
             {
                 throw new CitrusSqlmapException('削除条件が足りません、削除要求をキャンセルしました。', 0, __FILE__, __LINE__);
             }
@@ -409,7 +412,7 @@ class CitrusSqlmapExecutor
                 self::$_prepareStatements[] = $sth;
             }
 
-            $result = $sth->execute($parameter_list);
+            $result = $sth->execute($parameters);
 
             if ($result === false)
             {
@@ -417,7 +420,7 @@ class CitrusSqlmapExecutor
                 throw CitrusSqlmapException::pdoErrorInfo($sth->errorInfo());
             }
 
-            return $result;
+            return $sth->rowCount();
         }
         catch (PDOException $e)
         {
@@ -429,7 +432,7 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return false;
+        return 0;
     }
 
 
@@ -438,11 +441,11 @@ class CitrusSqlmapExecutor
      * statement query executor
      *
      * @param CitrusSqlmapStatement $statement
-     * @param array|null            $parameter_list
+     * @param array|null            $parameters
      * @return bool
      * @throws CitrusSqlmapException
      */
-    public static function statement(CitrusSqlmapStatement $statement, array $parameter_list = null) : bool
+    public static function statement(CitrusSqlmapStatement $statement, array $parameters = null) : bool
     {
         // クエリ実行
         try
@@ -450,7 +453,7 @@ class CitrusSqlmapExecutor
             // prepare
             $sth = self::callHandler()->prepare($statement->query);
 
-            $result = $sth->execute($parameter_list);
+            $result = $sth->execute($parameters);
 
             if ($result === false)
             {

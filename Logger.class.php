@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -70,11 +70,14 @@ class CitrusLogger
     /** @var int log level */
     public static $LOG_LEVEL = 0;
 
+    /** @var bool log display */
+    public static $LOG_DISPLAY = false;
+
     /** @var CitrusLoggerType */
     protected static $INSTANCE = null;
 
     /** @var bool is initialized */
-    public static $INITIALIZED = false;
+    public static $IS_INITIALIZED = false;
 
 
 
@@ -85,10 +88,10 @@ class CitrusLogger
      * @param array $configure
      * @return CitrusLoggerType
      */
-    public static function initialize($default_configure = [], $configure = [])
+    public static function initialize($default_configure = [], $configure = []) : CitrusLoggerType
     {
         // is initialized
-        if (self::$INITIALIZED === true)
+        if (self::$IS_INITIALIZED === true)
         {
             return self::$INSTANCE;
         }
@@ -149,8 +152,12 @@ class CitrusLogger
                 break;
         }
 
+        // display
+        self::$LOG_DISPLAY = CitrusNVL::NVL($logger['display'], false);
+
+
         // initialized
-        self::$INITIALIZED = true;
+        self::$IS_INITIALIZED = true;
 
         return self::$INSTANCE;
     }
@@ -242,8 +249,17 @@ class CitrusLogger
      * @param mixed  $value
      * @param string $comment
      */
-    private static function _output(&$value, $comment = '')
+    private static function _output($value, $comment = '')
     {
-        self::$instance->output($value, $comment);
+        // display
+        if (self::$LOG_DISPLAY === true)
+        {
+            var_dump([
+                Citrus::$TIMESTAMP_FORMAT,
+                $comment,
+                $value,
+            ]);
+        }
+        self::$INSTANCE->output($value, $comment);
     }
 }

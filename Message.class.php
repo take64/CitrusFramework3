@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -22,7 +22,7 @@ class CitrusMessage extends CitrusClass
     public static $items = [];
 
     /** @var bool is initialized */
-    public static $INITIALIZED = false;
+    public static $IS_INITIALIZED = false;
 
     /** @var bool enable session */
     public static $enable_session = false;
@@ -38,7 +38,7 @@ class CitrusMessage extends CitrusClass
     public static function initialize(array $default_configure = [], array $configure = [])
     {
         // is initialized
-        if (self::$INITIALIZED === true)
+        if (self::$IS_INITIALIZED === true)
         {
             return ;
         }
@@ -50,7 +50,7 @@ class CitrusMessage extends CitrusClass
         self::bind($configures);
 
         // initialized
-        self::$INITIALIZED = true;
+        self::$IS_INITIALIZED = true;
     }
 
 
@@ -244,7 +244,7 @@ class CitrusMessage extends CitrusClass
 //        {
 //            if (($size = count(self::getItem())) > 0)
 //            {
-//                $result = array();
+//                $result = [];
 //                $element= self::getItem();
 //                foreach ($element as $ky => $vl)
 //                {
@@ -296,7 +296,7 @@ class CitrusMessage extends CitrusClass
 //    public static function delAllMessage()
 //    {
 //        // クラス変数から削除
-//        self::$items = array();
+//        self::$items = [];
 //
 //        // セッションから削除
 //        if (self::isSession() == true)
@@ -335,7 +335,7 @@ class CitrusMessage extends CitrusClass
     public static function callItemsForTag($tag = null)
     {
         // 結果
-        $result = array();
+        $result = [];
 
         // 引数なし
         if (empty($tag) === true)

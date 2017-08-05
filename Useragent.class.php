@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -22,7 +22,7 @@ use Citrus\Useragent\CitrusUseragentElement;
 class CitrusUseragent
 {
     /** @var bool */
-    public static $INITIALIZED = false;
+    public static $IS_INITIALIZED = false;
 
 
 

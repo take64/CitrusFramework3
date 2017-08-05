@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Database
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Database;
@@ -45,11 +45,42 @@ class CitrusDatabaseColumn extends CitrusObject
 
 
     /**
+     * constructor.
+     */
+    public function __construct()
+    {
+        $this->schema = CitrusConfigure::$CONFIGURE_ITEM->database->schema;
+    }
+
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function properties() : array
+    {
+        $properties = get_object_vars($this);
+        unset($properties['schema']);
+        unset($properties['condition']);
+        foreach ($properties as $ky => $vl)
+        {
+            if (is_bool($vl) === true)
+            {
+                unset($properties[$ky]);
+            }
+        }
+
+        return $properties;
+    }
+
+
+
+    /**
      * call condition
      *
      * @return CitrusDatabaseColumn
      */
-    public function callCondition() : CitrusDatabaseColumn
+    public function callCondition()
     {
         if (is_null($this->condition) === true)
         {
@@ -112,6 +143,23 @@ class CitrusDatabaseColumn extends CitrusObject
             if (is_null($vl) === true)
             {
                 $this->$ky = '';
+            }
+        }
+    }
+
+
+
+    /**
+     * all nullify
+     */
+    public function nullify()
+    {
+        $properties = $this->properties();
+        foreach ($properties as $ky => $vl)
+        {
+            if (in_array($ky, ['schema', 'condition']) === false)
+            {
+                $this->$ky = null;
             }
         }
     }

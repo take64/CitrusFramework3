@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -45,7 +45,7 @@ class CitrusNVL
      */
     public static function replace($value, $replace1, $replace2)
     {
-        if (is_null($value) === false)
+        if (is_null($value) === true)
         {
             return $replace1;
         }
@@ -58,11 +58,11 @@ class CitrusNVL
      * ArrayVL
      *
      * @param array  $value
-     * @param string $key
+     * @param mixed  $key
      * @param mixed  $replace
      * @return array|mixed
      */
-    public static function ArrayVL(array $value, string $key, $replace)
+    public static function ArrayVL(array $value, $key, $replace)
     {
         $value = self::NVL($value, $replace);
 

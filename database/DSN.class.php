@@ -10,7 +10,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     .
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Database;

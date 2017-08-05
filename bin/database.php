@@ -10,7 +10,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  bin
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 /**
  * sample :
@@ -67,18 +67,18 @@ switch ($type)
 {
     // Entity生成処理
     case CitrusDatabaseGenerate::PROPERTY :
-        $propertyname = $settings['--propertyname'];
-        CitrusDatabaseGenerate::property($application_directory, $dsns, $tablename, $propertyname);
+        $propertyname = $settings['--property-name'];
+        CitrusDatabaseGenerate::property($dsns, $tablename, $propertyname);
         break;
     // Dao生成処理
     case CitrusDatabaseGenerate::DAO :
-        $daoname = $settings['--daoname'];
-        CitrusDatabaseGenerate::dao($application_directory, $tablename, $daoname);
+        $daoname = $settings['--dao-name'];
+        CitrusDatabaseGenerate::dao($tablename, $daoname);
         break;
     // Condition生成処理
     case CitrusDatabaseGenerate::CONDITION :
-        $conditionname = $settings['--conditionname'];
-        CitrusDatabaseGenerate::condition($application_directory, $tablename, $conditionname);
+        $conditionname = $settings['--condition-name'];
+        CitrusDatabaseGenerate::condition($tablename, $conditionname);
         break;
 }
 

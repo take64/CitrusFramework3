@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Sqlmap
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
@@ -59,8 +59,8 @@ class CitrusSqlmapClient
             {
                 // デフォルト設定を適用する
                 $default_sqlmap_path = sprintf(
-                    '%s/Integration/Sqlmap/%s.xml',
-                    CitrusConfigure::$CONFIGURE_ITEM->application->path,
+                    '%s/%s.xml',
+                    Citrus::$DIR_INTEGRATION_SQLMAP,
                     $this->sqlmap_id
                 );
                 $this->sqlmap_path = $default_sqlmap_path;

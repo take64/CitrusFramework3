@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -109,7 +109,7 @@ class CitrusGateway
                 $ucfirst_document_code .= $ucfirst_code;
                 $ucfirst_document_codes[] = $ucfirst_code;
             }
-var_dump([ $ucfirst_document_code, $ucfirst_document_codes ]);
+//var_dump([ $ucfirst_document_code, $ucfirst_document_codes ]);
 
             // デバイス取得
             if (is_null($device_code) === true)
@@ -133,20 +133,17 @@ var_dump([ $ucfirst_document_code, $ucfirst_document_codes ]);
                 $controller_namespace .= ('\\' . $one);
             }
 
-var_dump($controller_namespace);
             $controller_class_name = $ucfirst_application_id . $ucfirst_device_code . $ucfirst_document_code . 'Controller';
-var_dump($controller_class_name);
 
             // I have control
             $controller_namespace_class_name = $controller_namespace . '\\' . $controller_class_name;
-var_dump($controller_namespace_class_name);
             $controller = new $controller_namespace_class_name();
             $controller->run();
 
 //            foreach ()
 
 //            // コントローラー候補の選出
-//            $controllerChoices = array();
+//            $controllerChoices = [];
 //
 //            // 大元
 //            $controllerChoices[] = array(
@@ -158,11 +155,11 @@ var_dump($controller_namespace_class_name);
 //
 //            // ドキュメントコードのアッパーキャメルケース化
 //            $document_code_UCC = '';
-//            $document_code_UCC_list = array();
+//            $document_code_UCC_list = [];
 //            $document_code_list = explode('_', str_replace('-', '_', $document_cd));
 //            foreach ($document_code_list as $ky => $vl)
 //            {
-//                $choice = array();
+//                $choice = [];
 //
 //                $document_code_UCC_list[] = ucfirst(strtolower($vl));
 //                $document_code_UCC = $document_code_UCC . ucfirst(strtolower($vl));

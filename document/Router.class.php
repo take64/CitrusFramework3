@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Router.class.php.
  *
@@ -10,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Document
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Document;
@@ -38,7 +37,9 @@ class CitrusDocumentRouter extends CitrusObject
     public static $DEVICE_ROUTING = [];
 
     /** @var bool */
-    public static $INITIALIZED = false;
+    public static $IS_INITIALIZED = false;
+
+
 
     /**
      * initialize router
@@ -49,7 +50,7 @@ class CitrusDocumentRouter extends CitrusObject
     public static function initialize(array $default_configure = [], array $configure = [])
     {
         // is initialized
-        if (self::$INITIALIZED === true)
+        if (self::$IS_INITIALIZED === true)
         {
             return ;
         }
@@ -81,7 +82,7 @@ class CitrusDocumentRouter extends CitrusObject
         }
 
         // initialized
-        self::$INITIALIZED = true;
+        self::$IS_INITIALIZED = true;
     }
 
 

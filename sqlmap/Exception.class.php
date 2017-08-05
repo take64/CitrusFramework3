@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     .
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
@@ -28,10 +28,8 @@ class CitrusSqlmapException extends CitrusException
      * @param int            $code
      * @param Throwable|null $previous
      */
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $code = 0, Throwable $previous = null)
     {
-        // TODO : logging
-
         parent::__construct($message, $code, $previous);
     }
 
@@ -58,6 +56,8 @@ class CitrusSqlmapException extends CitrusException
      */
     public static function pdoErrorInfo(array $errorInfo)
     {
+//        var_dump($errorInfo);
+//        $errorInfo[2] = '';
         return new CitrusSqlmapException($errorInfo[2], $errorInfo[0]);
     }
 }

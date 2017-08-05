@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -111,7 +111,7 @@ var_dump($configure);
 
         $data = json_decode($data, true, null, JSON_OBJECT_AS_ARRAY);
         $items = $data['result']['items'];
-var_dump($items);
+//var_dump($items);
         $results = [];
         foreach($items as $one)
         {
@@ -384,7 +384,7 @@ var_dump($items);
 //        $data = json_decode($data);
 //        $data = $data->result->items;
 //// var_dump($data);
-//        $results = array();
+//        $results = [];
 //        foreach($data as $one)
 //        {
 //            $results[] = self::convertItem($one);
@@ -577,7 +577,7 @@ var_dump($items);
 //        $data = json_decode($data);
 //        // $data = $data->result->items;
 //// var_dump($data);
-//        $results = array();
+//        $results = [];
 //        if(isset($data->result->actress) == true)
 //        {
 //            foreach($data->result->actress as $one)

@@ -1,6 +1,6 @@
 <?php
 /**
- * Result.trait.php.
+ * Result.class.php.
  *
  *
  * PHP version 7
@@ -9,13 +9,13 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus
  * @subpackage  Database
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Database;
 
 
-trait CitrusDatabaseResult
+class CitrusDatabaseResult extends CitrusDatabaseColumn
 {
     /** @var int count */
     public $count;

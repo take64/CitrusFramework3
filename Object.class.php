@@ -9,7 +9,7 @@
  * @author      take64 <take64@citrus.tk>
  * @package     Citrus.
  * @subpackage  .
- * @license     http://www.besidesplus.net/
+ * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
@@ -104,9 +104,12 @@ class CitrusObject
      */
     public function set($key, $value, bool $strict = false)
     {
-        if ($strict === true && property_exists($this, $key) === true)
+        if ($strict === true)
         {
-            $this->$key = $value;
+            if (property_exists($this, $key) === true)
+            {
+                $this->$key = $value;
+            }
         }
         else
         {
