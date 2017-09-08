@@ -60,7 +60,7 @@ class CitrusSqlmapClient
                 // デフォルト設定を適用する
                 $default_sqlmap_path = sprintf(
                     '%s/%s.xml',
-                    Citrus::$DIR_INTEGRATION_SQLMAP,
+                    CitrusConfigure::$DIR_INTEGRATION_SQLMAP,
                     $this->sqlmap_id
                 );
                 $this->sqlmap_path = $default_sqlmap_path;
@@ -92,7 +92,7 @@ class CitrusSqlmapClient
             $insert->parse($this->sqlmap_path, 'insert', $id, $parameter);
             return CitrusSqlmapExecutor::insert($insert->statement, $insert->parameter_list);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -116,7 +116,7 @@ class CitrusSqlmapClient
             $update->parse($this->sqlmap_path, 'update', $id, $parameter);
             return CitrusSqlmapExecutor::update($update->statement, $update->parameter_list);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -140,7 +140,7 @@ class CitrusSqlmapClient
             $delete->parse($this->sqlmap_path, 'delete', $id, $parameter);
             return CitrusSqlmapExecutor::delete($delete->statement, $delete->parameter_list);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -164,7 +164,7 @@ class CitrusSqlmapClient
             $select->parse($this->sqlmap_path, 'select', $id, $parameter);
             return CitrusSqlmapExecutor::select($select->statement, $select->parameter_list);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -177,10 +177,10 @@ class CitrusSqlmapClient
      *
      * @param string               $id
      * @param CitrusDatabaseColumn $parameter
-     * @return CitrusDatabaseColumn
+     * @return CitrusDatabaseColumn|null
      * @throws CitrusSqlmapException
      */
-    public function queryForObject(string $id, CitrusDatabaseColumn $parameter) : CitrusDatabaseColumn
+    public function queryForObject(string $id, CitrusDatabaseColumn $parameter)
     {
         try
         {
@@ -199,7 +199,7 @@ class CitrusSqlmapClient
             $result = CitrusSqlmapExecutor::select($select->statement, $select->parameter_list);
             return count($result) > 0 ? $result[0] : null;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -212,10 +212,10 @@ class CitrusSqlmapClient
      *
      * @param string               $id
      * @param CitrusDatabaseColumn $parameter
-     * @return CitrusDatabaseColumn
+     * @return CitrusDatabaseColumn|null
      * @throws CitrusSqlmapException
      */
-    public function statement(string $id, CitrusDatabaseColumn $parameter) : CitrusDatabaseColumn
+    public function statement(string $id, CitrusDatabaseColumn $parameter)
     {
         try
         {
@@ -224,7 +224,7 @@ class CitrusSqlmapClient
             $result = CitrusSqlmapExecutor::select($statement->statement, $statement->parameter_list);
             return count($result) > 0 ? $result[0] : null;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }

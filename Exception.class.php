@@ -29,9 +29,9 @@ class CitrusException extends Exception
      */
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {
-        CitrusLogger::error($this);
-
         parent::__construct($message, $code, $previous);
+
+        CitrusLogger::error($this);
     }
 
 }

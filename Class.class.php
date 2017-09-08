@@ -126,7 +126,7 @@ class CitrusClass
      *
      * @param array|null $array
      */
-    public function bind(array $array = null)
+    public static function bind(array $array = null)
     {
         self::bindArray($array);
     }
@@ -138,7 +138,7 @@ class CitrusClass
      *
      * @param array|null $array
      */
-    public function bindArray(array $array = null)
+    public static function bindArray(array $array = null)
     {
         if (is_null($array) === true)
         {

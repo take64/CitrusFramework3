@@ -17,9 +17,11 @@ namespace Citrus\Useragent;
 
 class CitrusUseragentDevice
 {
-
     /** @var string */
     const DEFAULT = 'default';
+
+    /** @var string */
+    const XHR = 'xhr';
 
     /** @var string */
     const PC = 'pc';
@@ -59,6 +61,7 @@ class CitrusUseragentDevice
     {
         return [
             self::DEFAULT,
+            self::XHR,
             self::PC,
             self::MOBILE,
             self::IPHONE,

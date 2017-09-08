@@ -1,6 +1,6 @@
 <?php
 /**
- * Text.class.php.
+ * Password.class.php.
  * 2017/08/06
  *
  * PHP version 7
@@ -18,7 +18,7 @@ namespace Citrus\Formmap;
 
 use Citrus\CitrusNVL;
 
-class CitrusFormmapText extends CitrusFormmapElement
+class CitrusFormmapPassword extends CitrusFormmapElement
 {
     /**
      * to string
@@ -29,11 +29,10 @@ class CitrusFormmapText extends CitrusFormmapElement
     public function toString(array $appends = [])
     {
         $elements = [
-            'type'      => 'text',
+            'type'      => 'password',
             'id'        => $this->callPrefixedId(),
             'name'      => $this->id,
             'value'     => CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()),
-            'default'   => $this->callDefault(),
             'class'     => $this->class,
             'style'     => $this->style,
             'size'      => $this->size,
@@ -42,35 +41,5 @@ class CitrusFormmapText extends CitrusFormmapElement
         $elements = array_merge($elements, $appends);
 
         return self::generateTag('input', $elements);
-    }
-
-
-
-    /**
-     * call default value
-     *
-     * @return false|mixed|string
-     */
-    public function callDefault()
-    {
-        $value = $this->default;
-
-        // デフォルト設定
-        if (empty($value) === false)
-        {
-            // 変数タイプ別処理
-            switch ($this->var_type)
-            {
-                // datetime
-                case CitrusFormmapElement::VAR_TYPE_DATETIME :
-                    $value = date('Y-m-d H:i:s', strtotime($this->default));
-                    break;
-                // date
-                case CitrusFormmapElement::VAR_TYPE_DATE :
-                    $value = date('Y-m-d', strtotime($this->default));
-                    break;
-            }
-        }
-        return $value;
     }
 }

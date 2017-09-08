@@ -208,17 +208,17 @@ class CitrusGateway
             // save controller
             CitrusSession::commit();
         }
-        catch(CitrusServiceException $se)
+        catch (CitrusServiceException $se)
         {
             CitrusLogger::debug($se);
             $se->_commit();
         }
-        catch(CitrusErrorException $ee)
+        catch (CitrusErrorException $ee)
         {
             CitrusLogger::debug($ee);
             $ee->_commit();
         }
-        catch(Exception $e)
+        catch (Exception $e)
         {
             CitrusLogger::debug($e);
         }
@@ -237,19 +237,23 @@ class CitrusGateway
         }
         catch (CitrusSqlmapException $e)
         {
-
+            CitrusLogger::debug($e);
         }
-//        catch(CitrusServiceException $se)
+        catch (Exception $e)
+        {
+            CitrusLogger::debug($e);
+        }
+//        catch (CitrusServiceException $se)
 //        {
 //            CitrusLogger::debug($se);
 //            $se->_commit();
 //        }
-//        catch(CitrusErrorException $ee)
+//        catch (CitrusErrorException $ee)
 //        {
 //            CitrusLogger::debug($ee);
 //            $ee->_commit();
 //        }
-//        catch(Exception $e)
+//        catch (Exception $e)
 //        {
 //            CitrusLogger::debug($e);
 //        }

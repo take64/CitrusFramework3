@@ -1,7 +1,7 @@
 <?php
 /**
- * Text.class.php.
- * 2017/08/06
+ * Hidden.class.php.
+ * 2017/08/18
  *
  * PHP version 7
  *
@@ -18,7 +18,7 @@ namespace Citrus\Formmap;
 
 use Citrus\CitrusNVL;
 
-class CitrusFormmapText extends CitrusFormmapElement
+class CitrusFormmapHidden extends CitrusFormmapElement
 {
     /**
      * to string
@@ -29,15 +29,11 @@ class CitrusFormmapText extends CitrusFormmapElement
     public function toString(array $appends = [])
     {
         $elements = [
-            'type'      => 'text',
+            'type'      => 'hidden',
             'id'        => $this->callPrefixedId(),
             'name'      => $this->id,
             'value'     => CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()),
-            'default'   => $this->callDefault(),
             'class'     => $this->class,
-            'style'     => $this->style,
-            'size'      => $this->size,
-            'maxlength' => $this->max,
         ];
         $elements = array_merge($elements, $appends);
 
@@ -68,6 +64,9 @@ class CitrusFormmapText extends CitrusFormmapElement
                 // date
                 case CitrusFormmapElement::VAR_TYPE_DATE :
                     $value = date('Y-m-d', strtotime($this->default));
+                    break;
+                // default
+                default :
                     break;
             }
         }

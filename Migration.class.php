@@ -220,7 +220,7 @@ EOT;
      */
     private static function callMigrationDirectoryPath(string $directory) : string
     {
-        $path = sprintf('%s/.migration.sh/', $directory);
+        $path = sprintf('%s/.migration/', $directory);
 
         // ディレクトリがなければ生成
         if (file_exists($path) === false)

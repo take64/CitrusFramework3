@@ -15,6 +15,7 @@
 namespace Citrus;
 
 
+use Citrus\Authentication\CitrusAuthenticationDatabase;
 use Citrus\Configure\CitrusConfigureItem;
 use Citrus\Document\CitrusDocumentRouter;
 
@@ -35,11 +36,44 @@ class CitrusConfigure
     /** @var string */
     public static $PATH_FRAMEWORK;
 
-    /** @var bool */
-    private static $IS_INITIALIZED_CONFIGURE = false;
+    /** @var string dir */
+    public static $DIR_APP;
+
+    /** @var string dir */
+    public static $DIR_BUSINESS;
+
+    /** @var string dir */
+    public static $DIR_BUSINESS_ENTITY;
+
+    /** @var string dir */
+    public static $DIR_BUSINESS_FORMMAP;
+
+    /** @var string dir */
+    public static $DIR_BUSINESS_SERVICE;
+
+    /** @var string dir */
+    public static $DIR_INTEGRATION;
+
+    /** @var string dir */
+    public static $DIR_INTEGRATION_PROPERTY;
+
+    /** @var string dir */
+    public static $DIR_INTEGRATION_DAO;
+
+    /** @var string dir */
+    public static $DIR_INTEGRATION_CONDITION;
+
+    /** @var string dir */
+    public static $DIR_INTEGRATION_SQLMAP;
 
     /** @var bool */
     private static $IS_INITIALIZED_FRAMEWORK = false;
+
+    /** @var bool */
+    private static $IS_INITIALIZED_DIRECTORY = false;
+
+    /** @var bool */
+    private static $IS_INITIALIZED_CONFIGURE = false;
 
     /**
      * configure initilize
@@ -52,7 +86,10 @@ class CitrusConfigure
         self::autoloadFramework();
 
         // framework initialize
-        self::fremework(dirname($path_configure));
+        self::fremework();
+
+        // directory initialize
+        self::directory(dirname($path_configure));
 
         // configure initialize
         self::configure($path_configure);
@@ -61,12 +98,12 @@ class CitrusConfigure
         self::autoloadApplication();
     }
 
+
+
     /**
      * fremework initialize
-     *
-     * @param string $path_application_dir
      */
-    public static function fremework(string $path_application_dir)
+    public static function fremework()
     {
         // is initialized
         if (self::$IS_INITIALIZED_FRAMEWORK === true)
@@ -78,10 +115,43 @@ class CitrusConfigure
         self::$PATH_FRAMEWORK = dirname(__FILE__).'/Citrus.class.php';
 
         // citrus intialize
-        Citrus::initialize($path_application_dir);
+        Citrus::initialize();
 
         // initialized
         self::$IS_INITIALIZED_FRAMEWORK = true;
+    }
+
+
+
+    /**
+     * directory initialize
+     *
+     * @param string $path_application_dir
+     */
+    public static function directory(string $path_application_dir)
+    {
+        // is initialized
+        if (self::$IS_INITIALIZED_DIRECTORY === true)
+        {
+            return ;
+        }
+
+        // directory
+        self::$DIR_APP                  = $path_application_dir;
+        // dir business
+        self::$DIR_BUSINESS             = self::$DIR_APP . '/Business';
+        self::$DIR_BUSINESS_ENTITY      = self::$DIR_BUSINESS . '/Entity';
+        self::$DIR_BUSINESS_FORMMAP     = self::$DIR_BUSINESS . '/Formmap';
+        self::$DIR_BUSINESS_SERVICE     = self::$DIR_BUSINESS . '/Service';
+        // dir integration
+        self::$DIR_INTEGRATION          = self::$DIR_APP . '/Integration';
+        self::$DIR_INTEGRATION_PROPERTY = self::$DIR_INTEGRATION . '/Property';
+        self::$DIR_INTEGRATION_DAO      = self::$DIR_INTEGRATION . '/Dao';
+        self::$DIR_INTEGRATION_CONDITION= self::$DIR_INTEGRATION . '/Condition';
+        self::$DIR_INTEGRATION_SQLMAP   = self::$DIR_INTEGRATION . '/Sqlmap';
+
+        // initialized
+        self::$IS_INITIALIZED_DIRECTORY = true;
     }
 
 
@@ -131,8 +201,11 @@ class CitrusConfigure
         }
 
 
-        // ルーティング処理
+        // ルーティング処理初期化
         CitrusDocumentRouter::initialize($default_configure, $configures);
+
+        // 認証処理初期化
+        CitrusAuthentication::initialize($default_configure, $configures);
         // ロガー処理
 //        CitrusLogger::initialize($default_configure, $configures);
     }
@@ -172,7 +245,7 @@ class CitrusConfigure
             }
 
             $is_load_class = false;
-            $extentions = [ 'class', 'interface', 'abstract', 'trait' ];
+            $extentions = [ 'class', 'interface', 'abstract', 'trait', 'enum' ];
             foreach ($extentions as $extention)
             {
                 $class_file_path = sprintf('%s/%s%s.%s.php',
@@ -249,12 +322,13 @@ class CitrusConfigure
                     $_use_class = str_replace($one, '', $_use_class);
                 }
             }
+//            CitrusLogger::error('_use_class = %s', $_use_class);
             $_use_class_paths[] = $_use_class;
             $use_class_paths = $_use_class_paths;
 
             // パス確定
             $is_load_class = false;
-            $extentions = [ 'class', 'interface', 'abstract', 'trait' ];
+            $extentions = [ 'class', 'interface', 'abstract', 'trait', 'enum' ];
             foreach ($extentions as $extention)
             {
                 $class_file_path = sprintf('%s/%s.%s.php',
@@ -264,6 +338,7 @@ class CitrusConfigure
                 );
                 if (file_exists($class_file_path) === true)
                 {
+                    CitrusLogger::debug($class_file_path);
                     include_once $class_file_path;
                     $is_load_class = true;
                     break;
@@ -273,9 +348,7 @@ class CitrusConfigure
             if ($is_load_class === false)
             {
                 $error_message = 'load faild = ' . $class_file_path;
-                var_dump([$error_message,$use_class_paths]);
-                // TODO:
-                throw new \Exception($error_message);
+                throw new CitrusException($error_message);
             }
         });
     }

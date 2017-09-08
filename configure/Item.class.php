@@ -69,5 +69,9 @@ class CitrusConfigureItem
         $this->paths->domain = $this->application->domain;
         $this->paths->bind(CitrusNVL::ArrayVL($default_configure, $key, []));
         $this->paths->bind(CitrusNVL::ArrayVL($configure, $key, []));
+//        foreach ($this->paths as $ky => $vl)
+//        {
+//            $this->paths[$ky] = str_replace('{#domain#}', $this->paths->domain, $vl);
+//        }
     }
 }

@@ -75,13 +75,13 @@ switch ($action)
     case CitrusMigration::ACTION_MIGRATION :
     case CitrusMigration::ACTION_MIGRATION_UP :
         $version = CitrusNVL::ArrayVL($settings, '--version', null);
-        $version = CitrusNVL::EmptyVL($version, null);
+        $version = CitrusNVL::coalesce($version, null);
         CitrusMigration::up($application_directory, $dsns, $version);
         break;
     // マイグレーションDOWN実行
     case CitrusMigration::ACTION_MIGRATION_DOWN :
         $version = CitrusNVL::ArrayVL($settings, '--version', null);
-        $version = CitrusNVL::EmptyVL($version, null);
+        $version = CitrusNVL::coalesce($version, null);
         CitrusMigration::down($application_directory, $dsns, $version);
         break;
 }

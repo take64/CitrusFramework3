@@ -71,13 +71,15 @@ class CitrusSession extends CitrusObject
     /**
      * session factory method
      *
-     * @param boolean $use_ticket
+     * @param bool $use_ticket
      */
-    public static function factory($use_ticket = true)
+    public static function factory(bool $use_ticket = true)
     {
         session_name('CITRUSSESSID');
 
-        if ($use_ticket == true) {
+        $use_ticket = false;
+        if ($use_ticket === true)
+        {
             // get ticket
 //            $citrusTicketKey = $_REQUEST['ctk'];
             $citrus_ticket_key = CitrusNVL::ArrayVL($_REQUEST, 'ctk', '');
@@ -97,27 +99,29 @@ class CitrusSession extends CitrusObject
         session_start();
 
         // save old session data
-        self::$session  = new CitrusSessionItem(isset($_SESSION['data']) ? $_SESSION['data'] : false);
+        self::$session  = new CitrusSessionItem(isset($_SESSION['data']) ? $_SESSION['data'] : null);
         self::$getdata  = new CitrusSessionItem($_GET);
         self::$postdata = new CitrusSessionItem($_POST);
         self::$filedata = new CitrusSessionItem($_FILES);
         self::$request  = new CitrusSessionItem($_REQUEST);
         self::$router   = CitrusDocumentRouter::factory($_REQUEST);
 
-        if ($use_ticket)
-        {
+        session_regenerate_id(true);
+
+//        if ($use_ticket)
+//        {
             // disconnect session
-            session_destroy();
-
-            // create session id
-            self::$sessionId = md5(uniqid(rand()));
-
-            // sessing session id
-            session_id(self::$sessionId);
-
-            // session start
-            session_start();
-        }
+//            session_destroy();
+//
+//            // create session id
+//            self::$sessionId = md5(uniqid(rand()));
+//
+//            // sessing session id
+//            session_id(self::$sessionId);
+//
+//            // session start
+//            session_start();
+//        }
     }
 
 
@@ -138,5 +142,15 @@ class CitrusSession extends CitrusObject
     public static function commit()
     {
         $_SESSION['data'] = self::$session;
+    }
+
+
+
+    /**
+     * status
+     */
+    public static function status()
+    {
+        return session_status();
     }
 }

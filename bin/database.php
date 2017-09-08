@@ -45,7 +45,7 @@ $directory = $settings['--directory'];
 // 設定(タイプ)
 $type = $settings['--type'];
 // 設定(テーブル名)
-$tablename = $settings['--tablename'];
+$tablename = $settings['--table-name'];
 
 // application configure
 $application_directory = dirname(__FILE__) . '/../' . $directory;

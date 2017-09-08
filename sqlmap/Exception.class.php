@@ -7,8 +7,8 @@
  *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     .
- * @subpackage  .
+ * @package     Citrus
+ * @subpackage  Session
  * @license     http://www.citrus.tk/
  */
 
@@ -21,20 +21,6 @@ use Throwable;
 
 class CitrusSqlmapException extends CitrusException
 {
-    /**
-     * constructor.
-     *
-     * @param string         $message
-     * @param int            $code
-     * @param Throwable|null $previous
-     */
-    public function __construct($message = '', $code = 0, Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-
-
-
     /**
      * PDO exception
      *
@@ -56,8 +42,6 @@ class CitrusSqlmapException extends CitrusException
      */
     public static function pdoErrorInfo(array $errorInfo)
     {
-//        var_dump($errorInfo);
-//        $errorInfo[2] = '';
         return new CitrusSqlmapException($errorInfo[2], $errorInfo[0]);
     }
 }

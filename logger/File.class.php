@@ -37,13 +37,15 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
         $this->bind($configure);
     }
 
+
+
     /**
      * output log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array $params
      */
-    public function output($value, string $comment = '')
+    public function output($value, array $params = [])
     {
         $directory  = $this->directory;
         $filename   = $this->filename;
@@ -52,7 +54,7 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
         $vl_dump = '';
         if (is_string($value) === true)
         {
-            $vl_dump = $value . "\n";
+            $vl_dump = vsprintf($value, $params) . PHP_EOL;
         }
         else
         {
@@ -62,7 +64,7 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
             ob_end_clean();
         }
 
-        $dat = date('[Y-m-d H:i:s]', $_SERVER['REQUEST_TIME']).$comment.htmlspecialchars_decode(strip_tags($vl_dump));
+        $dat = date('[Y-m-d H:i:s] ', $_SERVER['REQUEST_TIME']).htmlspecialchars_decode(strip_tags($vl_dump));
 
         // log file exist
         $file_exist = file_exists($logfile);

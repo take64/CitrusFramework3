@@ -15,6 +15,9 @@
 namespace Citrus\Sqlmap;
 
 
+use Citrus\CitrusXml;
+use DOMNamedNodeMap;
+
 class CitrusSqlmapStatement
 {
     /** @var string element id */

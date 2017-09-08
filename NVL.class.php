@@ -15,6 +15,8 @@
 namespace Citrus;
 
 
+use Closure;
+
 class CitrusNVL
 {
     /**
@@ -36,20 +38,36 @@ class CitrusNVL
 
 
     /**
-     * NVL replace
+     * NVL coalesce
      *
-     * @param mixed $value
-     * @param mixed $replace1
-     * @param mixed $replace2
-     * @return mixed
+     * @param array ...$_
+     * @return mixed|null
      */
-    public static function replace($value, $replace1, $replace2)
+    public static function coalesce(...$_)
     {
-        if (is_null($value) === true)
+        $result = null;
+        $replacements = func_get_args();
+
+        foreach ($replacements as $replacement)
         {
-            return $replace1;
+            if (is_null($replacement) === true)
+            {
+                continue;
+            }
+
+            // クロージャなら実行
+            if ($replacement instanceof Closure)
+            {
+                $result = $replacement();
+            }
+            else
+            {
+                $result = $replacement;
+            }
+            break;
         }
-        return $replace2;
+
+        return $result;
     }
 
 
@@ -85,24 +103,30 @@ class CitrusNVL
      * EmptyVL
      *
      * @param mixed $value
-     * @param mixed $replace
+     * @param mixed $replace1
+     * @param mixed $replace2
      * @return array|mixed|Closure|null
      */
-    public static function EmptyVL($value, $replace)
+    public static function EmptyVL($value, $replace1, $replace2)
     {
+        $replace = null;
         if (empty($value) === true)
         {
-            // クロージャも許容
-            if ($replace instanceof \Closure)
-            {
-                return $replace();
-            }
-            else
-            {
-                return $replace;
-            }
+            $replace = $replace1;
+        }
+        else
+        {
+            $replace = $replace2;
         }
 
-        return $value;
+        // クロージャも許容
+        if ($replace instanceof \Closure)
+        {
+            return $replace();
+        }
+        else
+        {
+            return $replace;
+        }
     }
 }

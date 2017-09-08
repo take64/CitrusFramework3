@@ -42,7 +42,7 @@ class CitrusDatabaseGenerate
     public static function property(array $dsns, string $tablename, string $classname)
     {
         // propertyディレクトリパス
-        $directory_path = self::callDirectoryPath(Citrus::$DIR_INTEGRATION_PROPERTY);
+        $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_PROPERTY);
 
         // DSNの数だけ行う
         foreach ($dsns as $dsn)
@@ -229,7 +229,7 @@ PTY;
 
             $file_string = str_replace('{#property#}', implode(PHP_EOL, $properties), $file_string);
 
-            $generate_class_path = sprintf('%s%sProperty.class.php', $directory_path, $classname);
+            $generate_class_path = sprintf('%s/%sProperty.class.php', $directory_path, $classname);
             file_put_contents($generate_class_path, $file_string);
             echo 'generate class file => ' . $generate_class_path . PHP_EOL;
         }
@@ -246,7 +246,7 @@ PTY;
     public static function dao(string $tablename, string $classname)
     {
         // daoディレクトリパス
-        $directory_path = self::callDirectoryPath(Citrus::$DIR_INTEGRATION_DAO);
+        $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_DAO);
 
         // ファイル内容
         $file_string = <<<EOT
@@ -279,7 +279,7 @@ EOT;
         $file_string = str_replace('{#sqlmap_id#}', $sqlmap_id, $file_string);
         $file_string = str_replace('{#tablename#}', $tablename, $file_string);
 
-        $generate_class_path = sprintf('%s%sDao.class.php', $directory_path, $classname);
+        $generate_class_path = sprintf('%s/%sDao.class.php', $directory_path, $classname);
         file_put_contents($generate_class_path, $file_string);
         echo 'generate class file => ' . $generate_class_path . PHP_EOL;
     }
@@ -295,7 +295,7 @@ EOT;
     public static function condition(string $tablename, string $conditionname)
     {
         // propertyディレクトリパス
-        $directory_path = self::callDirectoryPath(Citrus::$DIR_INTEGRATION_CONDITION);
+        $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_CONDITION);
 
         // propertyファイル内容
         $file_string = <<<EOT
@@ -320,7 +320,7 @@ EOT;
         $file_string = str_replace('{#table_name#}', $tablename, $file_string);
         $file_string = str_replace('{#class-name#}', $conditionname, $file_string);
 
-        $generate_class_path = sprintf('%s%sCondition.class.php', $directory_path, $conditionname);
+        $generate_class_path = sprintf('%s/%sCondition.class.php', $directory_path, $conditionname);
         file_put_contents($generate_class_path, $file_string);
         echo 'generate class file => ' . $generate_class_path . PHP_EOL;
     }

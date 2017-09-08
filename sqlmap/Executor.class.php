@@ -16,6 +16,7 @@ namespace Citrus\Sqlmap;
 
 
 use Citrus\CitrusConfigure;
+use Citrus\CitrusLogger;
 use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Database\CitrusDatabaseResult;
 use PDO;
@@ -148,7 +149,7 @@ class CitrusSqlmapExecutor
             return true;
         }
         $array = explode(substr($query, $startPos), ' ');
-        foreach($array as $one)
+        foreach ($array as $one)
         {
             if (strrpos($one, ':') === 0)
             {
@@ -184,7 +185,6 @@ class CitrusSqlmapExecutor
         {
             $instance = new CitrusDatabaseResult();
         }
-//        self::_validate($statement, $parameters);
 
 
         // クエリ実行
@@ -215,7 +215,7 @@ class CitrusSqlmapExecutor
             }
 
             // method exist
-            $is_method_exist_bintColumn = method_exists($instance, 'bindColumn');
+            $is_method_exist_bint_column = method_exists($instance, 'bindColumn');
 
             // ganerate_flags
             $generate_flags = [];
@@ -245,7 +245,7 @@ class CitrusSqlmapExecutor
                     }
                 }
                 // カラム補完
-                if ($is_method_exist_bintColumn === true)
+                if ($is_method_exist_bint_column === true)
                 {
                     $copyEntity->bindColumn();
                 }

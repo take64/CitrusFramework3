@@ -162,104 +162,127 @@ class CitrusLogger
         return self::$INSTANCE;
     }
 
+
+
     /**
      * trace log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function trace($value, $comment = '')
+    public static function trace($value, ...$_)
     {
-        self::_output($value, '[trace]'.$comment);
+        self::_output($value, func_get_args());
     }
+
+
 
     /**
      * debug log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function debug($value, $comment = '')
+    public static function debug($value, ...$_)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_DEBUG)
         {
-            self::_output($value,'[debug]'.$comment);
+            self::_output($value, func_get_args());
         }
     }
+
+
 
     /**
      * info log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function info($value, $comment = '')
+    public static function info($value, ...$_)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_INFO)
         {
-            self::_output($value, '[info]'.$comment);
+            self::_output($value, func_get_args());
         }
     }
+
+
 
     /**
      * warn log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function warn($value, $comment = '')
+    public static function warn($value, ...$_)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_WARN)
         {
-            self::_output($value, '[warn]'.$comment);
+            self::_output($value, func_get_args());
         }
     }
+
+
 
     /**
      * error log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function error($value, $comment = '')
+    public static function error($value, ...$_)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_ERROR)
         {
-            self::_output($value, '[error]'.$comment);
+            self::_output($value, func_get_args());
         }
     }
+
+
 
     /**
      * fatal log file
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array ...$_
      */
-    public static function fatal($value, $comment = '')
+    public static function fatal($value, ...$_)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_FATAL)
         {
-            self::_output($value, '[fatal]'.$comment);
+            self::_output($value, func_get_args());
         }
     }
+
+
 
     /**
      * output log file
      *
      * @param mixed  $value
-     * @param string $comment
+     * @param array  $params
      */
-    private static function _output($value, $comment = '')
+    private static function _output($value, array $params)
     {
+        // params
+        array_shift($params);
+
         // display
         if (self::$LOG_DISPLAY === true)
         {
+            $display_value = $value;
+            if (is_string($value) === true)
+            {
+                $display_value = vsprintf($value, $params);
+
+            }
             var_dump([
                 Citrus::$TIMESTAMP_FORMAT,
-                $comment,
-                $value,
+                $display_value,
             ]);
+
         }
-        self::$INSTANCE->output($value, $comment);
+        self::$INSTANCE->output($value, $params);
     }
 }

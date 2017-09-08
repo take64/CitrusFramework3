@@ -35,7 +35,13 @@ class CitrusConfigurePaths extends CitrusObject
     public $javascript = '';
 
     /** @var string */
+    public $javascript_library = '';
+
+    /** @var string */
     public $stylesheet = '';
+
+    /** @var string */
+    public $stylesheet_library = '';
 
     /** @var string */
     public $smartyplugin = '';
@@ -95,6 +101,19 @@ class CitrusConfigurePaths extends CitrusObject
 
 
     /**
+     * call javascript library
+     *
+     * @param string|null $append_path
+     * @return string
+     */
+    public function callJavascriptLibrary(string $append_path = null)
+    {
+        return $this->replace($this->javascript_library, $append_path);
+    }
+
+
+
+    /**
      * call stylesheet
      *
      * @param string|null $append_path
@@ -103,6 +122,19 @@ class CitrusConfigurePaths extends CitrusObject
     public function callStylesheet(string $append_path = null)
     {
         return $this->replace($this->stylesheet, $append_path);
+    }
+
+
+
+    /**
+     * call stylesheet library
+     *
+     * @param string|null $append_path
+     * @return string
+     */
+    public function callStylesheetLibrary(string $append_path = null)
+    {
+        return $this->replace($this->stylesheet_library, $append_path);
     }
 
 
@@ -132,7 +164,7 @@ class CitrusConfigurePaths extends CitrusObject
         $result = $search;
         $result = str_replace('{#domain#}', $this->domain, $result);
 
-        $result .= $append_path;
+        $result .= '/' . $append_path;
 
         return $result;
     }

@@ -18,6 +18,7 @@ namespace Citrus\Database;
 use Citrus\Citrus;
 use Citrus\CitrusConfigure;
 use Citrus\CitrusObject;
+use Citrus\Sqlmap\CitrusSqlmapCondition;
 
 class CitrusDatabaseColumn extends CitrusObject
 {
@@ -34,7 +35,7 @@ class CitrusDatabaseColumn extends CitrusObject
     public $rowid;
 
     /** @var string rev */
-    public $rev = 1;
+    public $rev;
 
     /** @var string schema */
     public $schema = null;
@@ -76,15 +77,69 @@ class CitrusDatabaseColumn extends CitrusObject
 
 
     /**
+     * call primary keys
+     *
+     * @return string[]
+     */
+    public function callPrimaryKeys() : array
+    {
+        return [];
+    }
+
+
+
+    /**
      * call condition
      *
      * @return CitrusDatabaseColumn
      */
     public function callCondition()
     {
+        var_dump(__LINE__);
         if (is_null($this->condition) === true)
         {
+            var_dump(__LINE__);
             $this->condition = new CitrusDatabaseColumn();
+        }
+        return $this->condition;
+    }
+
+
+
+    /**
+     * to condition
+     *
+     * @return CitrusDatabaseColumn
+     */
+    public function toCondition()
+    {
+        $condition_calss_name = get_class($this->callCondition());
+        $condition = new $condition_calss_name();
+
+        $primary_keys = $this->callPrimaryKeys();
+        foreach ($primary_keys as $primary_key)
+        {
+            if (isset($this->$primary_key) === true && is_null($this->$primary_key) === false)
+            {
+                $condition->$primary_key = $this->$primary_key;
+            }
+        }
+
+        return $condition;
+    }
+
+
+
+    /**
+     * get condition
+     *
+     * @return CitrusDatabaseColumn
+     */
+    public function getCondition()
+    {
+        if (is_null($this->condition) === true)
+        {
+            $this->condition = $this->toCondition();
         }
         return $this->condition;
     }

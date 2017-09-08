@@ -20,8 +20,8 @@ interface CitrusLoggerType
     /**
      * output
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param mixed $value
+     * @param array $params
      */
-    public function output($value, string $comment = '');
+    public function output($value, array $params = []);
 }

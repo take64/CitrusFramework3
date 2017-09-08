@@ -10,12 +10,16 @@
  * @package     Citrus
  * @subpackage  Formmap
  * @license     http://www.citrus.tk/
- * @
  */
 
 namespace Citrus\Formmap;
 
 
+use Citrus\CitrusException;
+use Citrus\CitrusFormmap;
+use Citrus\CitrusLogger;
+use Citrus\CitrusMessage;
+use Citrus\CitrusNVL;
 use Citrus\CitrusObject;
 
 class CitrusFormmapElement extends CitrusObject
@@ -58,6 +62,9 @@ class CitrusFormmapElement extends CitrusObject
 
     /** @var string var type telephone */
     const VAR_TYPE_TELEPHONE = 'telephone';
+
+    /** @var string var type tel */
+    const VAR_TYPE_TEL = 'tel';
 
     /** @var string var type fax */
     const VAR_TYPE_FAX = 'fax';
@@ -108,8 +115,17 @@ class CitrusFormmapElement extends CitrusObject
     const VAR_TYPE_ELEMENT = 'element';
 
 
+    /** @var string form type element */
+    const FORM_TYPE_ELEMENT = 'element';
+
     /** @var string form type text */
     const FORM_TYPE_TEXT = 'text';
+
+    /** @var string form type hidden */
+    const FORM_TYPE_HIDDEN = 'hidden';
+
+    /** @var string form type select */
+    const FORM_TYPE_SELECT = 'select';
 
     /** @var string form type password */
     const FORM_TYPE_PASSWD = 'password';
@@ -192,8 +208,14 @@ class CitrusFormmapElement extends CitrusObject
      */
     public function __construct(array $element = null)
     {
-        $this->bindObject($element, true);
+//        var_dump(debug_backtrace());
+//        debug_print_backtrace();
+//        var_dump($element);
+
+//        $this->bindObject($element, true);
+        $this->bindArray($element, true);
     }
+
 
 
     /**
@@ -201,20 +223,72 @@ class CitrusFormmapElement extends CitrusObject
      *
      * @param string     $tag
      * @param array|null $elements
+     * @param mixed|null $options
      * @return string
      */
-    public static function generateTag(string $tag, array $elements = null) : string
+    public static function generateTag(string $tag, array $elements = null, $options = null) : string
     {
+        // 閉じタグがあるタイプか否か
+        $is_multiple_tag = in_array($tag, [ 'select' ]);
+
         $form_element = [];
         foreach ($elements as $ky => $vl)
         {
-            if (is_null($vl) === true)
+            // 基本初期値はnullだが、例外的に空配列[]を利用している為
+            // 0も通したい
+            if (is_null($vl) === true
+                || (is_string($vl) === true && $vl === '')
+                || (is_array($vl) === true && $vl === []))
             {
                 continue;
             }
-            $form_element[] = sprintf('%s="%s"', $ky, $vl);
-        }
 
+            if (is_array($vl) === true)
+            {
+                $form_element[$ky] = sprintf('%s="%s"', $ky, implode(', ', $vl));
+            }
+            else
+            {
+                $form_element[$ky] = sprintf('%s="%s"', $ky, $vl);
+            }
+        }
+//CitrusLogger::debug($form_element);
+        // 閉じタグがあるタイプ
+        if ($is_multiple_tag === true)
+        {
+            $inner_tags = [];
+            if (is_array($options) === true)
+            {
+                // select
+                if ($tag == 'select')
+                {
+                    foreach ($options as $ky => $vl)
+                    {
+                        $inner_tags[] = sprintf('<option value="%s" %s>%s</option>',
+                            $ky,
+                            ($ky === $elements['value'] ? 'selected' : ''),
+                            $vl
+                            );
+                    }
+                }
+            }
+            // その他のタグ
+            else if (is_string($options) === true)
+            {
+                $inner_tags[] = $options;
+            }
+
+            // valueは渡されてきてもいらなくなる
+            unset($form_element['value']);
+
+            return sprintf('<%s %s>%s</%s>',
+                $tag,
+                implode(' ', $form_element),
+                implode(PHP_EOL, $inner_tags),
+                $tag
+            );
+        }
+        // 閉じタグがないタイプ
         return sprintf('<%s %s />',
             $tag,
             implode(' ', $form_element)
@@ -230,7 +304,7 @@ class CitrusFormmapElement extends CitrusObject
      */
     public function callValue()
     {
-        if($this->escape === true)
+        if ($this->escape === true)
         {
             return htmlspecialchars($this->value, ENT_QUOTES);
         }
@@ -246,40 +320,53 @@ class CitrusFormmapElement extends CitrusObject
      */
     public function callDefault()
     {
-        if($this->escape === true)
+        if ($this->escape === true)
         {
             return htmlspecialchars($this->default, ENT_QUOTES);
         }
         return $this->default;
     }
 
-//
-//    /**
-//     * to string accesser
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  string
-//     */
-//    public function __toString()
-//    {
-//        return $this->toString();
-//    }
-//
-//    /**
-//     * to string accesser with option
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $option
-//     * @return  string
-//     */
-//    public function option($option = '')
-//    {
-//        return $this->toString($option);
-//    }
+
+
+    /**
+     * call prefixed id
+     *
+     * @return string
+     */
+    public function callPrefixedId()
+    {
+        if (empty($this->prefix) === true)
+        {
+            return $this->id;
+        }
+        return sprintf('%s%s', $this->prefix, $this->id);
+    }
+
+
+
+    /**
+     * to string accesser
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+
+
+    /**
+     * to string accesser with option
+     *
+     * @param array $option
+     * @return string
+     */
+    public function option(array $option = []) : string
+    {
+        return $this->toString($option);
+    }
 //
 //
 //
@@ -304,680 +391,925 @@ class CitrusFormmapElement extends CitrusObject
 //     * @param   string  $option
 //     * @return  string
 //     */
-//    public function span($option = '')
-//    {
-//        return "<span type='text' name='".$this->id."'"
-//            .(($this->id    === null)    ? "" : " id='".$this->id."'")
-//            .(($this->class === null) ? "" : " class='".$this->class."'")
-//            .(($this->style === null) ? "" : " style='".$this->style."'")
-//            ." ".$option." >"
-//            .(($this->value === null) ? $this->callDefault() : $this->callValue())
-//            ."</span>";
-//    }
-//
-//    /**
-//     * validate
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  integer
-//     */
-//    public function validate()
-//    {
-//        try
-//        {
-//            $result = 0;
-//            //validate require
-//            if($this->_validateRequired() === false)
-//            {
-//                $result++;
-//            }
-//            else
-//            {
-//                // validate type
-//                if($this->_validateVarType() === false)
-//                {
-//                    $result++;
-//                }
-//
-//                // validate max
-//                if($this->_validateMax() === false)
-//                {
-//                    $result++;
-//                }
-//
-//                // validate min
-//                if($this->_validateMin() === false)
-//                {
-//                    $result++;
-//                }
-//            }
-//            return $result;
-//        }
-//        catch(CitrusErrorException $ee)
-//        {
-//            throw $ee;
-//        }
-//    }
-//
-//    /**
-//     * filter
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  integer
-//     */
-//    public function filter()
-//    {
-//        // result value
-//        $result = $this->value;
-//
+
+
+    /**
+     * to span tag
+     *
+     * @return string
+     */
+    public function span()
+    {
+        $elements = [
+//            'type'      => 'text',
+            'id'        => $this->callPrefixedId(),
+            'name'      => $this->id,
+            'class'     => $this->class,
+            'style'     => $this->style,
+        ];
+//        $elements = array_merge($elements, $appends);
+
+        return self::generateTag('span', $elements, CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()));
+    }
+
+
+
+    /**
+     * validate
+     *
+     * @return int
+     * @throws CitrusException
+     */
+    public function validate() : int
+    {
+        try
+        {
+            $result = 0;
+            // validate require
+            if ($this->_validateRequired() === false)
+            {
+                $result++;
+            }
+            else
+            {
+                // validate type
+                if ($this->_validateVarType() === false)
+                {
+                    $result++;
+                }
+
+                // validate max
+                if ($this->_validateMax() === false)
+                {
+                    $result++;
+                }
+
+                // validate min
+                if ($this->_validateMin() === false)
+                {
+                    $result++;
+                }
+            }
+            return $result;
+        }
+        catch (CitrusException $e)
+        {
+            throw $e;
+        }
+    }
+
+
+
+    /**
+     * value filter
+     *
+     * @return mixed|null
+     */
+    public function filter()
+    {
+        // result value
+        $result = $this->value;
+
 //        // empty case
-//        if(is_numeric($result) === true)
+//        if (empty($result) === true)
 //        {
+//            return null;
 //        }
-//        else
-//            if(isset($result) === false)
-//            {
-//                return null;
-//            }
-//
-//        // non filter
-//        if(is_null($this->filter) === true)
-//        {
-//            return $result;
-//        }
-//
-//        // filter list
-//        $filter_list = explode(',', $this->filter);
-//
-//        foreach($filter_list as $filter_name)
-//        {
-//            $filter_method_name = '_filter'.ucfirst(trim($filter_name));
-//            $result = $this->$filter_method_name($result);
-//        }
-//
-//        return $result;
-//    }
-//
-//    /**
-//     * validate value required
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     */
-//    protected function _validateRequired()
-//    {
-//        try
-//        {
-//            if($this->required === true)
-//            {
-//                if(is_numeric($this->value) === true)
-//                {
-//
-//                }
-//                else
-//                    if(empty($this->value) === true)
-//                    {
-//                        if($this->validate_null_safe === true && is_null($this->value) === true)
-//                        {
-//
-//                        }
-//                        else
-//                        {
-//                            CitrusMessage::registError(CitrusLocale::message('form_validate_required', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    }
-//                    else
-//                        if(is_array($this->value) === true)
-//                        {
-//                            if(count($this->value) == 0)
-//                            {
-//                                if($this->validate_null_safe === true && is_null($this->value) === true)
-//                                {
-//
-//                                }
-//                                else
-//                                {
-//                                    CitrusMessage::registError(CitrusLocale::message('form_validate_required', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                                    return false;
-//                                }
-//                            }
-//                        }
-//            }
-//            return true;
-//        }
-//        catch(CitrusErrorException $ee)
-//        {
-//            throw $ee;
-//        }
-//    }
-//
-//    /**
-//     * validate value type
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateVarType()
-//    {
-//        try
-//        {
-//            // 入力がある場合のみチェックする。
-//            if(is_null($this->value) || $this->value == '')
-//            {
-//                return true;
-//            }
-//
-//            // filter
-//            $value = $this->filter();
-//
-//            // validate
-//            switch($this->var_type)
-//            {
-//
-//                // int
-//                case self::VAR_TYPE_INT :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(is_int(intval($vl)) === false || is_numeric($vl) === false || !preg_match('/^-?[0-9]*$/', $vl))
-//                            {
-//                                CitrusMessage::registError(CitrusLocale::message('form_validate_type_int', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                            else
-//                                if($vl >= 2147483648)
-//                                {
-//                                    CitrusMessage::registError(CitrusLocale::message('form_validate_numeric_max', array($this->name, 2147483648)), '', CitrusFormmap::MESSAGE_TAG);
-//                                    return false;
-//                                }
-//                                else
-//                                    if($vl <= -2147483648)
-//                                    {
-//                                        CitrusMessage::registError(CitrusLocale::message('form_validate_numeric_min', array($this->name, -2147483648)), '', CitrusFormmap::MESSAGE_TAG);
-//                                        return false;
-//                                    }
-//                        }
-//                    }
-//                    else
-//                        if(is_int(intval($value)) === false || is_numeric($value) === false || !preg_match('/^-?[0-9]*$/', $value))
-//                        {
-//                            CitrusMessage::registError(CitrusLocale::message('form_validate_type_int', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                        else
-//                            if($value >= 2147483648)
-//                            {
-//                                CitrusMessage::registError(CitrusLocale::message('form_validate_numeric_max', array($this->name, 2147483648)), '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                            else
-//                                if($value <= -2147483648)
-//                                {
-//                                    CitrusMessage::registError(CitrusLocale::message('form_validate_numeric_min', array($this->name, -2147483648)), '', CitrusFormmap::MESSAGE_TAG);
-//                                    return false;
-//                                }
-//                    break;
-//
-//                // float
-//                case self::VAR_TYPE_FLOAT :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(is_float(floatval($vl)) === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には少数を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(is_float(floatval($value)) === false)
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には少数を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // numeric
-//                case self::VAR_TYPE_NUMERIC :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(is_numeric($vl) === false)
-//                            {
-//                                CitrusMessage::registError(CitrusLocale::message('form_validate_type_numeric', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(is_numeric($value) === false)
-//                        {
-//                            CitrusMessage::registError(CitrusLocale::message('form_validate_type_numeric', array($this->name)), '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // string
-//                case self::VAR_TYPE_STRING :
-//                    // if(is_array($value))
-//                    // {
-//                    // foreach($value as $ky => $vl)
-//                    // {
-//                    // if(is_string($vl) === false)
-//                    // {
-//                    // CitrusMessage::registError('「'.$this->name.'」には文字列を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                    // return false;
-//                    // }
-//                    // }
-//                    // }
-//                    // else
-//                    // if(is_string($value) === false)
-//                    // {
-//                    // CitrusMessage::registError('「'.$this->name.'」には文字列を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                    // return false;
-//                    // }
-//                    break;
-//
-//                // alphabet
-//                case self::VAR_TYPE_ALPHABET :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^[a-zA-Z]/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には半角英字を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^[a-zA-Z]/', $this->value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には半角英字を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // alphabet & numeric
-//                case self::VAR_TYPE_ALPHANUMERIC :
-//                    if(is_array($this->value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^[a-zA-Z0-9_.]/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には半角英数字を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^[a-zA-Z0-9_.]/', $value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には半角英数字を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // alphabet & numeric & marks
-//                case self::VAR_TYPE_AN_MARKS :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^[a-zA-Z0-9_.%&#-]/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には半角英数字および記号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^[a-zA-Z0-9_.%&#-]/', $value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には半角英数字および記号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // date
-//                case self::VAR_TYPE_DATE :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            $timestamp = strtotime($vl);
-//                            if($timestamp === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//
-//                            $year   = date('Y', $timestamp);
-//                            $month  = date('n', $timestamp);
-//                            $day    = date('j', $timestamp);
-//                            if(checkdate($month, $day, $year) === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                            if(!preg_match('/^[0-9]{4}(-|\/)?[0-9]{2}(-|\/)?[0-9]{2}$/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(strtotime($value) === false)
-//                        {
-//                            $timestamp = strtotime($value);
-//                            if($timestamp === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//
-//                            $year   = date('Y', $timestamp);
-//                            $month  = date('n', $timestamp);
-//                            $day    = date('j', $timestamp);
-//                            if(checkdate($month, $day, $year) === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    if(!preg_match('/^[0-9]{4}(-|\/)?[0-9]{2}(-|\/)?[0-9]{2}$/', $value))
-//                    {
-//                        CitrusMessage::registError('「'.$this->name.'」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                        return false;
-//                    }
-//                    break;
-//
-//                // time
-//                case self::VAR_TYPE_TIME :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^[0-9]{2}[:.]?[0-5][0-9][:.]?([0-5][0-9])?/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には時分秒または時分を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^[0-9]{2}[:.]?[0-5][0-9][:.]?([0-5][0-9])?/', $value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には時分秒または時分を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // datetime
-//                case self::VAR_TYPE_DATETIME :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(strtotime($vl) === false)
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には年月日時分秒を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(strtotime($value) === false)
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には年月日時分秒を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // tel
-//                case self::VAR_TYPE_TEL :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」には電話番号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」には電話番号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // fax
-//                case self::VAR_TYPE_FAX :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-//                            if(!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $vl))
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」にはFAX番号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-//                        if(!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $value))
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」にはFAX番号を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // email
-//                case self::VAR_TYPE_EMAIL :
-//                    if(is_array($value))
-//                    {
-//                        foreach($value as $ky => $vl)
-//                        {
-/*                            if(!preg_match('/^([*+!.&#$|\'\\%\/0-9a-z^_`{}=?> :-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})$/i', $vl))*/
-//                            {
-//                                CitrusMessage::registError('「'.$this->name.'」にはメールアドレスを入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                    else
-/*                        if(!preg_match('/^([*+!.&#$|\'\\%\/0-9a-z^_`{}=?> :-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})$/i', $value))*/
-//                        {
-//                            CitrusMessage::registError('「'.$this->name.'」にはメールアドレスを入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//                            return false;
-//                        }
-//                    break;
-//
-//                // other
-//                default :
-//                    return true;
-//                    break;
-//            }
-//        }
-//        catch(CitrusErrorException $ee)
-//        {
-//            throw $ee;
-//        }
-//    }
-//
-//    /**
-//     * validate max
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     */
-//    protected function _validateMax()
-//    {
-//        try
-//        {
-//            // 入力がある場合のみチェックする。
-//            if(is_null($this->value) === true || $this->value == '')
-//            {
-//                return true;
-//            }
-//            if(is_null($this->max) === false)
-//            {
-//                // numeric
-//                if($this->var_type == self::VAR_TYPE_INT
-//                    || $this->var_type == self::VAR_TYPE_FLOAT)
-//                {
-//                    return $this->_validateNumericMax();
-//                }
-//                else
-//
-//                    // string
-//                    if($this->var_type == self::VAR_TYPE_STRING)
-//                    {
-//                        return $this->_validateLengthMax();
-//                    }
-//            }
-//        }
-//        catch(CitrusErrorException $ee)
-//        {
-//            throw $ee;
-//        }
-//    }
-//
-//    /**
-//     * validate min
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateMin()
-//    {
-//        try
-//        {
-//            // 入力がある場合のみチェックする。
-//            if(is_null($this->value) === true || $this->value == '')
-//            {
-//                return true;
-//            }
-//            if(is_null($this->min) === false)
-//            {
-//                // numeric
-//                if($this->var_type == self::VAR_TYPE_INT
-//                    || $this->var_type == self::VAR_TYPE_FLOAT)
-//                {
-//                    return $this->_validateNumericMin();
-//                }
-//                else
-//
-//                    // string
-//                    if($this->var_type == self::VAR_TYPE_STRING)
-//                    {
-//                        return $this->_validateLengthMin();
-//                    }
-//            }
-//        }
-//        catch(CitrusErrorException $ee)
-//        {
-//            throw $ee;
-//        }
-//    }
-//
-//    /**
-//     * validate max numeric
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateNumericMax()
-//    {
-//        if(!($this->value <= $this->max))
-//        {
-//            CitrusMessage::registError(CitrusLocale::message('form_validate_numeric_max', array($this->name, $this->max)), '', CitrusFormmap::MESSAGE_TAG);
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * validate min numeric
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateNumericMin()
-//    {
-//        if(!($this->value >= $this->min))
-//        {
-//            CitrusMessage::registError('「'.$this->name.'」には「'.$this->min.'」以上の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-////            throw new CitrusErrorException('「'.$this->name.'」には「'.$this->min.'」以上の値を入力してください。');
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * validate max length
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateLengthMax()
-//    {
-//        $length = mb_strwidth($this->value, 'UTF-8');
-//        if(!($length <= $this->max))
-//        {
-//            CitrusMessage::registError(CitrusLocale::message('form_validate_length_max', array($this->name, $this->max)), '', CitrusFormmap::MESSAGE_TAG);
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * validate min length
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  boolean
-//     */
-//    protected function _validateLengthMin()
-//    {
-//        $length = mb_strwidth($this->value, 'UTF-8');
-//        if(!($length >= $this->min))
-//        {
-//            CitrusMessage::registError('「'.$this->name.'」には「'.$this->min.'」文字以上で入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-////            throw new CitrusErrorException('「'.$this->name.'」には「'.$this->min.'」文字以上で入力してください。');
-//            return false;
-//        }
-//        return true;
-//    }
+
+        // non filter
+        if (is_null($this->filters) === true)
+        {
+            return $result;
+        }
+
+        // filter list
+        foreach ($this->filters as $one)
+        {
+            $filter_method_name = 'filter'.ucfirst(trim($one));
+            $result = $this->$filter_method_name($result);
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value required
+     *
+     * @return bool
+     * @throws CitrusException
+     */
+    protected function _validateRequired() : bool
+    {
+        try
+        {
+            if ($this->required === true)
+            {
+                $message = sprintf('「%s」は入力必須です。', $this->name);
+                if (is_numeric($this->value) === true)
+                {
+                    return true;
+                }
+                else if (empty($this->value) === true)
+                {
+                    if ($this->validate_null_safe === true && is_null($this->value) === true)
+                    {}
+                    else
+                    {
+                        $this->addError($message);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        catch (CitrusException $e)
+        {
+            throw $e;
+        }
+    }
+
+
+
+    /**
+     * validate value type
+     *
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarType() : bool
+    {
+        try
+        {
+            // 入力がある場合のみチェックする。
+            if (is_null($this->value) === true || $this->value === '')
+            {
+                return true;
+            }
+
+            // result
+            $result = true;
+
+            // message
+            $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
+            $message_form_validate_type_float = sprintf('「%s」には少数を入力してください。', $this->name);
+            $message_form_validate_type_numeric = sprintf('「%s」には数字を入力してください。', $this->name);
+            $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, PHP_INT_MAX);
+            $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, PHP_INT_MIN);
+            $message_form_validate_length_max = sprintf('「%s」には「%s」文字以下で入力してください。', $this->name, 0);
+            $message_form_validate_length_min = sprintf('「%s」には「%s」文字以上で入力してください。', $this->name, 0);
+
+            $message_form_validate_type_alphabet = sprintf('「%s」には半角英字を入力してください。', $this->name);
+            $message_form_validate_type_alphanumeric = sprintf('「%s」には半角英数字を入力してください。', $this->name);
+            $message_form_validate_type_an_marks = sprintf('「%s」には半角英数字および記号を入力してください。', $this->name);
+            $message_form_validate_type_date = sprintf('「%s」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', $this->name);
+            $message_form_validate_type_time = sprintf('「%s」には時分秒または時分を入力してください。', $this->name);
+            $message_form_validate_type_datetime = sprintf('「%s」には年月日時分秒を入力してください。', $this->name);
+            $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
+            $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
+            $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
+
+
+
+
+            
+            // filter
+            $filtered_value = $this->filter();
+
+            // validate
+            switch($this->var_type)
+            {
+                // int
+                case self::VAR_TYPE_INT :
+                    $result = $this->_validateVarTypeInt($filtered_value);
+                    break;
+
+                // float
+                case self::VAR_TYPE_FLOAT :
+                    $result = $this->_validateVarTypeFloat($filtered_value);
+                    break;
+
+                // numeric
+                case self::VAR_TYPE_NUMERIC :
+                    $result = $this->_validateVarTypeNumeric($filtered_value);
+                    break;
+
+                // string
+                case self::VAR_TYPE_STRING :
+                    break;
+
+                // alphabet
+                case self::VAR_TYPE_ALPHABET :
+                    $result = $this->_validateVarTypeAlphabet($filtered_value);
+                    break;
+
+                // alphabet & numeric
+                case self::VAR_TYPE_ALPHANUMERIC :
+                    $result = $this->_validateVarTypeAlphanumeric($filtered_value);
+                    break;
+
+                // alphabet & numeric & marks
+                case self::VAR_TYPE_AN_MARKS :
+                    $result = $this->_validateVarTypeANMarks($filtered_value);
+                    break;
+
+                // date
+                case self::VAR_TYPE_DATE :
+                    $result = $this->_validateVarTypeDate($filtered_value);
+                    break;
+
+                // time
+                case self::VAR_TYPE_TIME :
+                    $result = $this->_validateVarTypeTime($filtered_value);
+                    break;
+
+                // datetime
+                case self::VAR_TYPE_DATETIME :
+                    $result = $this->_validateVarTypeDatetime($filtered_value);
+                    break;
+
+                // tel
+                case self::VAR_TYPE_TEL :
+                    $result = $this->_validateVarTypeTel($filtered_value);
+                    break;
+
+                // fax
+                case self::VAR_TYPE_FAX :
+                    $result = $this->_validateVarTypeFax($filtered_value);
+                    break;
+
+                // email
+                case self::VAR_TYPE_EMAIL :
+                    $result = $this->_validateVarTypeEmail($filtered_value);
+                    break;
+
+                // other
+                default :
+                    $result = true;
+                    break;
+            }
+            return $result;
+        }
+        catch (CitrusException $e)
+        {
+            throw $e;
+        }
+    }
+
+
+
+    /**
+     * validate value type int
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeInt($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
+        $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, PHP_INT_MAX);
+        $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, PHP_INT_MIN);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeInt($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (is_int(intval($filtered_value)) === false && is_numeric($filtered_value) === false && !preg_match('/^-?[0-9]*$/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_int);
+            $result = false;
+        }
+        else if ($filtered_value >= PHP_INT_MAX)
+        {
+            $this->addError($message_form_validate_numeric_max);
+            $result = false;
+        }
+        else if ($filtered_value <= PHP_INT_MIN)
+        {
+            $this->addError($message_form_validate_numeric_min);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type float
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeFloat($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_float = sprintf('「%s」には少数を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeFloat($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (is_float(floatval($filtered_value)) === false)
+        {
+            $this->addError($message_form_validate_type_float);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type numeric
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeNumeric($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_numeric = sprintf('「%s」には数字を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeFloat($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (is_numeric($filtered_value) === false)
+        {
+            $this->addError($message_form_validate_type_numeric);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type alphabet
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeAlphabet($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_alphabet = sprintf('「%s」には半角英字を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeAlphabet($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^[a-zA-Z]/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_alphabet);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type alphanumeric
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeAlphanumeric($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_alphanumeric = sprintf('「%s」には半角英数字を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeAlphabet($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^[a-zA-Z0-9_.]/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_alphanumeric);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type alphanumeric & marks
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeANMarks($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_an_marks = sprintf('「%s」には半角英数字および記号を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeANMarks($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^[a-zA-Z0-9_.%&#-]/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_an_marks);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type date
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeDate($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_date = sprintf('「%s」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeDate($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (strtotime($filtered_value) !== false)
+        {
+            $timestamp = strtotime($filtered_value);
+            if ($timestamp === false)
+            {
+                $this->addError($message_form_validate_type_date);
+                $result = false;
+            }
+
+            $year   = date('Y', $timestamp);
+            $month  = date('n', $timestamp);
+            $day    = date('j', $timestamp);
+            if (checkdate($month, $day, $year) === false)
+            {
+                $this->addError($message_form_validate_type_date);
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type time
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeTime($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_time = sprintf('「%s」には時分秒または時分を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeTime($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^[0-9]{2}[:.]?[0-5][0-9][:.]?([0-5][0-9])?/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_time);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type datetime
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeDatetime($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_datetime = sprintf('「%s」には年月日時分秒を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeDatetime($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (strtotime($filtered_value) === false)
+        {
+            $this->addError($message_form_validate_type_datetime);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type tel
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeTel($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeTel($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_tel);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type fax
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeFax($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeFax($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^([0-9]{2,3}-){0,1}[0-9]{1,4}-[0-9]{2,4}-[0-9]{2,4}$/', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_fax);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate value type email
+     *
+     * @param mixed $filtered_value
+     * @return bool
+     * @throws CitrusException
+     */
+    private function _validateVarTypeEmail($filtered_value) : bool
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
+
+        // validate
+        if (is_array($filtered_value) === true)
+        {
+            foreach ($filtered_value as $one)
+            {
+                $result = $this->_validateVarTypeEmail($one);
+                if ($result === false)
+                {
+                    break;
+                }
+            }
+        }
+        else if (!preg_match('/^([*+!.&#$|\'\\%\/0-9a-z^_`{}=?> :-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})$/i', $filtered_value))
+        {
+            $this->addError($message_form_validate_type_email);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate max
+     *
+     * @return bool
+     * @throws CitrusException
+     */
+    protected function _validateMax()
+    {
+        try
+        {
+            // 入力がある場合のみチェックする。
+            // null もしくは 空文字 はスルー
+            if (is_null($this->value) === true || $this->value == '')
+            {
+                return true;
+            }
+            if (is_null($this->max) === false)
+            {
+                // numeric
+                if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+                {
+                    return $this->_validateNumericMax();
+                }
+                else if ($this->var_type == self::VAR_TYPE_STRING)
+                {
+                    return $this->_validateLengthMax();
+                }
+            }
+        }
+        catch (CitrusException $ee)
+        {
+            throw $ee;
+        }
+    }
+
+
+
+    /**
+     * validate min
+     *
+     * @return bool
+     * @throws CitrusException
+     */
+    protected function _validateMin()
+    {
+        try
+        {
+            // 入力がある場合のみチェックする。
+            // null もしくは 空文字 はスルー
+            if (is_null($this->value) === true || $this->value == '')
+            {
+                return true;
+            }
+            if (is_null($this->min) === false)
+            {
+                // numeric
+                if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+                {
+                    return $this->_validateNumericMin();
+                }
+                else if ($this->var_type === self::VAR_TYPE_STRING)
+                {
+                    return $this->_validateLengthMin();
+                }
+            }
+        }
+        catch (CitrusException $e)
+        {
+            throw $e;
+        }
+    }
+
+
+
+    /**
+     * validate max numeric
+     *
+     * @return bool
+     */
+    protected function _validateNumericMax()
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, $this->max);
+
+        if ($this->value > $this->max)
+        {
+            $this->addError($message_form_validate_numeric_max);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate min numeric
+     *
+     * @return bool
+     */
+    protected function _validateNumericMin()
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, $this->min);
+
+        if ($this->value < $this->min)
+        {
+            $this->addError($message_form_validate_numeric_min);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate max length
+     *
+     * @return bool
+     */
+    protected function _validateLengthMax()
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_length_max = sprintf('「%s」には「%s」文字以下で入力してください。', $this->name, $this->max);
+
+        $length = mb_strwidth($this->value, 'UTF-8');
+        if ($length > $this->max)
+        {
+            $this->addError($message_form_validate_length_max);
+            $result = false;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * validate min length
+     *
+     * @return bool
+     */
+    protected function _validateLengthMin()
+    {
+        // result
+        $result = true;
+
+        // message
+        $message_form_validate_length_min = sprintf('「%s」には「%s」文字以上で入力してください。', $this->name, $this->min);
+
+        $length = mb_strwidth($this->value, 'UTF-8');
+        if ($length < $this->min)
+        {
+            $this->addError($message_form_validate_length_min);
+            $result = false;
+        }
+
+        return $result;
+    }
+
 //
 //    /**
 //     * validate less (this <= less)
@@ -989,24 +1321,24 @@ class CitrusFormmapElement extends CitrusObject
 //    public function validateLess($element = null)
 //    {
 //        // 入力がある場合のみチェックする。
-//        if(is_null($this->value) === true || $this->value == '')
+//        if (is_null($this->value) === true || $this->value == '')
 //        {
 //            return true;
 //        }
-//        if(is_null($element) === false)
+//        if (is_null($element) === false)
 //        {
 //            // 日付の場合
-//            if(($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
+//            if (($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
 //            {
-//                if(strtotime($this->value) > strtotime($element->value))
+//                if (strtotime($this->value) > strtotime($element->value))
 //                {
-//                    CitrusMessage::registError('[ '.$this->name.' ] は ['.$element->name.' ] 以前の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
+//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以前の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
 //
 //                    return false;
 //                }
 //            }
 //            // 数値系の場合
-//            if((
+//            if ((
 //                ($this->var_type == self::VAR_TYPE_INT
 //                    || $this->var_type == self::VAR_TYPE_FLOAT
 //                    || $this->var_type == self::VAR_TYPE_NUMERIC
@@ -1018,9 +1350,9 @@ class CitrusFormmapElement extends CitrusObject
 //                )
 //            ))
 //            {
-//                if(floatVal($this->value) > floatVal($element->value))
+//                if (floatVal($this->value) > floatVal($element->value))
 //                {
-//                    CitrusMessage::registError('[ '.$this->name.' ] は ['.$element->name.' ] 以下の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
+//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以下の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
 //
 //                    return false;
 //                }
@@ -1039,24 +1371,24 @@ class CitrusFormmapElement extends CitrusObject
 //    public function validateGreater($element = null)
 //    {
 //        // 入力がある場合のみチェックする。
-//        if(is_null($this->value) === true || $this->value == '')
+//        if (is_null($this->value) === true || $this->value == '')
 //        {
 //            return true;
 //        }
-//        if(is_null($element) === false)
+//        if (is_null($element) === false)
 //        {
 //            // 日付の場合
-//            if(($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
+//            if (($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
 //            {
-//                if(strtotime($this->value) < strtotime($element->value))
+//                if (strtotime($this->value) < strtotime($element->value))
 //                {
-//                    CitrusMessage::registError('[ '.$this->name.' ] は ['.$element->name.' ] 以降の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
+//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以降の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
 //
 //                    return false;
 //                }
 //            }
 //            // 数値系の場合
-//            if((
+//            if ((
 //                ($this->var_type == self::VAR_TYPE_INT
 //                    || $this->var_type == self::VAR_TYPE_FLOAT
 //                    || $this->var_type == self::VAR_TYPE_NUMERIC
@@ -1068,9 +1400,9 @@ class CitrusFormmapElement extends CitrusObject
 //                )
 //            ))
 //            {
-//                if(floatVal($this->value) < floatVal($element->value))
+//                if (floatVal($this->value) < floatVal($element->value))
 //                {
-//                    CitrusMessage::registError('[ '.$this->name.' ] は ['.$element->name.' ] 以上の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
+//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以上の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
 //
 //                    return false;
 //                }
@@ -1104,7 +1436,7 @@ class CitrusFormmapElement extends CitrusObject
 //     */
 //    protected function _filterMd5($value)
 //    {
-//        if(empty($value) === false)
+//        if (empty($value) === false)
 //        {
 //            return md5($value);
 //        }
@@ -1122,7 +1454,7 @@ class CitrusFormmapElement extends CitrusObject
 //     */
 //    protected function _filterUtf8($value)
 //    {
-//        if(empty($value) === false)
+//        if (empty($value) === false)
 //        {
 //            $value = mb_convert_encoding(urldecode($value), 'UTF-8', mb_detect_encoding(urldecode($value), 'UTF-8, SJIS-win, eucJP-win, EUC-JP, SJIS, ASCII, JIS'));
 //        }
@@ -1157,4 +1489,28 @@ class CitrusFormmapElement extends CitrusObject
 //    {
 //        $this->validate_null_safe = $validate_null_safe;
 //    }
+
+
+    /**
+     * filter password hash
+     *
+     * @param $value
+     * @return bool|string
+     */
+    public function filterPasswordHash($value)
+    {
+        return password_hash($value, PASSWORD_DEFAULT);
+    }
+
+
+
+    /**
+     * add formmap error message
+     *
+     * @param string $message
+     */
+    private function addError(string $message)
+    {
+        CitrusMessage::addError($message, null, CitrusFormmap::MESSAGE_TAG);
+    }
 }

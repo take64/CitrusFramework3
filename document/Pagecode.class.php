@@ -15,7 +15,9 @@
 namespace Citrus\Document;
 
 
+use Citrus\Citrus;
 use Citrus\CitrusConfigure;
+use Citrus\CitrusLogger;
 use Citrus\CitrusObject;
 
 class CitrusDocumentPagecode extends CitrusObject
@@ -59,6 +61,9 @@ class CitrusDocumentPagecode extends CitrusObject
     /** @var string template id */
     public $template_id;
 
+    /** @var string stylesheet, javascript suffix */
+    public $suffix = '';
+
 
 
     /**
@@ -66,6 +71,7 @@ class CitrusDocumentPagecode extends CitrusObject
      */
     public function __construct()
     {
+        $this->suffix = Citrus::$TIMESTAMP_INT;
     }
 
 
@@ -79,54 +85,100 @@ class CitrusDocumentPagecode extends CitrusObject
     {
         if (is_array($javascript) === true)
         {
-            foreach ($javascript as $one)
+            foreach ($javascript as $path)
             {
-                $this->addJavascript($one);
+                $this->addJavascript($path);
             }
         }
-        else if (file_exists($javascript) === true)
+        else
         {
-            $network_path = '';
-            $server_path = CitrusConfigure::$CONFIGURE_ITEM->application->path;
-            if (strpos($javascript, $server_path) !== false)
+            // パスが絶対パスの場合
+            if (file_exists($javascript) === true)
             {
-                $network_path = str_replace($server_path, '', $javascript);
+                $path = str_replace(CitrusConfigure::$CONFIGURE_ITEM->application->path, '', $javascript);
+                $this->add('javascripts', $path);
+                return ;
             }
-            if (empty($network_path) === false)
+            // パスがベースディレクトリ以下指定の場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->application->path . $javascript;
+            if (file_exists($path) === true) {
+                $this->add('javascripts', $javascript);
+                return;
+            }
+            // パスがライブラリの可能性
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callJavascriptLibrary($javascript);
+            if (file_exists($path) === true)
             {
-                $this->add('javascript', '/'.$network_path);
+                $this->addJavascript($path);
+                return;
             }
+            // パスが独自追加の場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callJavascript($javascript);
+            if (file_exists($path) === true)
+            {
+                $this->addJavascript($path);
+                return;
+            }
+            // ページ用リソースの場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callJavascript('Page/' . $javascript);
+            if (file_exists($path) === true)
+            {
+                $this->addJavascript($path);
+                return;
+            }
+            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
+
+
 
     /**
      * add stylesheet
      *
-     * @param   string|string[]    $stylesheet
+     * @param string|string[] $stylesheet
      */
     public function addStylesheet($stylesheet)
     {
-        if (is_array($stylesheet) === true)
-        {
-            foreach ($stylesheet as $one)
-            {
+        if (is_array($stylesheet) === true) {
+            foreach ($stylesheet as $one) {
                 $this->addStylesheet($one);
             }
-        }
-        else if (file_exists($stylesheet) === true)
-        {
-            $network_path = '';
-            $server_path = CitrusConfigure::$CONFIGURE_ITEM->application->path;
-            if (strpos($stylesheet, $server_path) !== false)
-            {
-                $network_path = str_replace($server_path, '', $stylesheet);
+        } else {
+            // パスが絶対パスの場合
+            if (file_exists($stylesheet) === true) {
+                $path = str_replace(CitrusConfigure::$CONFIGURE_ITEM->application->path, '', $stylesheet);
+                $this->add('stylesheets', $path);
+                return;
             }
-            if (empty($network_path) === false)
-            {
-                $this->add('stylesheet', '/'.$network_path);
+            // パスがベースディレクトリ以下指定の場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->application->path . $stylesheet;
+            if (file_exists($path) === true) {
+                $this->add('stylesheets', $stylesheet);
+                return;
             }
+            // パスがライブラリの可能性
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callStylesheetLibrary($stylesheet);
+            if (file_exists($path) === true) {
+                $this->addStylesheet($path);
+                return;
+            }
+            // パスが独自追加の場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callStylesheet($stylesheet);
+            if (file_exists($path) === true) {
+                $this->addStylesheet($path);
+                return;
+            }
+            // ページ用リソースの場合
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callStylesheet('Page/' . $stylesheet);
+            if (file_exists($path) === true) {
+                $this->addStylesheet($path);
+                return;
+            }
+            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
+
+
 
     /**
      * add stylesheet plaintext
@@ -142,6 +194,8 @@ class CitrusDocumentPagecode extends CitrusObject
         }
     }
 
+
+
     /**
      * add breadcrumbs
      *
@@ -153,6 +207,8 @@ class CitrusDocumentPagecode extends CitrusObject
         $this->add('crumbs', [$name => $url]);
     }
 
+
+
     /**
      * minimize javascript
      * 同じファイルパスにミニマイズ版があれば置き換える
@@ -163,7 +219,7 @@ class CitrusDocumentPagecode extends CitrusObject
         $server_path_base = CitrusConfigure::$CONFIGURE_ITEM->application->path;
 
         // file list
-        $files = $this->javascript;
+        $files = $this->javascripts;
         foreach ($files as $ky => $vl)
         {
             // ファイル名内に.min.jsが含まれない
@@ -190,7 +246,7 @@ class CitrusDocumentPagecode extends CitrusObject
         $server_path_base = CitrusConfigure::$CONFIGURE_ITEM->application->path;
 
         // file list
-        $files = $this->stylesheet;
+        $files = $this->stylesheets;
 
         foreach ($files as $ky => $vl)
         {

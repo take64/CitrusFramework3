@@ -340,15 +340,13 @@ class CitrusDocumentRouter extends CitrusObject
     }
 
 
+
     /**
      * redirect URL
      *
-     * @access  public
-     * @since   0.0.3.4 2012.03.14
-     * @version 0.0.3.4 2012.03.14
-     * @return  string
+     * @param string|null $url
      */
-    public static function redirectURL($url = null)
+    public static function redirectURL(string $url = null)
     {
         if ($url != null)
         {

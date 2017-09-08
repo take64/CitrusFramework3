@@ -25,13 +25,13 @@ class CitrusXml
      *
      * @param DOMNamedNodeMap $attributes
      * @param string $key
-     * @return string
+     * @return string|null
      */
-    public static function getNamedItemValue(DOMNamedNodeMap $attributes, string $key) : string
+    public static function getNamedItemValue(DOMNamedNodeMap $attributes, string $key)
     {
         $item = $attributes->getNamedItem($key);
         $value = null;
-        if(isset($item) === true)
+        if (isset($item) === true)
         {
             $value = $item->value;
         }

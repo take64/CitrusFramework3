@@ -112,7 +112,7 @@ class CitrusSqlmapParser
         {
             preg_match_all('/#[a-zA-Z0-9_\-\>\.]*#/', $_query, $matches, PREG_PATTERN_ORDER);
 
-            foreach($matches[0] as $ky => $vl)
+            foreach ($matches[0] as $ky => $vl)
             {
                 $match_code     = str_replace('#', '', $vl);
                 $replace_code   = ':'.str_replace('.', '__', $match_code);
@@ -121,7 +121,7 @@ class CitrusSqlmapParser
                 if (is_array($_parameter_list[$replace_code]) === true)
                 {
                     $array_replace_codes = [];
-                    foreach($_parameter_list[$replace_code] as $ary_ky => $ary_vl)
+                    foreach ($_parameter_list[$replace_code] as $ary_ky => $ary_vl)
                     {
                         $array_replace_codes[] = $replace_code.'_'.$ary_ky;
                         $_parameter_list[$replace_code.'_'.$ary_ky] = $ary_vl;
@@ -137,7 +137,7 @@ class CitrusSqlmapParser
         if (strrpos($_query, '$') !== false)
         {
             preg_match_all('/\$[a-zA-Z0-9_\-\>]*\$/', $_query, $matches, PREG_PATTERN_ORDER);
-            foreach($matches[0] as $ky => $vl)
+            foreach ($matches[0] as $ky => $vl)
             {
                 $match_code     = str_replace('$', '', $vl);
                 $_query = str_replace($vl, $this->callProperty($this->parameter, $match_code), $_query);
@@ -295,7 +295,9 @@ class CitrusSqlmapParser
     {
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
 
-        if (empty($this->parameter->{$dynamic->property}) && is_numeric($this->parameter->{$dynamic->property}) === false)
+        $property = $this->callProperty($this->parameter, $dynamic->property);
+
+        if (empty($property) === true)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
@@ -317,7 +319,7 @@ class CitrusSqlmapParser
 
         $property = $this->callProperty($this->parameter, $dynamic->property);
 
-        if (empty($property) === false || is_numeric($property) === true)
+        if (empty($property) === false)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
@@ -472,7 +474,7 @@ class CitrusSqlmapParser
      * @param CitrusSqlmapDynamic|null $dynamic
      * @return string
      */
-    protected function _nodes(DOMNodeList $nodes, CitrusSqlmapDynamic $dynamic = null) : string
+    protected function _nodes(DOMNodeList $nodes, CitrusSqlmapDynamic $dynamic = null)
     {
         $size = $nodes->length;
         for ($i = 0; $i < $size; $i++)
@@ -519,9 +521,10 @@ class CitrusSqlmapParser
     protected function _include(DOMElement $element) : CitrusSqlmapDynamic
     {
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
-
+//var_dump(simplexml_import_dom($element));
         $include = new CitrusSqlmapParser();
-        $include->parse($this->_path, $this->_transaction, $dynamic->id, $this->_parameter);
+//var_dump([$this->_path, $this->_transaction, $dynamic->id, $this->_parameter]);
+        $include->parse($this->_path, $this->_transaction, $dynamic->refid, $this->_parameter);
         $dynamic->query = $include->statement->query;
         $this->parameter_list += $include->parameter_list;
 
@@ -546,13 +549,13 @@ class CitrusSqlmapParser
      *
      * @param CitrusDatabaseColumn $parameter
      * @param string               $property
-     * @return string
+     * @return string|null
      */
-    private function callProperty(CitrusDatabaseColumn $parameter, string $property) : string
+    private function callProperty(CitrusDatabaseColumn $parameter, string $property)
     {
         $property_list  = explode('.', $property);
         $result = $parameter;
-        foreach($property_list as $one)
+        foreach ($property_list as $one)
         {
             $result = $result->$one;
         }

@@ -112,4 +112,16 @@ class CitrusDmmCondition
 
     /** @var string 絞り込み TODO: 後で */
     public $article_id = null;
+
+    /** @var array service dmm.r18の一覧 */
+    public static $SERVICE_R18S = [
+        self::SERVICE_R18_DIGITAL   => '動画',
+        self::SERVICE_R18_MONTHLY   => '月額動画',
+        self::SERVICE_R18_PPM       => '10円動画',
+        self::SERVICE_R18_RENTAL    => 'DVDレンタル',
+        self::SERVICE_R18_MONO      => '通販',
+        self::SERVICE_R18_PCGAME    => '美少女ゲーム',
+        self::SERVICE_R18_DOUJIN    => '同人',
+        self::SERVICE_R18_EBOOK     => '電子書籍',
+    ];
 }

@@ -38,6 +38,23 @@ trait CitrusSqlmapCondition
     public $is_count = false;
 
 
+    /**
+     * constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $properties = get_object_vars($this);
+        foreach ($properties as $ky => $vl)
+        {
+            if (in_array($ky, ['schema', 'condition']) === false)
+            {
+                $this->$ky = null;
+            }
+        }
+    }
+
+
 
     /**
      * page limit offset
@@ -48,17 +65,15 @@ trait CitrusSqlmapCondition
     public function pageLimit(int $page = null, int $limit = null)
     {
         // page
-        $page = CitrusNVL::EmptyVL($page, $this->page);
-        $page = CitrusNVL::EmptyVL($page, 1);
+        $page = CitrusNVL::coalesce($page, $this->page, 1);
         $this->page = $page;
 
         // limit
-        $limit = CitrusNVL::EmptyVL($limit, $this->limit);
-        $limit = CitrusNVL::EmptyVL($limit, 10);
+        $limit = CitrusNVL::coalesce($limit, $this->limit, 10);
         $this->limit = $limit;
 
         // offset
-        $this->offset = CitrusNVL::EmptyVL($this->offset, function () use ($page, $limit) {
+        $this->offset = CitrusNVL::coalesce($this->offset, function () use ($page, $limit) {
             return $limit * ($page - 1);
         });
     }

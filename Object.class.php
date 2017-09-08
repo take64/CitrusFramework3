@@ -182,6 +182,34 @@ class CitrusObject
 
 
     /**
+     * general remover method is empty
+     *
+     * @param array|string $key
+     */
+    public function removeIsEmpty($key)
+    {
+        if (is_array($key) === true)
+        {
+            foreach ($key as $ky => $vl)
+            {
+                if (empty($this->$vl) === true)
+                {
+                    unset($this->$vl);
+                }
+            }
+        }
+        else
+        {
+            if (empty($this->$key) === true)
+            {
+                unset($this->$key);
+            }
+        }
+    }
+
+
+
+    /**
      * general bind method
      *
      * @param array|null $array
@@ -222,6 +250,7 @@ class CitrusObject
      */
     public function bindObject($object = null, $strict = false)
     {
+//        var_dump($object);
         if (is_null($object) === true)
         {
             return ;
@@ -272,72 +301,100 @@ class CitrusObject
      * set value from context path
      *
      * @param string $context
-     * @param mixed $value
+     * @param mixed  $value
      */
-    public function setFromContext($context, $value)
+    public function setFromContext(string $context, $value)
     {
+        // condition.rowid -> [ 'condition', 'rowid' ]
         $context_list = explode('.', $context);
         $context_size = count($context_list);
-        $context_get_limit = $context_size - 2;
 
         $object = $this;
-        for ($i = 0; $i <= $context_get_limit; $i++)
+        foreach ($context_list as $idx => $property_name)
         {
-            $method = 'get';
-            $method_properties = explode('_', $context_list[$i]);
-            foreach ($method_properties as $ky => $vl)
+            // 設定したいオブジェクト
+            if ($idx === ($context_size - 1))
             {
-                $method .= ucfirst(strtolower($vl));
+                $object->set($property_name, $value);
+                break;
             }
-            if (method_exists($object, $method) === true)
+
+            // 階層を下げる
+            $target = $object->get($property_name);
+            if (is_null($target) === true)
             {
-                $object = $object->$method();
+                $method_name = 'call' . ucfirst($property_name);
+                $target = $object->$method_name();
             }
-            else
+            if (is_null($target) === true)
             {
-                $object = $object->get($context_list[$i]);
+                CitrusLogger::error('[%s]はnullのプロパティです', $property_name);
+                break;
             }
+            $object = $target;
         }
 
-        if (is_array($value) === false && strtolower($value) == 'null')
-        {
-            $value = null;
-        }
 
-        if (empty($context_list[$i]) == true)
-        {
-            return ;
-        }
-
-        $method = 'set';
-        $method_properties = explode('_', $context_list[$i]);
-        foreach ($method_properties as $ky => $vl)
-        {
-            $method .= ucfirst(strtolower($vl));
-        }
-
-        if (method_exists($object, $method) === true)
-        {
-            if ($method == 'set')
-            {
-                $exist_data = $object->get($context_list[$i]);
-                if (empty($exist_data) === true)
-                {
-                    $object->set($context_list[$i], $value);
-                }
-            }
-            else
-            {
-                $object->$method($value);
-            }
-        }
-        else
-        {
-            $exist_data = $object->get($context_list[$i]);
-            if (empty($exist_data) === true)
-            {
-                $object->set($context_list[$i], $value);
-            }
-        }
+//        $context_get_limit = $context_size - 2;
+//
+//        $object = $this;
+//        for ($i = 0; $i <= $context_get_limit; $i++)
+//        {
+//            $method = 'get';
+//            $method_properties = explode('_', $context_list[$i]);
+//            foreach ($method_properties as $ky => $vl)
+//            {
+//                $method .= ucfirst(strtolower($vl));
+//            }
+//            if (method_exists($object, $method) === true)
+//            {
+//                $object = $object->$method();
+//            }
+//            else
+//            {
+//                $object = $object->get($context_list[$i]);
+//            }
+//        }
+//
+//        if (is_array($value) === false && strtolower($value) == 'null')
+//        {
+//            $value = null;
+//        }
+//
+//        if (empty($context_list[$i]) == true)
+//        {
+//            return ;
+//        }
+//
+//        $method = 'set';
+//        $method_properties = explode('_', $context_list[$i]);
+//        foreach ($method_properties as $ky => $vl)
+//        {
+//            $method .= ucfirst(strtolower($vl));
+//        }
+//
+//        if (method_exists($object, $method) === true)
+//        {
+//            if ($method == 'set')
+//            {
+//                $exist_data = $object->get($context_list[$i]);
+//                if (empty($exist_data) === true)
+//                {
+//                    $object->set($context_list[$i], $value);
+//                }
+//            }
+//            else
+//            {
+//                $object->$method($value);
+//            }
+//        }
+//        else
+//        {
+//            $exist_data = $object->get($context_list[$i]);
+//            if (empty($exist_data) === true)
+//            {
+//                $object->set($context_list[$i], $value);
+//            }
+//        }
     }
 }

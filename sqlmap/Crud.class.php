@@ -14,13 +14,18 @@
 
 namespace Citrus\Sqlmap;
 
+use Citrus\CitrusLogger;
+use Citrus\CitrusMessage;
 use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Database\CitrusDatabaseResult;
 
 class CitrusSqlmapCrud extends CitrusSqlmapClient
 {
+    /** @var CitrusSqlmapCrud  */
+    private static $INSTANCE = null;
+
     /** @var string target name */
-    public $target = '';
+    protected $target = '';
 
 
     /**
@@ -36,7 +41,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('summary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -48,16 +53,16 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * call sqlmap summary
      *
      * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
+     * @return CitrusDatabaseColumn|null
      * @throws CitrusSqlmapException
      */
-    public function summary(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function summary(CitrusDatabaseColumn $condition)
     {
         try
         {
             return $this->queryForObject('summary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -80,7 +85,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             $record = $this->queryForObject('count', $condition);
             return $record->count;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -105,7 +110,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             $condition->orderby = 'modified_at DESC';
             return $this->queryForObject('detail', $condition);;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -156,7 +161,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
                 }
             }
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -177,7 +182,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('name', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -198,7 +203,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('name', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -219,7 +224,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('detail', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -240,7 +245,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('detail', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -261,7 +266,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('selection', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -282,7 +287,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('selection', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -303,7 +308,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('facesSummary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -324,7 +329,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('facesSummary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -345,7 +350,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('facesDetail', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -366,7 +371,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('facesDetail', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -387,7 +392,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForList('nameSummary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -408,7 +413,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
         {
             return $this->queryForObject('nameSummary', $condition);
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -431,7 +436,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             $record = $this->queryForObject('nameCount', $condition);
             return $record->count;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             throw $e;
         }
@@ -467,9 +472,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
                 {
                     if ($this->exist($entity->toCondition()) === true)
                     {
-                        throw new CitrusSqlmapException(
-                            CitrusLocale::message('sqlmap_regist_exist', array($this->callTarget().$message)),
-                            0, __FILE__, __LINE__);
+                        throw new CitrusSqlmapException(sprintf('対象の%sは既に登録されています。', $message));
                     }
                 }
             }
@@ -480,14 +483,12 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             // message
             if ($this->isMessage() === true)
             {
-                CitrusMessage::addMessage(
-                    CitrusLocale::message('sqlmap_regist_success', array($this->callTarget().$message))
-                );
+                CitrusMessage::addMessage(sprintf('%sが登録されました。', $message));
             }
 
             return true;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             // log
             CitrusLogger::error($e->getMessage());
@@ -498,9 +499,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
                 CitrusMessage::addError($e->getMessage());
             }
 
-            throw new CitrusSqlmapException(
-                CitrusLocale::message('sqlmap_regist_failed', array($this->callTarget().$message)),
-                0, __FILE__, __LINE__);
+            throw new CitrusSqlmapException(sprintf('%sの登録に失敗しました。', $message));
         }
     }
 
@@ -545,20 +544,16 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             // validate
             if ($this->isValidate() === true)
             {
-                // exist check
-                if ($this->exist($entity->getCondition()) === false)
-                {
-                    throw new CitrusSqlmapException(
-                        CitrusLocale::message('sqlmap_modify_not_exist', array($this->callTarget().$message)),
-                        0, __FILE__, __LINE__);
-                }
+//                // exist check
+//                if ($this->exist($entity->getCondition()) === false)
+//                {
+//                    throw new CitrusSqlmapException(sprintf('編集対象の%sは登録されていないか、他ユーザに更新されています。', $message));
+//                }
 
                 // duplicate check
                 if ($this->exist($entity->getCondition(), $entity->toCondition()) === true)
                 {
-                    throw new CitrusSqlmapException(
-                        CitrusLocale::message('sqlmap_modify_exist', array($this->callTarget().$message)),
-                        0, __FILE__, __LINE__);
+                    throw new CitrusSqlmapException(sprintf('%sは既に登録されています。', $message));
                 }
             }
 
@@ -567,14 +562,12 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             // message
             if ($this->isMessage() === true)
             {
-                CitrusMessage::addMessage(
-                    CitrusLocale::message('sqlmap_modify_success', array($this->callTarget().$message))
-                );
+                CitrusMessage::addMessage(sprintf('%sが編集されました。', $message));
             }
 
             return true;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             // log
             CitrusLogger::error($e->getMessage());
@@ -585,9 +578,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
                 CitrusMessage::addError($e->getMessage());
             }
 
-            throw new CitrusSqlmapException(
-                CitrusLocale::message('sqlmap_modify_failed', array($this->callTarget().$message)),
-                0, __FILE__, __LINE__);
+            throw new CitrusSqlmapException(sprintf('%sの編集に失敗しました。', $message));
         }
     }
 
@@ -629,9 +620,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             {
                 if ($this->exist($condition) === false)
                 {
-                    throw new CitrusSqlmapException(
-                        CitrusLocale::message('sqlmap_remove_not_exist', array($this->callTarget().$message)),
-                        0, __FILE__, __LINE__);
+                    throw new CitrusSqlmapException(sprintf('削除対象の%sは登録されていないか、他ユーザに更新されています。', $message));
                 }
             }
 
@@ -640,14 +629,12 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             // message
             if ($this->isMessage() === true)
             {
-                CitrusMessage::addMessage(
-                    CitrusLocale::message('sqlmap_remove_success', array($this->callTarget().$message))
-                );
+                CitrusMessage::addMessage(sprintf('%sが削除されました。', $message));
             }
 
             return true;
         }
-        catch(CitrusSqlmapException $e)
+        catch (CitrusSqlmapException $e)
         {
             // message
             if ($this->isMessage() === true)
@@ -655,9 +642,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
                 CitrusMessage::addError($e->getMessage());
             }
 
-            throw new CitrusSqlmapException(
-                CitrusLocale::message('sqlmap_remove_failed', array($this->callTarget().$message)),
-                0, __FILE__, __LINE__);
+            throw new CitrusSqlmapException(sprintf('%sの削除に失敗しました。', $message));
         }
     }
 
@@ -703,5 +688,21 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     protected function callTarget() : string
     {
         return $this->target;
+    }
+
+
+
+    /**
+     * call shared instance
+     *
+     * @return CitrusSqlmapCrud
+     */
+    public static function sharedDao() : CitrusSqlmapCrud
+    {
+        if (is_null(self::$INSTANCE) === true)
+        {
+            self::$INSTANCE = new static();
+        }
+        return self::$INSTANCE;
     }
 }

@@ -16,11 +16,13 @@ namespace Citrus\Controller;
 
 
 use Citrus\CitrusConfigure;
+use Citrus\CitrusException;
 use Citrus\CitrusFormmap;
 use Citrus\CitrusMessage;
 use Citrus\CitrusSession;
 use Citrus\Document\CitrusDocumentPagecode;
 use Citrus\Library\CitrusLibrarySmarty3;
+use Exception;
 
 class CitrusControllerPage
 {
@@ -64,12 +66,11 @@ class CitrusControllerPage
             $site_title = $application->name;
             if (empty($site_title) === false)
             {
-                $pagecode->site_title    = $site_title;
+                $pagecode->site_title = $site_title;
             }
 
             // form値のbind
             $this->callFormmap()->bind();
-
 
             $templateRouter = $this->initialize();
 
@@ -87,14 +88,14 @@ class CitrusControllerPage
             }
 
             // TODO:
-//            // CSS,JS追加
-//            $resourceAppendedList = [];
-//            foreach ($resourceList as $ky => $vl)
-//            {
-//                $resourceAppendedList[] = $vl;
-//                $this->pagecode->addStylesheet(CitrusConfigure::$DIR_STYLESHEET_PAGE.implode('/', $resourceAppendedList).'.css');
-//                $this->pagecode->addJavascript(CitrusConfigure::$DIR_JAVASCRIPT_PAGE.implode('/', $resourceAppendedList).'.js');
-//            }
+            // CSS,JS追加
+            $resourceAppendedList = [];
+            foreach ($resourceList as $ky => $vl)
+            {
+                $resourceAppendedList[] = $vl;
+                $this->pagecode->addStylesheet(implode('/', $resourceAppendedList).'.css');
+                $this->pagecode->addJavascript(implode('/', $resourceAppendedList).'.js');
+            }
 
             // CitrusLogger::debug($this);
 
@@ -152,64 +153,75 @@ class CitrusControllerPage
 
             //CitrusLogger::debug($this->callSmarty()->plugins_dir);
 
+            if (file_exists($template_path) === false)
+            {
+                throw new CitrusException(sprintf('[%s]のテンプレートが存在しません。', $template_path));
+            }
             $this->callSmarty()->display($template_path);
         }
-        catch(Exception $e)
+        catch (CitrusException $e)
         {
-            CitrusLogger::debug($e);
+            header("HTTP/1.0 404 Not Found");
+            var_dump($e);
+        }
+        catch (Exception $e)
+        {
+            var_dump($e);
             header("HTTP/1.0 404 Not Found");
         }
     }
 
+
+
     /**
      * initialize method
      *
-     * @access  protected
-     * @since   0.0.3.5 2012.03.17
-     * @version 0.0.3.5 2012.03.17
-     * @return  string
+     * @return string|null
      */
     protected function initialize()
     {
         return null;
     }
 
+
+
     /**
      * release method
      *
-     * @access  protected
-     * @since   0.0.3.5 2012.03.17
-     * @version 0.0.3.5 2012.03.17
-     * @return  string
+     * @return string|null
      */
     protected function release()
     {
         return null;
     }
 
+
+
     /**
      * call formmap element
      *
-     * @return  CitrusFormmap
+     * @return CitrusFormmap
      */
-    protected function callFormmap()
+    protected function callFormmap() : CitrusFormmap
     {
-        if ($this->formmap === null)
+        if (is_null($this->formmap) === true)
         {
-            CitrusFormmap::initialize();
+            CitrusFormmap::initialize(CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT, CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN);
             $this->formmap = new CitrusFormmap();
         }
         return $this->formmap;
     }
 
+
+
     /**
      * call smarty element
      *
-     * @return  CitrusLibrarySmarty3
+     * @return CitrusLibrarySmarty3
      */
-    protected function callSmarty()
+    protected function callSmarty() : CitrusLibrarySmarty3
     {
-        if ($this->smarty === null)
+        if (is_null($this->smarty) === true)
         {
             $this->smarty = new CitrusLibrarySmarty3();
         }

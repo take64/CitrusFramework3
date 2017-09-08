@@ -53,11 +53,11 @@ class CitrusQueryBuilder
      * build select statement
      *
      * @param string                    $table_name
-     * @param array|null                $columns
      * @param CitrusDatabaseColumn|null $condition
+     * @param array|null                $columns
      * @return CitrusQueryBuilder
      */
-    public function select(string $table_name, array $columns = null, CitrusDatabaseColumn $condition = null) : CitrusQueryBuilder
+    public function select(string $table_name, CitrusDatabaseColumn $condition = null, array $columns = null) : CitrusQueryBuilder
     {
         // クエリタイプ
         $this->query_type = self::QUERY_TYPE_SELECT;
@@ -66,8 +66,10 @@ class CitrusQueryBuilder
         $this->statement = new CitrusSqlmapStatement();
 
         // カラム列挙
-        $select_context = CitrusNVL::replace($columns, '*', implode(', ', $columns));
-
+        $select_context = CitrusNVL::EmptyVL($columns, '*', function () use ($columns) {
+            return implode(', ', $columns);
+        });
+//var_dump([$select_context, $condition->schema, $table_name]);
         // ベースクエリー
         $query = sprintf('SELECT %s FROM %s.%s', $select_context, $condition->schema, $table_name);
 

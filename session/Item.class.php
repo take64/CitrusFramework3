@@ -85,4 +85,74 @@ class CitrusSessionItem extends CitrusObject
         }
         return null;
     }
+
+
+
+    /**
+     * session value calls
+     *
+     * @return mixed[]
+     */
+    public function properties() : array
+    {
+        $result = [];
+        $property_keys = array_keys(parent::properties());
+        foreach ($property_keys as $one)
+        {
+            $result[$one] = $this->call($one);
+        }
+        return $result;
+    }
+
+
+
+    /**
+     * general bind method
+     *
+     * @param array|null $array
+     * @param bool       $strict
+     */
+    public function bind(array $array = null, bool $strict = false)
+    {
+        $this->bindArray($array, $strict);
+    }
+
+
+
+    /**
+     * general bind array method
+     *
+     * @param array|null $array
+     * @param bool       $strict
+     */
+    public function bindArray(array $array = null, bool $strict = false)
+    {
+        if (is_null($array) === true)
+        {
+            return ;
+        }
+        foreach ($array as $ky => $vl)
+        {
+            $this->set($ky, serialize($vl), $strict);
+        }
+    }
+
+
+
+    /**
+     * general bind object method
+     *
+     * @param mixed|null $object
+     * @param bool       $strict
+     */
+    public function bindObject($object = null, $strict = false)
+    {
+        var_dump($object);
+        if (is_null($object) === true)
+        {
+            return ;
+        }
+        $array = get_object_vars($object);
+        $this->bindArray($array, $strict);
+    }
 }

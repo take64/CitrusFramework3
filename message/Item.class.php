@@ -125,5 +125,6 @@ class CitrusMessageItem
         $this->name         = $name;
         $this->date         = $date;
         $this->tag          = $tag;
+        $this->date         = Citrus::$TIMESTAMP_FORMAT;
     }
 }
