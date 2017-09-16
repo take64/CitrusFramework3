@@ -338,7 +338,6 @@ class CitrusConfigure
                 );
                 if (file_exists($class_file_path) === true)
                 {
-                    CitrusLogger::debug($class_file_path);
                     include_once $class_file_path;
                     $is_load_class = true;
                     break;

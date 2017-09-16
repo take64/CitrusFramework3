@@ -347,8 +347,9 @@ class CitrusSqlmapParser
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
 
         $compare = ($dynamic->compare_property  ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
+        $property = $this->callProperty($this->parameter, $dynamic->compare_property);
 
-        if ($this->parameter->{$dynamic->property} == $compare)
+        if ($property == $compare)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
@@ -548,7 +549,7 @@ class CitrusSqlmapParser
      * ネストの深いプロパティーを取得する。
      *
      * @param CitrusDatabaseColumn $parameter
-     * @param string               $property
+     * @param string|null          $property
      * @return string|null
      */
     private function callProperty(CitrusDatabaseColumn $parameter, string $property)

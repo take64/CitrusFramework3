@@ -126,7 +126,7 @@ class CitrusDocumentPagecode extends CitrusObject
                 $this->addJavascript($path);
                 return;
             }
-            CitrusLogger::debug('[%s]が存在しません。', $path);
+//            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
 
@@ -174,7 +174,7 @@ class CitrusDocumentPagecode extends CitrusObject
                 $this->addStylesheet($path);
                 return;
             }
-            CitrusLogger::debug('[%s]が存在しません。', $path);
+//            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
 

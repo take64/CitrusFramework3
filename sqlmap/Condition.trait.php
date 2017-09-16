@@ -65,15 +65,15 @@ trait CitrusSqlmapCondition
     public function pageLimit(int $page = null, int $limit = null)
     {
         // page
-        $page = CitrusNVL::coalesce($page, $this->page, 1);
+        $page = CitrusNVL::coalesceNull($page, $this->page, 1);
         $this->page = $page;
 
         // limit
-        $limit = CitrusNVL::coalesce($limit, $this->limit, 10);
+        $limit = CitrusNVL::coalesceNull($limit, $this->limit, 10);
         $this->limit = $limit;
 
         // offset
-        $this->offset = CitrusNVL::coalesce($this->offset, function () use ($page, $limit) {
+        $this->offset = CitrusNVL::coalesceNull($this->offset, function () use ($page, $limit) {
             return $limit * ($page - 1);
         });
     }

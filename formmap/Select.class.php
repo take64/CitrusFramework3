@@ -32,7 +32,7 @@ class CitrusFormmapSelect extends CitrusFormmapElement
             'type'      => 'select',
             'id'        => $this->callPrefixedId(),
             'name'      => $this->id,
-            'value'     => CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()),
+            'value'     => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),
             'default'   => $this->callDefault(),
             'class'     => $this->class,
             'style'     => $this->style,

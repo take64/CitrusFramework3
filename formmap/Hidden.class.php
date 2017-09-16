@@ -32,7 +32,7 @@ class CitrusFormmapHidden extends CitrusFormmapElement
             'type'      => 'hidden',
             'id'        => $this->callPrefixedId(),
             'name'      => $this->id,
-            'value'     => CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()),
+            'value'     => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),
             'class'     => $this->class,
         ];
         $elements = array_merge($elements, $appends);

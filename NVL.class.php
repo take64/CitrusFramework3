@@ -38,12 +38,12 @@ class CitrusNVL
 
 
     /**
-     * NVL coalesce
+     * NVL coalesce null
      *
      * @param array ...$_
      * @return mixed|null
      */
-    public static function coalesce(...$_)
+    public static function coalesceNull(...$_)
     {
         $result = null;
         $replacements = func_get_args();
@@ -51,6 +51,41 @@ class CitrusNVL
         foreach ($replacements as $replacement)
         {
             if (is_null($replacement) === true)
+            {
+                continue;
+            }
+
+            // クロージャなら実行
+            if ($replacement instanceof Closure)
+            {
+                $result = $replacement();
+            }
+            else
+            {
+                $result = $replacement;
+            }
+            break;
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * NVL coalesce empty
+     *
+     * @param array ...$_
+     * @return mixed|null
+     */
+    public static function coalesceEmpty(...$_)
+    {
+        $result = null;
+        $replacements = func_get_args();
+
+        foreach ($replacements as $replacement)
+        {
+            if (empty($replacement) === true)
             {
                 continue;
             }

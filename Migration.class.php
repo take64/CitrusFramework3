@@ -67,7 +67,7 @@ class {#class_name#} extends CitrusMigrationItem
 
     public function up()
     {
-        \$this->execute(\$query = <<<SQL
+        \$this->execute(<<<SQL
 
 SQL
         );
@@ -75,7 +75,7 @@ SQL
 
     public function down()
     {
-        \$this->execute(\$query = <<<SQL
+        \$this->execute(<<<SQL
 
 SQL
         );

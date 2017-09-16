@@ -409,7 +409,7 @@ class CitrusFormmapElement extends CitrusObject
         ];
 //        $elements = array_merge($elements, $appends);
 
-        return self::generateTag('span', $elements, CitrusNVL::coalesce($this->value, $this->callValue(), $this->callDefault()));
+        return self::generateTag('span', $elements, CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()));
     }
 
 
