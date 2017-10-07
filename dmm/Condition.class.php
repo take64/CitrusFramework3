@@ -23,51 +23,6 @@ class CitrusDmmCondition
     /** @var string site dmm.r18 */
     const SITE_DMM_R18 = 'DMM.R18';
 
-    /** @var string service dmm.com AKB48グループ, 月額動画 */
-    const SERVICE_COM_MONTHLY = 'monthly';
-
-    /** @var string service dmm.com 動画 */
-    const SERVICE_COM_DIGITAL = 'digital';
-
-    /** @var string service dmm.com 電子書籍 */
-    const SERVICE_COM_EBOOK = 'ebook';
-
-    /** @var string service dmm.com PCソフト */
-    const SERVICE_COM_PCSOFT = 'pcsoft';
-
-    /** @var string service dmm.com 通販 */
-    const SERVICE_COM_MONO = 'mono';
-
-    /** @var string service dmm.com いろいろレンタル */
-    const SERVICE_COM_RENTAL = 'rental';
-
-    /** @var string service dmm.com 通販 */
-    const SERVICE_COM_NANDEMO = 'nandemo';
-
-    /** @var string service dmm.r18 動画 */
-    const SERVICE_R18_DIGITAL = 'digital';
-
-    /** @var string service dmm.r18 月額動画 */
-    const SERVICE_R18_MONTHLY = 'monthly';
-
-    /** @var string service dmm.r18 10円動画 */
-    const SERVICE_R18_PPM = 'ppm';
-
-    /** @var string service dmm.r18 DVDレンタル */
-    const SERVICE_R18_RENTAL = 'rental';
-
-    /** @var string service dmm.r18 通販 */
-    const SERVICE_R18_MONO = 'mono';
-
-    /** @var string service dmm.r18 美少女ゲーム */
-    const SERVICE_R18_PCGAME = 'pcgame';
-
-    /** @var string service dmm.r18 同人 */
-    const SERVICE_R18_DOUJIN = 'doujin';
-
-    /** @var string service dmm.r18 電子書籍 */
-    const SERVICE_R18_EBOOK = 'ebook';
-
     /** @var string sort 商品 人気 */
     const SORT_ITEM_RANK = 'rank';
 
@@ -154,16 +109,4 @@ class CitrusDmmCondition
 
     /** @var string 女優指定 */
     public $actress_id = null;
-
-    /** @var array service dmm.r18の一覧 */
-    public static $SERVICE_R18S = [
-        self::SERVICE_R18_DIGITAL   => '動画',
-        self::SERVICE_R18_MONTHLY   => '月額動画',
-        self::SERVICE_R18_PPM       => '10円動画',
-        self::SERVICE_R18_RENTAL    => 'DVDレンタル',
-        self::SERVICE_R18_MONO      => '通販',
-        self::SERVICE_R18_PCGAME    => '美少女ゲーム',
-        self::SERVICE_R18_DOUJIN    => '同人',
-        self::SERVICE_R18_EBOOK     => '電子書籍',
-    ];
 }

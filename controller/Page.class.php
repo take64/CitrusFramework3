@@ -21,19 +21,20 @@ use Citrus\CitrusFormmap;
 use Citrus\CitrusMessage;
 use Citrus\CitrusSession;
 use Citrus\Document\CitrusDocumentPagecode;
+use Citrus\Document\CitrusDocumentRouter;
 use Citrus\Library\CitrusLibrarySmarty3;
 use Exception;
 
 class CitrusControllerPage
 {
     /** @var CitrusDocumentPagecode */
-    public $pagecode;
+    private $pagecode;
 
     /** @var CitrusLibrarySmarty3 */
-    public $smarty = null;
+    private $smarty = null;
 
     /** @var CitrusFormmap */
-    public $formmap = null;
+    private $formmap = null;
 
     /**
      * controller run
@@ -42,141 +43,139 @@ class CitrusControllerPage
     {
         try
         {
-            // besides default setting
-            $pagecode = new CitrusDocumentPagecode();
-            $application = CitrusConfigure::$CONFIGURE_ITEM->application;
-            $pagecode->site_id      = $application->id;
-            $pagecode->site_title   = $application->name;
-            $pagecode->copyright    = $application->copyright;
-
             // ルーター
-            $router = CitrusSession::$router;
+            $router = clone CitrusSession::$router;
+            // 実行アクション
             $actionName = $router->action;
-
-            // CitrusLogger::debug($router);
-
-//            // ページ名
-//            $document = CitrusSession::$session->call('document');
-//            $pagecode->page_id      = $document->document_cd;
-//            $pagecode->page_title   = $document->name;
-
-            $this->pagecode = $pagecode;
-
-            // サイト用名称
-            $site_title = $application->name;
-            if (empty($site_title) === false)
+            if (method_exists($this, $actionName) === false)
             {
-                $pagecode->site_title = $site_title;
+                $actionName = 'none';
+                $router->action = $actionName;
+                if (method_exists($this, $actionName) === false)
+                {
+                    $router404 = CitrusDocumentRouter::parseURL(CitrusConfigure::$CONFIGURE_ITEM->routing->error404);
+                    $actionName = $router404->action;
+                    $router->document = $router404->document;
+                    $router->action = $actionName;
+                }
             }
+
+            // 初期化実行
+            $templateRouterInitialize = $this->initialize();
+            $router = $templateRouterInitialize ?: $router;
+
+            // アクション実行
+            $templateRouterAction = $this->$actionName();
+            $router = $templateRouterAction ?: $router;
+
+            // 後片付け
+            $templateRouterReleace = $this->release();
+            $router = $templateRouterReleace ?: $router;
 
             // form値のbind
             $this->callFormmap()->bind();
 
-            $templateRouter = $this->initialize();
-
-            // リソース配列用パス
-            $resourceDocumentList = explode('_', str_replace('-', '_', CitrusSession::$router->document));
-            $resourceList[] = CitrusSession::$router->device;
-            foreach ($resourceDocumentList as $ky => $vl)
-            {
-                $resourceList[] = $vl;
-            }
-            $resourceList[] = CitrusSession::$router->action;
-            foreach ($resourceList as $ky => $vl)
-            {
-                $resourceList[$ky] = ucfirst(strtolower($vl));
-            }
-
-            // TODO:
-            // CSS,JS追加
-            $resourceAppendedList = [];
-            foreach ($resourceList as $ky => $vl)
-            {
-                $resourceAppendedList[] = $vl;
-                $this->pagecode->addStylesheet(implode('/', $resourceAppendedList).'.css');
-                $this->pagecode->addJavascript(implode('/', $resourceAppendedList).'.js');
-            }
-
-            // CitrusLogger::debug($this);
-
-            if (method_exists($this, $actionName) === true)
-            {
-                $templateRouterAction = $this->$actionName();
-            }
-            else
-            {
-                // TODO:
-//                $this->none();
-                $templateRouterAction = null;
-            }
-            $templateRouterReleace = $this->release();
-
-            if ($templateRouterAction !== null)
-            {
-                $templateRouter = $templateRouterAction;
-            }
-            if ($templateRouterReleace !== null)
-            {
-                $templateRouter = $templateRouterReleace;
-            }
-            if ($templateRouter === null)
-            {
-                $templateRouter = CitrusSession::$router;
-            }
-
-
+            // テンプレート当て込み
             $this->callSmarty()->assign('router', CitrusSession::$router);
-            $this->callSmarty()->assign('pagecode', $this->pagecode);
+            $this->callSmarty()->assign('pagecode', $this->callPagecode());
             $this->callSmarty()->assign('formmap',  $this->callFormmap());
             $this->callSmarty()->assign('errors',   CitrusMessage::popErrors());
             $this->callSmarty()->assign('message',  CitrusMessage::popMessages());
 
-            $templateDocumentArray = explode('_', str_replace('-', '_', $templateRouter->document));
-            $templateArray[] = $templateRouter->device;
-            foreach ($templateDocumentArray as $templateDocument)
-            {
-                $templateArray[] = $templateDocument;
-            }
-            $templateArray[] = $templateRouter->action;
+            // リソース読み込み
+            $this->loadResource($router);
 
-            foreach ($templateArray as $ky => $vl)
-            {
-                $templateArray[$ky] = ucfirst($vl);
-            }
-
-            $template_path  = CitrusConfigure::$CONFIGURE_ITEM->paths->callTemplate('/Page') . '/' . implode('/', $templateArray).'.tpl';
-
-            $this->callSmarty()->addPluginsDir(CitrusConfigure::$CONFIGURE_ITEM->paths->callTemplate('/Plug'));
-//            $this->callSmarty()->addPluginsDir(CitrusConfigure::$DIR_TEMPLATE_PLUG);
-//            $plugin_path    = CitrusConfigure::$DIR_TEMPLATE_PLUG.$templateArray[0].'/';
-//            $this->callSmarty()->addPluginsDir($plugin_path);
-
-            //CitrusLogger::debug($this->callSmarty()->plugins_dir);
-
-            if (file_exists($template_path) === false)
-            {
-                throw new CitrusException(sprintf('[%s]のテンプレートが存在しません。', $template_path));
-            }
-            $this->callSmarty()->display($template_path);
+            // テンプレート読み込み
+            $this->loadTemplate($router);
         }
         catch (CitrusException $e)
         {
             header("HTTP/1.0 404 Not Found");
-            var_dump($e);
+            throw $e;
         }
         catch (Exception $e)
         {
-            var_dump($e);
             header("HTTP/1.0 404 Not Found");
+            throw CitrusException::convert($e);
         }
     }
 
 
 
     /**
+     * リソース読み込み
+     *
+     * @param CitrusDocumentRouter|null $router
+     */
+    private function loadResource(CitrusDocumentRouter $router = null)
+    {
+        $router = $router ?: CitrusSession::$router;
+
+        // リソース配列用パス
+        $resourceDocumentList = explode('_', str_replace('-', '_', $router->document));
+        $resourceList[] = $router->device;
+        foreach ($resourceDocumentList as $ky => $vl)
+        {
+            $resourceList[] = $vl;
+        }
+        $resourceList[] = $router->action;
+        foreach ($resourceList as $ky => $vl)
+        {
+            $resourceList[$ky] = ucfirst(strtolower($vl));
+        }
+
+        // stylesheet, javascript
+        $resourceAppendedList = [];
+        foreach ($resourceList as $ky => $vl)
+        {
+            $resourceAppendedList[] = $vl;
+            $this->callPagecode()->addStylesheet(implode('/', $resourceAppendedList) . '.css');
+            $this->callPagecode()->addJavascript(implode('/', $resourceAppendedList) . '.js');
+        }
+
+        // プラグイン
+        $this->callSmarty()->addPluginsDir([CitrusConfigure::$CONFIGURE_ITEM->paths->callTemplate('/Plug')]);
+    }
+
+
+
+    /**
+     * テンプレート読み込み
+     *
+     * @param CitrusDocumentRouter|null $router
+     * @throws CitrusException
+     */
+    private function loadTemplate(CitrusDocumentRouter $router = null)
+    {
+        $router = $router ?: CitrusSession::$router;
+
+        $templateDocumentArray = explode('_', str_replace('-', '_', $router->document));
+        $templateArray[] = $router->device;
+        foreach ($templateDocumentArray as $templateDocument)
+        {
+            $templateArray[] = $templateDocument;
+        }
+        $templateArray[] = $router->action;
+
+        foreach ($templateArray as $ky => $vl)
+        {
+            $templateArray[$ky] = ucfirst($vl);
+        }
+
+        // テンプレート読み込み
+        $template_path  = CitrusConfigure::$CONFIGURE_ITEM->paths->callTemplate('/Page') . '/' . implode('/', $templateArray).'.tpl';
+        if (file_exists($template_path) === false)
+        {
+            throw new CitrusException(sprintf('[%s]のテンプレートが存在しません。', $template_path));
+        }
+        $this->callSmarty()->display($template_path);
+    }
+
+
+    /**
      * initialize method
      *
-     * @return string|null
+     * @return CitrusDocumentRouter|null
      */
     protected function initialize()
     {
@@ -188,11 +187,33 @@ class CitrusControllerPage
     /**
      * release method
      *
-     * @return string|null
+     * @return CitrusDocumentRouter|null
      */
     protected function release()
     {
         return null;
+    }
+
+
+
+    /**
+     * call pagecode
+     *
+     * @return CitrusDocumentPagecode
+     */
+    protected function callPagecode() : CitrusDocumentPagecode
+    {
+        if (is_null($this->pagecode) === true)
+        {
+            $application = CitrusConfigure::$CONFIGURE_ITEM->application;
+            $_pagecode = new CitrusDocumentPagecode();
+            $_pagecode->site_id     = $application->id;
+            $_pagecode->site_title  = $application->name;
+            $_pagecode->copyright   = $application->copyright;
+
+            $this->pagecode = $_pagecode;
+        }
+        return $this->pagecode;
     }
 
 

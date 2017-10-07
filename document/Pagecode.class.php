@@ -120,7 +120,7 @@ class CitrusDocumentPagecode extends CitrusObject
                 return;
             }
             // ページ用リソースの場合
-            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callJavascript('Page/' . $javascript);
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callJavascript('/Page/' . $javascript);
             if (file_exists($path) === true)
             {
                 $this->addJavascript($path);
@@ -169,7 +169,7 @@ class CitrusDocumentPagecode extends CitrusObject
                 return;
             }
             // ページ用リソースの場合
-            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callStylesheet('Page/' . $stylesheet);
+            $path = CitrusConfigure::$CONFIGURE_ITEM->paths->callStylesheet('/Page/' . $stylesheet);
             if (file_exists($path) === true) {
                 $this->addStylesheet($path);
                 return;

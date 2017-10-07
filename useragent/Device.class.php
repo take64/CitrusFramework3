@@ -42,6 +42,9 @@ class CitrusUseragentDevice
     const SMARTPHONE = 'smartphone';
 
     /** @var string */
+    const TABLET = 'tablet';
+
+    /** @var string */
     const ROBOT = 'robot';
 
     /** @var string */

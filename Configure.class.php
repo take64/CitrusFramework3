@@ -15,7 +15,6 @@
 namespace Citrus;
 
 
-use Citrus\Authentication\CitrusAuthenticationDatabase;
 use Citrus\Configure\CitrusConfigureItem;
 use Citrus\Document\CitrusDocumentRouter;
 
@@ -200,14 +199,14 @@ class CitrusConfigure
             self::$CONFIGURE_PLAIN_DOMAIN = $configures[$first_key];
         }
 
-
         // ルーティング処理初期化
         CitrusDocumentRouter::initialize($default_configure, $configures);
 
         // 認証処理初期化
         CitrusAuthentication::initialize($default_configure, $configures);
+
         // ロガー処理
-//        CitrusLogger::initialize($default_configure, $configures);
+        CitrusLogger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
     }
 
 

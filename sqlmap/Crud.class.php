@@ -16,13 +16,16 @@ namespace Citrus\Sqlmap;
 
 use Citrus\CitrusLogger;
 use Citrus\CitrusMessage;
+use Citrus\CitrusSingleton;
 use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Database\CitrusDatabaseResult;
 
 class CitrusSqlmapCrud extends CitrusSqlmapClient
 {
-    /** @var CitrusSqlmapCrud  */
-    private static $INSTANCE = null;
+    use CitrusSingleton
+    {
+        callSingleton as public sharedDao;
+    }
 
     /** @var string target name */
     protected $target = '';
@@ -108,7 +111,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             $condition->limit   = 1;
             $condition->offset  = 0;
             $condition->orderby = 'modified_at DESC';
-            return $this->queryForObject('detail', $condition);;
+            return $this->queryForObject('detail', $condition);
         }
         catch (CitrusSqlmapException $e)
         {
@@ -688,21 +691,5 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     protected function callTarget() : string
     {
         return $this->target;
-    }
-
-
-
-    /**
-     * call shared instance
-     *
-     * @return CitrusSqlmapCrud
-     */
-    public static function sharedDao() : CitrusSqlmapCrud
-    {
-        if (is_null(self::$INSTANCE) === true)
-        {
-            self::$INSTANCE = new static();
-        }
-        return self::$INSTANCE;
     }
 }

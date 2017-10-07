@@ -16,6 +16,7 @@ namespace Citrus\Sqlmap;
 
 
 use Citrus\CitrusConfigure;
+use Citrus\CitrusLogger;
 use Citrus\Database\CitrusDatabaseColumn;
 use DOMDocument;
 use DOMElement;
@@ -347,7 +348,7 @@ class CitrusSqlmapParser
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
 
         $compare = ($dynamic->compare_property  ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
-        $property = $this->callProperty($this->parameter, $dynamic->compare_property);
+        $property = $this->callProperty($this->parameter, $dynamic->property);
 
         if ($property == $compare)
         {
@@ -370,8 +371,9 @@ class CitrusSqlmapParser
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
+        $property = $this->callProperty($this->parameter, $dynamic->property);
 
-        if ($this->parameter->{$dynamic->property} != $compare)
+        if ($property != $compare)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }

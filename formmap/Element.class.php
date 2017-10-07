@@ -121,6 +121,9 @@ class CitrusFormmapElement extends CitrusObject
     /** @var string form type text */
     const FORM_TYPE_TEXT = 'text';
 
+    /** @var string form type search */
+    const FORM_TYPE_SEARCH = 'search';
+
     /** @var string form type hidden */
     const FORM_TYPE_HIDDEN = 'hidden';
 
@@ -184,6 +187,9 @@ class CitrusFormmapElement extends CitrusObject
 
     /** @var string accesskey */
     public $accesskey;
+
+    /** @var string placeholder */
+    public $placeholder;
 
     /** @var int size */
     public $size;
@@ -476,10 +482,22 @@ class CitrusFormmapElement extends CitrusObject
 //            return null;
 //        }
 
-        // non filter
+        // non filter is null
         if (is_null($this->filters) === true)
         {
             return $result;
+        }
+
+        // non filter is 空文字
+        if ($result == '')
+        {
+            return $result;
+        }
+
+        // one filter
+        if (is_string($this->filters) === true)
+        {
+            $this->filters = [ $this->filters ];
         }
 
         // filter list
@@ -1500,6 +1518,18 @@ class CitrusFormmapElement extends CitrusObject
     public function filterPasswordHash($value)
     {
         return password_hash($value, PASSWORD_DEFAULT);
+    }
+
+
+    /**
+     * filter like
+     *
+     * @param $value
+     * @return bool|string
+     */
+    public function filterLike($value)
+    {
+        return sprintf('%%%s%%', $value);
     }
 
 

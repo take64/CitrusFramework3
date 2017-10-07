@@ -1,7 +1,7 @@
 <?php
 /**
- * Redis.class.php.
- * 2017/09/16
+ * Memcached.class.php.
+ * 2017/09/19
  *
  * PHP version 7
  * phpredis version 3.1.3
@@ -18,10 +18,10 @@ namespace Citrus\Cache;
 
 use Citrus\CitrusException;
 use Closure;
-use Redis;
-use RedisException;
+use Memcached;
+use MemcachedException;
 
-class CitrusCacheRedis extends CitrusCacheDeamon
+class CitrusCacheMemcached extends CitrusCacheDeamon
 {
     /**
      * connection
@@ -32,9 +32,9 @@ class CitrusCacheRedis extends CitrusCacheDeamon
      */
     public function connect(string $host, int $port = 6379)
     {
-        // TODO connectでhostとportを渡すのか、constructorで渡すのか悩む
-        $this->handler = new Redis();
-        $this->handler->connect($host, $port);
+        // TODO addServerでhostとportを渡すのか、constructorで渡すのか悩む
+        $this->handler = new Memcached();
+        $this->handler->addServer($host, $port);
     }
 
 
@@ -47,7 +47,7 @@ class CitrusCacheRedis extends CitrusCacheDeamon
     {
         if (is_null($this->handler) === false)
         {
-            $this->handler->close();
+            $this->handler->quit();
         }
         $this->handler = null;
     }
@@ -63,7 +63,7 @@ class CitrusCacheRedis extends CitrusCacheDeamon
     public function call($key)
     {
         // cache key
-        $cache_key = $this->callPrefixedKey($key);
+        $cache_key = $this->callPrefixedKey($key, true);
 
         // serialized value
         $serialized_value = $this->handler->get($cache_key);
@@ -88,25 +88,26 @@ class CitrusCacheRedis extends CitrusCacheDeamon
         try
         {
             // cache key
-            $cache_key = $this->callPrefixedKey($key);
+            $cache_key = $this->callPrefixedKey($key, true);
 
             // serialized value
             $serialized_value = serialize($value);
 
+            // expire
+            if ($expire === 0)
+            {
+                $expire = $this->expire;
+            }
+            $expire += time();
+
             // set value
-            $result = $this->handler->set($cache_key, $serialized_value);
+            $result = $this->handler->set($cache_key, $serialized_value, $expire);
             if ($result === false)
             {
-                throw new CitrusCacheException(sprintf('Redis::set に失敗しました。 message=%s', $this->handler->getLastError()));
-            }
-
-            // set exprire
-            if ($expire > 0)
-            {
-                $this->handler->setTimeout($cache_key, $expire);
+                throw new CitrusCacheException(sprintf('Memcached::set に失敗しました。 message=%s', $this->handler->getResultMessage()), $this->handler->getResultCode());
             }
         }
-        catch (RedisException $e)
+        catch (MemcachedException $e)
         {
             throw CitrusCacheException::convert($e);
         }
@@ -125,10 +126,10 @@ class CitrusCacheRedis extends CitrusCacheDeamon
      */
     public function exists($key): bool
     {
-        // cache key
-        $cache_key = $this->callPrefixedKey($key);
+        // 一旦キー取得(キーがあるかどうかで判断)
+        $result = $this->call($key);
 
-        return $this->handler->exists($cache_key);
+        return Memcached::RES_NOTFOUND !== $this->handler->getResultCode();
     }
 
 
@@ -161,4 +162,8 @@ class CitrusCacheRedis extends CitrusCacheDeamon
 
         return $value;
     }
+
+
+
+
 }

@@ -31,14 +31,18 @@ class CitrusConfigureItem
     /** @var CitrusDatabaseDSN */
     public $database;
 
-    /** @var CitrusLoggerType */
-    public $logger;
+//    /** @var CitrusLoggerType */
+//    public $logger;
 
     /** @var CitrusConfigurePaths */
     public $paths;
 
-//    /** @var string */
-//    public $logger_type;
+    /** @var CitrusConfigureRouting */
+    public $routing;
+
+
+
+
 
     /**
      * constructor.
@@ -60,8 +64,8 @@ class CitrusConfigureItem
         $this->database->bind(CitrusNVL::ArrayVL($default_configure, $key, []));
         $this->database->bind(CitrusNVL::ArrayVL($configure, $key, []));
 
-        // logger
-        $this->logger = CitrusLogger::initialize($default_configure, $configure);
+//        // logger
+//        $this->logger = CitrusLogger::initialize($default_configure, $configure);
 
         // paths
         $key = 'paths';
@@ -69,9 +73,11 @@ class CitrusConfigureItem
         $this->paths->domain = $this->application->domain;
         $this->paths->bind(CitrusNVL::ArrayVL($default_configure, $key, []));
         $this->paths->bind(CitrusNVL::ArrayVL($configure, $key, []));
-//        foreach ($this->paths as $ky => $vl)
-//        {
-//            $this->paths[$ky] = str_replace('{#domain#}', $this->paths->domain, $vl);
-//        }
+
+        // routing
+        $key = 'routing';
+        $this->routing = new CitrusConfigureRouting();
+        $this->routing->bind(CitrusNVL::ArrayVL($default_configure, $key, []));
+        $this->routing->bind(CitrusNVL::ArrayVL($configure, $key, []));
     }
 }

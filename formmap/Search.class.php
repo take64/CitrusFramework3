@@ -1,7 +1,7 @@
 <?php
 /**
- * Text.class.php.
- * 2017/08/06
+ * Search.class.php.
+ * 2017/10/04
  *
  * PHP version 7
  *
@@ -18,7 +18,7 @@ namespace Citrus\Formmap;
 
 use Citrus\CitrusNVL;
 
-class CitrusFormmapText extends CitrusFormmapElement
+class CitrusFormmapSearch extends CitrusFormmapElement
 {
     /**
      * to string
@@ -29,7 +29,7 @@ class CitrusFormmapText extends CitrusFormmapElement
     public function toString(array $appends = [])
     {
         $elements = [
-            'type'          => 'text',
+            'type'          => 'search',
             'id'            => $this->callPrefixedId(),
             'name'          => $this->id,
             'value'         => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),

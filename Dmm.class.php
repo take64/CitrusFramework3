@@ -147,39 +147,23 @@ class CitrusDmm
         $item->affiliateURL     = $data['affiliateURL'];
         $item->affiliateURLsp   = CitrusNVL::ArrayVL($data, 'affiliateURLsp', '');
         $item->date             = $data['date'];
+        $item->imageURL         = CitrusNVL::ArrayVL($data, 'imageURL', null);
+        $item->sampleImageURL   = CitrusNVL::ArrayVL($data, 'sampleImageURL', null);
+        $item->sampleMovieURL   = CitrusNVL::ArrayVL($data, 'sampleMovieURL', null);
+        $item->iteminfo         = CitrusNVL::ArrayVL($data, 'iteminfo', null);
+        $item->review           = CitrusNVL::ArrayVL($data, 'review', null);
 
-        if (isset($data['imageURL']) === true)
-        {
-            $item->imageURL = $data['imageURL'];
-        }
-        if (isset($data['sampleImageURL']) === true)
-        {
-            $item->sampleImageURL = $data['sampleImageURL'];
-        }
-        if (isset($data['sampleMovieURL']) === true)
-        {
-            $item->sampleMovieURL = $data['sampleMovieURL'];
-        }
         if (isset($data['prices']) === true)
         {
             $item->prices = $data['prices'];
             $item->prices['price'] = str_replace('~', '', $item->prices['price']);
         }
-        if (isset($data['iteminfo']) === true)
-        {
-            $item->iteminfo = $data['iteminfo'];
-        }
-        if (isset($data['review']) === true)
-        {
-            $item->review = $data['review'];
-        }
-
 
 
         $volume = 0;
         if (isset($data['volume']) === true)
         {
-            if (strpos((string)$data['volume'], ':00') !== false)
+            if (strpos((string)$data['volume'], ':') !== false)
             {
                 $volumes = explode(':', substr($data['volume'], 0, -3));   // 1:54:00対応
                 rsort($volumes);
@@ -231,7 +215,7 @@ class CitrusDmm
         {
             $params['keyword'] = mb_convert_encoding($condition->keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
         }
-        if (is_null($condition->keyword) === false)
+        if (is_null($condition->actress_id) === false)
         {
             $params['actress_id'] = $condition->actress_id;
         }
@@ -257,7 +241,14 @@ class CitrusDmm
         }
 
         $data = json_decode($data, true, null, JSON_OBJECT_AS_ARRAY);
-        $items = $data['result']['actress'];
+        if (isset($data['result']['actress']) === true)
+        {
+            $items = $data['result']['actress'];
+        }
+        else
+        {
+            $items = [];
+        }
 
         $results = [];
         foreach ($items as $one)
@@ -284,7 +275,7 @@ class CitrusDmm
         $item->name         = $data['name'];
         $item->ruby         = $data['ruby'];
         $item->bust         = $data['bust'];
-        $item->cup          = $data['cup'];
+        $item->cup          = CitrusNVL::ArrayVL($data, 'cup', null);   // cupは何故か有る場合とない場合が有る
         $item->waist        = $data['waist'];
         $item->hip          = $data['hip'];
         $item->height       = $data['height'];
@@ -292,14 +283,8 @@ class CitrusDmm
         $item->blood_type   = $data['blood_type'];
         $item->hobby        = $data['hobby'];
         $item->prefectures  = $data['prefectures'];
-        if (isset($data['imageURL']) === true)
-        {
-            $item->imageURL = $data['imageURL'];
-        }
-        if (isset($data['listURL']) === true)
-        {
-            $item->imageURL = $data['listURL'];
-        }
+        $item->imageURL     = CitrusNVL::ArrayVL($data, 'imageURL', null);
+        $item->listURL      = CitrusNVL::ArrayVL($data, 'listURL', null);
 
         return $item;
     }

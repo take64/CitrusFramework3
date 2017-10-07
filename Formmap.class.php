@@ -18,6 +18,7 @@ namespace Citrus;
 use Citrus\Formmap\CitrusFormmapElement;
 use Citrus\Formmap\CitrusFormmapHidden;
 use Citrus\Formmap\CitrusFormmapPassword;
+use Citrus\Formmap\CitrusFormmapSearch;
 use Citrus\Formmap\CitrusFormmapSelect;
 use Citrus\Formmap\CitrusFormmapSubmit;
 use Citrus\Formmap\CitrusFormmapText;
@@ -150,6 +151,7 @@ class CitrusFormmap
                         case CitrusFormmapElement::FORM_TYPE_SELECT : $form = new CitrusFormmapSelect($element);    break;
                         case CitrusFormmapElement::FORM_TYPE_SUBMIT : $form = new CitrusFormmapSubmit($element);    break;
                         case CitrusFormmapElement::FORM_TYPE_TEXT   : $form = new CitrusFormmapText($element);      break;
+                        case CitrusFormmapElement::FORM_TYPE_SEARCH : $form = new CitrusFormmapSearch($element);    break;
                         default                                     :                                               break;
                     }
                     // 外部情報の設定

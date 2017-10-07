@@ -1018,6 +1018,10 @@
             var form_type = $(this).attr('type');
             var ky = $(this).attr('id').replace(options.edit.queries.prefix, '');
             var vl = $(this).val();
+            if (vl === null && form_type === 'select') {
+                $(this).find('option:first').prop('selected', true);
+                vl = $(this).val();
+            }
             entity[ky] = vl;
         });
         

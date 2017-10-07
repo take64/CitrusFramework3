@@ -16,6 +16,7 @@ namespace Citrus;
 
 
 use Citrus\Cache\CitrusCacheEngine;
+use Citrus\Cache\CitrusCacheMemcached;
 use Citrus\Cache\CitrusCacheRedis;
 use Closure;
 
@@ -79,6 +80,14 @@ class CitrusCache
                 $prefix = CitrusNVL::ArrayVL($cache, 'prefix', '');
                 $expire = CitrusNVL::ArrayVL($cache, 'expire', 0);
                 self::$INSTANCE = new CitrusCacheRedis($prefix, $expire);
+                self::$INSTANCE->connect($cache['host'], $cache['port']);
+                break;
+
+            // redis
+            case self::ENGINE_MEMCACHED :
+                $prefix = CitrusNVL::ArrayVL($cache, 'prefix', '');
+                $expire = CitrusNVL::ArrayVL($cache, 'expire', 0);
+                self::$INSTANCE = new CitrusCacheMemcached($prefix, $expire);
                 self::$INSTANCE->connect($cache['host'], $cache['port']);
                 break;
         }
@@ -162,6 +171,6 @@ class CitrusCache
         {
             return self::$INSTANCE->callWithBind($key, $valueFunction, $expire);
         }
-        return null;
+        return $valueFunction();
     }
 }

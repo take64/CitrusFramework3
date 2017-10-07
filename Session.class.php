@@ -31,6 +31,9 @@ class CitrusSession extends CitrusObject
     /** @var CitrusSessionItem $_FILES values */
     public static $filedata;
 
+    /** @var CitrusSessionItem $_SERVER values */
+    public static $server;
+
     /** @var CitrusSessionItem $_POST + $_GET values */
     public static $request;
 
@@ -103,6 +106,7 @@ class CitrusSession extends CitrusObject
         self::$getdata  = new CitrusSessionItem($_GET);
         self::$postdata = new CitrusSessionItem($_POST);
         self::$filedata = new CitrusSessionItem($_FILES);
+        self::$server   = new CitrusSessionItem($_SERVER);
         self::$request  = new CitrusSessionItem($_REQUEST);
         self::$router   = CitrusDocumentRouter::factory($_REQUEST);
 

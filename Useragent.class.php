@@ -108,6 +108,12 @@ class CitrusUseragent
             $element->device = CitrusUseragentDevice::SMARTPHONE;
             $element->carrier= CitrusUseragentCarrier::SOFTBANK;
         }
+        // other iPad
+        else if (preg_match('/iPad;/', $useragent) === 1)
+        {
+            $element->device = CitrusUseragentDevice::IPAD;
+            $element->carrier= CitrusUseragentCarrier::OTHER;
+        }
         // other iPod
         else if (preg_match('/iPod;/', $useragent) === 1)
         {

@@ -101,7 +101,7 @@ class CitrusLogger
         $logger = array_merge($logger, CitrusNVL::ArrayVL($default_configure, 'logger', []));
         $logger = array_merge($logger, CitrusNVL::ArrayVL($configure, 'logger', []));
 
-
+// var_dump($logger, $default_configure, $configure);
         // log type select
         $type = $logger['type'];
 //        if (isset($default_configure['logger']) === true && isset($default_configure['logger']['type']) === true)
@@ -153,6 +153,8 @@ class CitrusLogger
         }
 
         // display
+// var_dump($logger);
+// var_dump(CitrusConfigure::$CONFIGURE_ITEM);
         self::$LOG_DISPLAY = CitrusNVL::NVL($logger['display'], false);
 
 
@@ -271,6 +273,7 @@ class CitrusLogger
         // display
         if (self::$LOG_DISPLAY === true)
         {
+var_dump(self::$LOG_DISPLAY);
             $display_value = $value;
             if (is_string($value) === true)
             {

@@ -34,4 +34,17 @@ class CitrusException extends Exception
         CitrusLogger::error($this);
     }
 
+
+
+    /**
+     * CitrusException converter
+     *
+     * @param Exception $e
+     * @return CitrusException
+     */
+    public static function convert(Exception $e)
+    {
+        return new static($e->getMessage(), $e->getCode(), $e->getPrevious());
+    }
+
 }

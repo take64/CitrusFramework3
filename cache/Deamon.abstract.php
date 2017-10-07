@@ -95,13 +95,19 @@ abstract class CitrusCacheDeamon implements CitrusCacheEngine
      * ドメインがない場合は :productSummaries となるが、ドメインなしを明示的にしたいので : は捨てない
      *
      * @param mixed $key
+     * @prama bool  $with_hash
      * @return string
      */
-    public function callPrefixedKey($key)
+    public function callPrefixedKey($key, $with_hash = false)
     {
         if (is_string($key) === false)
         {
             $key = serialize($key);
+        }
+
+        if ($with_hash === true)
+        {
+            $key = md5($key);
         }
 
         return sprintf('%s:%s', $this->prefix, $key);

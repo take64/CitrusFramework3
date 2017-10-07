@@ -109,7 +109,6 @@ class CitrusGateway
                 $ucfirst_document_code .= $ucfirst_code;
                 $ucfirst_document_codes[] = $ucfirst_code;
             }
-//var_dump([ $ucfirst_document_code, $ucfirst_document_codes ]);
 
             // デバイス取得
             if (is_null($device_code) === true)
@@ -124,8 +123,6 @@ class CitrusGateway
             // 頭文字だけ大文字で後は小文字のAPPLICATION_CD
             $ucfirst_application_id = ucfirst(strtolower(CitrusConfigure::$CONFIGURE_ITEM->application->id));
 
-//var_dump([$ucfirst_device_code, $ucfirst_application_id, $ucfirst_document_code, CitrusSession::$router->properties()]);
-
             $controller_file_prefix = array_pop($ucfirst_document_codes);
             $controller_namespace = '\\' . $ucfirst_application_id . '\\Controller\\' . $ucfirst_device_code;
             foreach ($ucfirst_document_codes as $one)
@@ -139,71 +136,6 @@ class CitrusGateway
             $controller_namespace_class_name = $controller_namespace . '\\' . $controller_class_name;
             $controller = new $controller_namespace_class_name();
             $controller->run();
-
-//            foreach ()
-
-//            // コントローラー候補の選出
-//            $controllerChoices = [];
-//
-//            // 大元
-//            $controllerChoices[] = array(
-//                'path' => CitrusConfigure::$DIR_CONTROLLER
-//                    . $ucfirst_term_cd .'Controller.class.php',
-//                'name' => $ucfirst_application_cd
-//                    . $ucfirst_term_cd .'Controller'
-//            );
-//
-//            // ドキュメントコードのアッパーキャメルケース化
-//            $document_code_UCC = '';
-//            $document_code_UCC_list = [];
-//            $document_code_list = explode('_', str_replace('-', '_', $document_cd));
-//            foreach ($document_code_list as $ky => $vl)
-//            {
-//                $choice = [];
-//
-//                $document_code_UCC_list[] = ucfirst(strtolower($vl));
-//                $document_code_UCC = $document_code_UCC . ucfirst(strtolower($vl));
-//
-//                $choice = array(
-//                    'path' => CitrusConfigure::$DIR_CONTROLLER
-//                        . $ucfirst_term_cd .'/'
-//                        . implode('/', $document_code_UCC_list) .'Controller.class.php',
-//                    'name' => $ucfirst_application_cd
-//                        . $ucfirst_term_cd
-//                        . $document_code_UCC . 'Controller',
-//                );
-//                if (file_exists($choice['path']) === true)
-//                {
-//                    $controllerChoices[] = $choice;
-//                }
-//                else
-//                {
-//                    continue;
-//                }
-//            }
-//
-//            $lastChoice = $controllerChoices[count($controllerChoices) - 1];
-//            $controller_file_path = $lastChoice['path'];
-//            $controller_class_name = $lastChoice['name'];
-
-            // CitrusLogger::debug(array(
-            // '----+----+----+----',
-            // $controller_file_path,
-            // $controller_class_name,
-            // 0
-            // ));
-
-            // go controller
-//            include_once $controller_file_path;
-//            $controller = new $controller_class_name();
-//            $result = $controller->run();
-
-            // CitrusLogger::debug(array(
-            // '----+----+----+----',
-            // $controller_file_path,
-            // $controller_class_name,
-            // 1
-            // ));
 
             // save controller
             CitrusSession::commit();

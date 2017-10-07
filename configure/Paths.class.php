@@ -164,7 +164,7 @@ class CitrusConfigurePaths extends CitrusObject
         $result = $search;
         $result = str_replace('{#domain#}', $this->domain, $result);
 
-        $result .= '/' . $append_path;
+        $result .= $append_path;
 
         return $result;
     }

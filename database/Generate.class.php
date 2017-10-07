@@ -201,10 +201,11 @@ EOT;
                 // クラス名置換
                 switch ($data_type)
                 {
-                    case 'character varying' :  $data_type = 'string'; break;
-                    case 'text' :               $data_type = 'string'; break;
-                    case 'date' :               $data_type = 'string'; break;
-                    case 'numeric' :            $data_type = 'int'; break;
+                    case 'character varying'            : $data_type = 'string';                            break;
+                    case 'text'                         : $data_type = 'string';                            break;
+                    case 'date'                         : $data_type = 'string';                            break;
+                    case 'numeric'                      : $data_type = 'int';                               break;
+                    case 'timestamp without time zone'  : $data_type = 'string'; $property_value = 'null';  break;
                 }
 
                 // デフォルト値置換

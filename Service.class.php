@@ -21,8 +21,10 @@ use Citrus\Sqlmap\CitrusSqlmapCrud;
 
 class CitrusService
 {
-    /** @var CitrusService  */
-    private static $INSTANCE = null;
+    use CitrusSingleton
+    {
+        callSingleton as public sharedService;
+    }
 
     /** @var CitrusSqlmapCrud citrus object */
     protected $dao = null;
@@ -309,21 +311,5 @@ class CitrusService
             $this->dao = new CitrusSqlmapClient();
         }
         return $this->dao;
-    }
-
-
-
-    /**
-     * call shared instance
-     *
-     * @return CitrusService
-     */
-    public static function sharedService() : CitrusService
-    {
-        if (is_null(self::$INSTANCE) === true)
-        {
-            self::$INSTANCE = new static();
-        }
-        return self::$INSTANCE;
     }
 }
