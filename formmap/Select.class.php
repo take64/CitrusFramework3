@@ -38,7 +38,7 @@ class CitrusFormmapSelect extends CitrusFormmapElement
             'style'     => $this->style,
             'accesskey' => $this->accesskey,
         ];
-        $elements = array_merge($elements, $appends);
+        $elements = self::appendOption($elements, $appends);
 
         return self::generateTag('select', $elements, $this->options);
     }

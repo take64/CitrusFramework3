@@ -195,6 +195,17 @@ class CitrusControllerPage
     }
 
 
+    /**
+     * 404 method
+     *
+     * @return CitrusDocumentRouter|null
+     */
+    protected function error404()
+    {
+        return null;
+    }
+
+
 
     /**
      * call pagecode

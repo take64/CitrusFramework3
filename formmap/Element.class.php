@@ -223,6 +223,33 @@ class CitrusFormmapElement extends CitrusObject
     }
 
 
+    /**
+     * option appends
+     *
+     * @param array $elements
+     * @param array $appends
+     * @return array
+     */
+    protected static function appendOption(array $elements, array $appends)
+    {
+        foreach ($appends as $ky => $append)
+        {
+            if (isset($elements[$ky]) === true)
+            {
+                if (is_string($elements[$ky]) === true)
+                {
+                    $elements[$ky] = [ $elements[$ky] ];
+                }
+                $elements[$ky][] = $append;
+            }
+            else
+            {
+                $elements[$ky] = [ $append ];
+            }
+        }
+        return $elements;
+    }
+
 
     /**
      * generate html tag
@@ -249,7 +276,11 @@ class CitrusFormmapElement extends CitrusObject
                 continue;
             }
 
-            if (is_array($vl) === true)
+            if (is_array($vl) === true && $ky === 'class')
+            {
+                $form_element[$ky] = sprintf('%s="%s"', $ky, implode(' ', $vl));
+            }
+            else if (is_array($vl) === true)
             {
                 $form_element[$ky] = sprintf('%s="%s"', $ky, implode(', ', $vl));
             }

@@ -35,7 +35,7 @@ class CitrusFormmapHidden extends CitrusFormmapElement
             'value'     => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),
             'class'     => $this->class,
         ];
-        $elements = array_merge($elements, $appends);
+        $elements = self::appendOption($elements, $appends);
 
         return self::generateTag('input', $elements);
     }

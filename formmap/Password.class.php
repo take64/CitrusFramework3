@@ -38,7 +38,7 @@ class CitrusFormmapPassword extends CitrusFormmapElement
             'size'      => $this->size,
             'maxlength' => $this->max,
         ];
-        $elements = array_merge($elements, $appends);
+        $elements = self::appendOption($elements, $appends);
 
         return self::generateTag('input', $elements);
     }

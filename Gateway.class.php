@@ -15,6 +15,7 @@
 namespace Citrus;
 
 
+use Citrus\Document\CitrusDocumentRouter;
 use Citrus\Sqlmap\CitrusSqlmapException;
 
 class CitrusGateway
@@ -140,10 +141,13 @@ class CitrusGateway
             // save controller
             CitrusSession::commit();
         }
-        catch (CitrusServiceException $se)
+        catch (CitrusException $e)
         {
-            CitrusLogger::debug($se);
-            $se->_commit();
+            // 404でリダイレクトの様に振る舞う
+            CitrusSession::$router = CitrusDocumentRouter::parseURL(
+                CitrusConfigure::$CONFIGURE_ITEM->routing->error404
+            );
+            self::controller();
         }
         catch (CitrusErrorException $ee)
         {

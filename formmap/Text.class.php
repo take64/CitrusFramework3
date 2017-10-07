@@ -40,7 +40,7 @@ class CitrusFormmapText extends CitrusFormmapElement
             'maxlength'     => $this->max,
             'placeholder'   => $this->placeholder,
         ];
-        $elements = array_merge($elements, $appends);
+        $elements = self::appendOption($elements, $appends);
 
         return self::generateTag('input', $elements);
     }
