@@ -31,6 +31,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     protected $target = '';
 
 
+
     /**
      * call sqlmap summaries
      *
@@ -38,7 +39,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function summaries(CitrusDatabaseColumn $condition) : array
+    public function summaries(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -103,7 +104,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function last(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function last(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -179,7 +180,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function names(CitrusDatabaseColumn $condition) : array
+    public function names(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -200,7 +201,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function name(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function name(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -221,7 +222,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function details(CitrusDatabaseColumn $condition) : array
+    public function details(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -242,7 +243,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function detail(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function detail(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -263,7 +264,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function selections(CitrusDatabaseColumn $condition) : array
+    public function selections(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -284,7 +285,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function selection(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function selection(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -305,7 +306,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function facesSummaries(CitrusDatabaseColumn $condition) : array
+    public function facesSummaries(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -326,7 +327,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function facesSummary(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function facesSummary(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -347,7 +348,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function facesDetails(CitrusDatabaseColumn $condition) : array
+    public function facesDetails(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -368,7 +369,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function facesDetail(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function facesDetail(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -389,7 +390,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return array
      * @throws CitrusSqlmapException
      */
-    public function nameSummaries(CitrusDatabaseColumn $condition) : array
+    public function nameSummaries(CitrusDatabaseColumn $condition)
     {
         try
         {
@@ -410,7 +411,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function nameSummary(CitrusDatabaseColumn $condition) : CitrusDatabaseColumn
+    public function nameSummary(CitrusDatabaseColumn $condition)
     {
         try
         {
