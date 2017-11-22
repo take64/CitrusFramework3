@@ -17,6 +17,7 @@ namespace Citrus;
 
 use Citrus\Document\CitrusDocumentRouter;
 use Citrus\Sqlmap\CitrusSqlmapException;
+use Exception;
 
 class CitrusGateway
 {
@@ -135,6 +136,7 @@ class CitrusGateway
 
             // I have control
             $controller_namespace_class_name = $controller_namespace . '\\' . $controller_class_name;
+            spl_autoload_call($controller_namespace_class_name);
             $controller = new $controller_namespace_class_name();
             $controller->run();
 

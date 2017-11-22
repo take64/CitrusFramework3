@@ -264,9 +264,7 @@ class CitrusConfigure
             if ($is_load_class === false)
             {
                 $error_message = 'load faild = ' . $class_file_path;
-                var_dump($error_message);
-                // TODO:
-                throw new \Exception($error_message);
+                throw new CitrusException($error_message);
             }
         });
     }
@@ -281,7 +279,6 @@ class CitrusConfigure
     public static function autoloadApplication()
     {
         spl_autoload_register(function($use_class_name) {
-
             $namespace_application = ucfirst(self::$CONFIGURE_ITEM->application->id);
             $namespace_head = $namespace_application . '\\';
             if (strpos($use_class_name, $namespace_head) === false)
@@ -316,12 +313,15 @@ class CitrusConfigure
             $_use_class = array_pop($_use_class_paths);
             foreach ($_use_class_paths as $one)
             {
+                if (empty($one) === true)
+                {
+                    continue;
+                }
                 if (strpos($_use_class, $one) === 0)
                 {
                     $_use_class = str_replace($one, '', $_use_class);
                 }
             }
-//            CitrusLogger::error('_use_class = %s', $_use_class);
             $_use_class_paths[] = $_use_class;
             $use_class_paths = $_use_class_paths;
 
