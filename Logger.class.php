@@ -273,7 +273,6 @@ class CitrusLogger
         // display
         if (self::$LOG_DISPLAY === true)
         {
-var_dump(self::$LOG_DISPLAY);
             $display_value = $value;
             if (is_string($value) === true)
             {
