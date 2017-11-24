@@ -1,24 +1,18 @@
 <?php
 /**
- * Exception.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus;
+namespace Citrus\Autoloader;
 
 
+use Citrus\CitrusLogger;
 use Exception;
 use Throwable;
 
-class CitrusException extends Exception
+class CitrusAutoloaderException extends Exception
 {
     /**
      * constructor.
@@ -31,7 +25,7 @@ class CitrusException extends Exception
     {
         parent::__construct($message, $code, $previous);
 
-        CitrusLogger::error($this);
+        CitrusLogger::error($message);
     }
 
 
@@ -40,7 +34,7 @@ class CitrusException extends Exception
      * CitrusException converter
      *
      * @param Exception $e
-     * @return CitrusException
+     * @return CitrusAutoloaderException
      */
     public static function convert(Exception $e)
     {
