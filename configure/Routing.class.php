@@ -20,6 +20,12 @@ use Citrus\CitrusObject;
 class CitrusConfigureRouting extends CitrusObject
 {
     /** @var string */
+    public $default;
+
+    /** @var string */
+    public $login;
+
+    /** @var string */
     public $error404;
 
     /** @var string */

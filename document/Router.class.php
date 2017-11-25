@@ -22,6 +22,18 @@ use Citrus\Useragent\CitrusUseragentDevice;
 class CitrusDocumentRouter extends CitrusObject
 {
     /** @var string */
+    CONST ROUTE_DEFAULT = 'default';
+
+    /** @var string */
+    CONST ROUTE_LOGIN = 'login';
+
+    /** @var string */
+    CONST ROUTE_ERROR404 = 'error404';
+
+    /** @var string */
+    CONST ROUTE_ERROR503 = 'error503';
+
+    /** @var string */
     public $device;
 
     /** @var string */
@@ -35,6 +47,9 @@ class CitrusDocumentRouter extends CitrusObject
 
     /** @var array */
     public static $DEVICE_ROUTING = [];
+
+    /** @var array */
+    public static $ACCESS_ROUTING = [];
 
     /** @var bool */
     public static $IS_INITIALIZED = false;
@@ -72,6 +87,12 @@ class CitrusDocumentRouter extends CitrusObject
             }
         }
 
+        // アクセス設定
+        $accesses = [];
+        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($default_configure, 'routing', []));
+        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($configure, 'routing', []));
+        self::$ACCESS_ROUTING = $accesses;
+
         // initialized
         self::$IS_INITIALIZED = true;
     }
@@ -85,7 +106,7 @@ class CitrusDocumentRouter extends CitrusObject
      */
     public static function callDefaultURL()
     {
-        return 'home/index';
+        return self::$ACCESS_ROUTING[self::ROUTE_DEFAULT];
     }
 
 
@@ -97,7 +118,7 @@ class CitrusDocumentRouter extends CitrusObject
      */
     public static function callLoginURL()
     {
-        return 'home/login';
+        return self::$ACCESS_ROUTING[self::ROUTE_LOGIN];
     }
 
 
