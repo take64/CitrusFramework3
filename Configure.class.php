@@ -201,10 +201,10 @@ class CitrusConfigure
         }
 
         // ルーティング処理初期化
-        CitrusDocumentRouter::initialize($default_configure, $configures);
+        CitrusDocumentRouter::initialize($default_configure, $configures[$domain]);
 
         // 認証処理初期化
-        CitrusAuthentication::initialize($default_configure, $configures);
+        CitrusAuthentication::initialize($default_configure, $configures[$domain]);
 
         // ロガー処理
         CitrusLogger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
