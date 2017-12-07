@@ -24,6 +24,7 @@ use Citrus\Document\CitrusDocumentPagecode;
 use Citrus\Document\CitrusDocumentRouter;
 use Citrus\Library\CitrusLibrarySmarty3;
 use Exception;
+use Smarty_Internal_Template;
 
 class CitrusControllerPage
 {
@@ -149,6 +150,22 @@ class CitrusControllerPage
     {
         $router = $router ?: CitrusSession::$router;
 
+        self::displayTemplate($this->callSmarty(), $router);
+    }
+
+
+
+    /**
+     * テンプレート読み込んで表示
+     *
+     * @param Smarty_Internal_Template|CitrusLibrarySmarty3|null $template
+     * @param CitrusDocumentRouter|null     $router
+     * @throws CitrusException
+     */
+    public static function displayTemplate($template, CitrusDocumentRouter $router = null)
+    {
+        $router = $router ?: CitrusSession::$router;
+
         $templateDocumentArray = explode('_', str_replace('-', '_', $router->document));
         $templateArray[] = $router->device;
         foreach ($templateDocumentArray as $templateDocument)
@@ -168,7 +185,7 @@ class CitrusControllerPage
         {
             throw new CitrusException(sprintf('[%s]のテンプレートが存在しません。', $template_path));
         }
-        $this->callSmarty()->display($template_path);
+        $template->display($template_path);
     }
 
 
