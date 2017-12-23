@@ -17,6 +17,7 @@ namespace Citrus;
 
 use Citrus\Autoloader\CitrusAutoloaderException;
 use Citrus\Document\CitrusDocumentRouter;
+use Citrus\Http\CitrusHttpHeader;
 use Citrus\Sqlmap\CitrusSqlmapException;
 use Exception;
 
@@ -147,6 +148,7 @@ class CitrusGateway
         catch (CitrusAutoloaderException $e)
         {
             // 404でリダイレクトの様に振る舞う
+            CitrusHttpHeader::status404();
             CitrusSession::$router = CitrusDocumentRouter::parseURL(
                 CitrusConfigure::$CONFIGURE_ITEM->routing->error404
             );
