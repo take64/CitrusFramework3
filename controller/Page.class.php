@@ -22,6 +22,7 @@ use Citrus\CitrusMessage;
 use Citrus\CitrusSession;
 use Citrus\Document\CitrusDocumentPagecode;
 use Citrus\Document\CitrusDocumentRouter;
+use Citrus\Http\CitrusHttpHeader;
 use Citrus\Library\CitrusLibrarySmarty3;
 use Exception;
 use Smarty_Internal_Template;
@@ -91,12 +92,12 @@ class CitrusControllerPage
         }
         catch (CitrusException $e)
         {
-            header("HTTP/1.0 404 Not Found");
+            CitrusHttpHeader::status404();
             throw $e;
         }
         catch (Exception $e)
         {
-            header("HTTP/1.0 404 Not Found");
+            CitrusHttpHeader::status404();
             throw CitrusException::convert($e);
         }
     }
