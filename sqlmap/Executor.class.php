@@ -392,7 +392,7 @@ class CitrusSqlmapExecutor
             // 削除の条件がない場合は、削除をしない。(全件削除回避のため。)
             if (empty($parameters) === true)
             {
-                throw new CitrusSqlmapException('削除条件が足りません、削除要求をキャンセルしました。', 0, __FILE__, __LINE__);
+                throw new CitrusSqlmapException('削除条件が足りません、削除要求をキャンセルしました。', 0);
             }
 
             // prepare cache
