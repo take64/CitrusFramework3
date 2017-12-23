@@ -388,7 +388,7 @@ class CitrusControllerXhr
 
         // remove
         $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_edit_id);
-        return new CitrusXhrResult($this->callService()->remove($entity->getCondition()));
+        return new CitrusXhrResult([$this->callService()->remove($entity->getCondition())]);
     }
     
     /**
