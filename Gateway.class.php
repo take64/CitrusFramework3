@@ -146,6 +146,7 @@ class CitrusGateway
         }
         catch (CitrusAutoloaderException $e)
         {
+            header("HTTP/1.0 404 Not Found");
             // 404でリダイレクトの様に振る舞う
             CitrusSession::$router = CitrusDocumentRouter::parseURL(
                 CitrusConfigure::$CONFIGURE_ITEM->routing->error404
