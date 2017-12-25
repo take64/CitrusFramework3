@@ -1,14 +1,7 @@
 <?php
 /**
- * Xhr.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Controller
  * @license     http://www.citrus.tk/
  */
 
@@ -25,7 +18,6 @@ use Citrus\CitrusSession;
 use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Document\CitrusDocumentPager;
 use Citrus\Message\CitrusMessageItem;
-use Citrus\Sqlmap\CitrusSqlmapCondition;
 use Citrus\Xhr\CitrusXhrElement;
 use Citrus\Xhr\CitrusXhrResult;
 
@@ -84,8 +76,8 @@ class CitrusControllerXhr
         'count', 'sum', 'avg', 'max', 'min', 'name', 'id',
     ];
 
-    
-    
+
+
     /**
      * controller run
      */
@@ -171,61 +163,6 @@ class CitrusControllerXhr
         }
         return $this->formmap;
     }
-
-
-
-//    /**
-//     * call summary list
-//     * サマリリストの取得
-//     *
-//     * @return CitrusXhrElement
-//     */
-//    public function summaries() : CitrusXhrResult
-//    {
-//        // get form data
-//        $this->callFormmap()->load($this->formmap_namespace . '.php');
-//        $this->callFormmap()->bind();
-//        /** @var CitrusDatabaseColumn $condition */
-//        $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_call_id);
-//        $condition->toLike($this->search_column_to_like);
-//
-//        // validate
-//        if ($this->callFormmap()->validate($this->formmap_call_id) > 0)
-//        {
-//            $result = new CitrusXhrResult();
-//        }
-//        else
-//        {
-//            // condition
-//            if (empty($condition->orderby) === true)
-//            {
-//                $condition->orderby = $this->default_orderby;
-//            }
-//            $condition->pageLimit();
-//
-//            // call list
-//            $list = $this->callService()->summaries($condition);
-//            $count = 0;
-//
-//            // data exist
-//            if (empty($list) === false)
-//            {
-//                // call count
-//                $count = $this->callService()->count($condition);
-//                // modify
-//                foreach ($list as &$one)
-//                {
-//                    $one->remove($this->remove_column_summaries);
-//                    $one->null2blank();
-//                }
-//            }
-//
-//            $result = new CitrusXhrResult($list);
-//            $result->pager = new CitrusDocumentPager($condition->page, $count, $condition->limit, 7);
-//        }
-//
-//        return $result;
-//    }
 
 
 
@@ -486,7 +423,7 @@ class CitrusControllerXhr
      * 画面ロールの登録
      *
      * @access  public
-     * @return  boolean
+     * @return  CitrusXhrResult
      */
     public function on()
     {
@@ -526,10 +463,7 @@ class CitrusControllerXhr
      * toggle document_role off
      * 画面ロールの登録
      *
-     * @access  public
-     * @since   0.0.3.0 2010.11.04
-     * @version 0.0.3.0 2010.11.04
-     * @return  boolean
+     * @return  CitrusXhrResult
      */
     public function off()
     {

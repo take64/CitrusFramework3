@@ -1,15 +1,9 @@
 <?php
 /**
- * Redis.class.php.
- * 2017/09/16
- *
- * PHP version 7
  * phpredis version 3.1.3
  *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Cache
  * @license     http://www.citrus.tk/
  */
 
@@ -32,11 +26,9 @@ class CitrusCacheRedis extends CitrusCacheDeamon
      */
     public function connect(string $host, int $port = 6379)
     {
-        // TODO connectでhostとportを渡すのか、constructorで渡すのか悩む
         $this->handler = new Redis();
         $this->handler->connect($host, $port);
     }
-
 
 
 

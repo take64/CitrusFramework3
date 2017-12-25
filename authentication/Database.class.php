@@ -1,20 +1,12 @@
 <?php
 /**
- * Database.class.php.
- * 2017/08/10
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Authentication
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Authentication;
 
-use Citrus\Citrus;
 use Citrus\CitrusAuthentication;
 use Citrus\CitrusLogger;
 use Citrus\CitrusSession;
@@ -172,6 +164,6 @@ class CitrusAuthenticationDatabase extends CitrusAuthenticationProtocol
         CitrusSession::$session->regist(CitrusAuthentication::SESSION_KEY, $item);
         CitrusSession::commit();
 
-        return ($result > 0 ? true : false);
+        return ($result > 0);
     }
 }

@@ -1,14 +1,7 @@
 <?php
 /**
- * File.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Logger
  * @license     http://www.citrus.tk/
  */
 
@@ -47,9 +40,9 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
      */
     public function output($value, array $params = [])
     {
-        $directory  = $this->directory;
-        $filename   = $this->filename;
-        $logfile    = $directory . $filename . '-' . date('Ymd', $_SERVER['REQUEST_TIME']);
+        $_directory = $this->directory;
+        $_filename  = $this->filename;
+        $logfile    = sprintf('%s%s-%s', $_directory, $_filename, date('Ymd', $_SERVER['REQUEST_TIME']);
 
         $vl_dump = '';
         if (is_string($value) === true)
@@ -71,12 +64,9 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
 
         // writing log
         $fp = @fopen($logfile, 'a+');
-        if ($fp === false)
+        if ($fp === false && mkdir(dirname($logfile)) === true)
         {
-            if (mkdir(dirname($logfile)) === true)
-            {
-                $fp = fopen($logfile, 'a+');
-            }
+            $fp = fopen($logfile, 'a+');
         }
         fwrite($fp, $dat);
         fclose($fp);

@@ -94,7 +94,7 @@ class CitrusUseragent
     }
 
 
-    
+
     /**
      * ユーザーエージェントパターン配列
      *

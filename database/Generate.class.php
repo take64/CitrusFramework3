@@ -114,7 +114,8 @@ WHERE information_schema.table_constraints.constraint_type = \'PRIMARY KEY\'
             $primary_keys = [];
             foreach ($primarykey_results as $one)
             {
-                $primary_keys[$one['column_name']] = sprintf('\'%s\'', $one['column_name']);
+                $column_name = $one['column_name'];
+                $primary_keys[$column_name] = sprintf('\'%s\'', $column_name);
             }
 
             // デフォルトカラム
@@ -206,6 +207,7 @@ EOT;
                     case 'date'                         : $data_type = 'string';                            break;
                     case 'numeric'                      : $data_type = 'int';                               break;
                     case 'timestamp without time zone'  : $data_type = 'string'; $property_value = 'null';  break;
+                    default                             :
                 }
 
                 // デフォルト値置換
@@ -213,6 +215,12 @@ EOT;
                 {
                     $property_value = 'null';
                 }
+                // serial置換
+                else if (strpos($property_value, 'nextval') !== false)
+                {
+                    $property_value = 'null';
+                }
+
 
                 // ベース文字列
                 $property = <<<PTY

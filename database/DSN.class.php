@@ -1,15 +1,8 @@
 <?php
 
 /**
- * DSN.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     .
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -62,6 +55,7 @@ class CitrusDatabaseDSN extends CitrusObject
                     $this->database
                     );
                 break;
+            default:
         }
         return $dsn;
     }
@@ -89,6 +83,7 @@ class CitrusDatabaseDSN extends CitrusObject
                     $this->password
                 );
                 break;
+            default:
         }
         return $dsn;
     }

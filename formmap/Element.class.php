@@ -1,14 +1,7 @@
 <?php
 /**
- * Element.class.php.
- * 2017/08/05
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Formmap
  * @license     http://www.citrus.tk/
  */
 
@@ -17,123 +10,122 @@ namespace Citrus\Formmap;
 
 use Citrus\CitrusException;
 use Citrus\CitrusFormmap;
-use Citrus\CitrusLogger;
 use Citrus\CitrusMessage;
 use Citrus\CitrusNVL;
 use Citrus\CitrusObject;
 
 class CitrusFormmapElement extends CitrusObject
 {
-    /** @var string var type int */
+    /** var type int */
     const VAR_TYPE_INT = 'int';
 
-    /** @var string var type float */
+    /** var type float */
     const VAR_TYPE_FLOAT = 'float';
 
-    /** @var string var type numeric */
+    /** var type numeric */
     const VAR_TYPE_NUMERIC = 'numeric';
 
-    /** @var string var type string */
+    /** var type string */
     const VAR_TYPE_STRING = 'string';
 
-    /** @var string var type alphabet */
+    /** var type alphabet */
     const VAR_TYPE_ALPHABET = 'alphabet';
 
-    /** @var string var type alphabet & numeric */
+    /** var type alphabet & numeric */
     const VAR_TYPE_ALPHANUMERIC = 'alphanumeric';
 
-    /** @var string var type alphabet & numeric & marks */
+    /** var type alphabet & numeric & marks */
     const VAR_TYPE_AN_MARKS = 'an_marks';
 
-    /** @var string var type date */
+    /** var type date */
     const VAR_TYPE_DATE = 'date';
 
-    /** @var string var type time */
+    /** var type time */
     const VAR_TYPE_TIME = 'time';
 
-    /** @var string var type datetime */
+    /** var type datetime */
     const VAR_TYPE_DATETIME = 'dateime';
 
-    /** @var string var type bool */
+    /** var type bool */
     const VAR_TYPE_BOOL = 'bool';
 
-    /** @var string var type file */
+    /** var type file */
     const VAR_TYPE_FILE = 'file';
 
-    /** @var string var type telephone */
+    /** var type telephone */
     const VAR_TYPE_TELEPHONE = 'telephone';
 
-    /** @var string var type tel */
+    /** var type tel */
     const VAR_TYPE_TEL = 'tel';
 
-    /** @var string var type fax */
+    /** var type fax */
     const VAR_TYPE_FAX = 'fax';
 
-    /** @var string var type year */
+    /** var type year */
     const VAR_TYPE_YEAR = 'year';
 
-    /** @var string var type month */
+    /** var type month */
     const VAR_TYPE_MONTH = 'month';
 
-    /** @var string var type day */
+    /** var type day */
     const VAR_TYPE_DAY = 'day';
 
-    /** @var string var type email */
+    /** var type email */
     const VAR_TYPE_EMAIL = 'email';
 
-    /** @var string var type text */
+    /** var type text */
     const VAR_TYPE_TEXT = 'text';
 
-    /** @var string var type password */
+    /** var type password */
     const VAR_TYPE_PASSWD = 'password';
 
-    /** @var string var type textarea */
+    /** var type textarea */
     const VAR_TYPE_TEXTAREA = 'textarea';
 
-    /** @var string var type select */
+    /** var type select */
     const VAR_TYPE_SELECT = 'select';
 
-    /** @var string var type radio */
+    /** var type radio */
     const VAR_TYPE_RADIO = 'radio';
 
-    /** @var string var type checkbox */
+    /** var type checkbox */
     const VAR_TYPE_CHECKBOX = 'checkbox';
 
-    /** @var string var type button */
+    /** var type button */
     const VAR_TYPE_BUTTON = 'button';
 
-    /** @var string var type submit */
+    /** var type submit */
     const VAR_TYPE_SUBMIT = 'submit';
 
-    /** @var string var type image */
+    /** var type image */
     const VAR_TYPE_IMAGE = 'image';
 
-    /** @var string var type hidden */
+    /** var type hidden */
     const VAR_TYPE_HIDDEN = 'hidden';
 
-    /** @var string var type element */
+    /** var type element */
     const VAR_TYPE_ELEMENT = 'element';
 
 
-    /** @var string form type element */
+    /** form type element */
     const FORM_TYPE_ELEMENT = 'element';
 
-    /** @var string form type text */
+    /** form type text */
     const FORM_TYPE_TEXT = 'text';
 
-    /** @var string form type search */
+    /** form type search */
     const FORM_TYPE_SEARCH = 'search';
 
-    /** @var string form type hidden */
+    /** form type hidden */
     const FORM_TYPE_HIDDEN = 'hidden';
 
-    /** @var string form type select */
+    /** form type select */
     const FORM_TYPE_SELECT = 'select';
 
-    /** @var string form type password */
+    /** form type password */
     const FORM_TYPE_PASSWD = 'password';
 
-    /** @var string form type submit */
+    /** form type submit */
     const FORM_TYPE_SUBMIT = 'submit';
 
 
@@ -207,6 +199,7 @@ class CitrusFormmapElement extends CitrusObject
     public $validate_null_safe = false;
 
 
+
     /**
      * constructor.
      *
@@ -214,13 +207,9 @@ class CitrusFormmapElement extends CitrusObject
      */
     public function __construct(array $element = null)
     {
-//        var_dump(debug_backtrace());
-//        debug_print_backtrace();
-//        var_dump($element);
-
-//        $this->bindObject($element, true);
         $this->bindArray($element, true);
     }
+
 
 
     /**
@@ -249,6 +238,7 @@ class CitrusFormmapElement extends CitrusObject
         }
         return $elements;
     }
+
 
 
     /**
@@ -289,7 +279,7 @@ class CitrusFormmapElement extends CitrusObject
                 $form_element[$ky] = sprintf('%s="%s"', $ky, $vl);
             }
         }
-//CitrusLogger::debug($form_element);
+
         // 閉じタグがあるタイプ
         if ($is_multiple_tag === true)
         {
@@ -404,30 +394,7 @@ class CitrusFormmapElement extends CitrusObject
     {
         return $this->toString($option);
     }
-//
-//
-//
-//    /**
-//     * to string accesser with option
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @return  string
-//     */
-//    public function toString($option = '')
-//    {
-//        return '';
-//    }
-//    /**
-//     * span tag
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $option
-//     * @return  string
-//     */
+
 
 
     /**
@@ -438,13 +405,11 @@ class CitrusFormmapElement extends CitrusObject
     public function span()
     {
         $elements = [
-//            'type'      => 'text',
             'id'        => $this->callPrefixedId(),
             'name'      => $this->id,
             'class'     => $this->class,
             'style'     => $this->style,
         ];
-//        $elements = array_merge($elements, $appends);
 
         return self::generateTag('span', $elements, CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()));
     }
@@ -507,12 +472,6 @@ class CitrusFormmapElement extends CitrusObject
         // result value
         $result = $this->value;
 
-//        // empty case
-//        if (empty($result) === true)
-//        {
-//            return null;
-//        }
-
         // non filter is null
         if (is_null($this->filters) === true)
         {
@@ -562,9 +521,7 @@ class CitrusFormmapElement extends CitrusObject
                 }
                 else if (empty($this->value) === true)
                 {
-                    if ($this->validate_null_safe === true && is_null($this->value) === true)
-                    {}
-                    else
+                    if (($this->validate_null_safe === true && is_null($this->value) === true) === false)
                     {
                         $this->addError($message);
                         return false;
@@ -618,9 +575,6 @@ class CitrusFormmapElement extends CitrusObject
             $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
             $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
             $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
-
-
-
 
             
             // filter
@@ -1259,6 +1213,7 @@ class CitrusFormmapElement extends CitrusObject
         {
             throw $e;
         }
+        return false;
     }
 
 
@@ -1359,185 +1314,6 @@ class CitrusFormmapElement extends CitrusObject
         return $result;
     }
 
-//
-//    /**
-//     * validate less (this <= less)
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     */
-//    public function validateLess($element = null)
-//    {
-//        // 入力がある場合のみチェックする。
-//        if (is_null($this->value) === true || $this->value == '')
-//        {
-//            return true;
-//        }
-//        if (is_null($element) === false)
-//        {
-//            // 日付の場合
-//            if (($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
-//            {
-//                if (strtotime($this->value) > strtotime($element->value))
-//                {
-//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以前の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//
-//                    return false;
-//                }
-//            }
-//            // 数値系の場合
-//            if ((
-//                ($this->var_type == self::VAR_TYPE_INT
-//                    || $this->var_type == self::VAR_TYPE_FLOAT
-//                    || $this->var_type == self::VAR_TYPE_NUMERIC
-//                )
-//                &&
-//                ($element->var_type == self::VAR_TYPE_DATE
-//                    || $element->var_type == self::VAR_TYPE_FLOAT
-//                    || $element->var_type == self::VAR_TYPE_NUMERIC
-//                )
-//            ))
-//            {
-//                if (floatVal($this->value) > floatVal($element->value))
-//                {
-//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以下の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * validate greater (this >= greater)
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     */
-//    public function validateGreater($element = null)
-//    {
-//        // 入力がある場合のみチェックする。
-//        if (is_null($this->value) === true || $this->value == '')
-//        {
-//            return true;
-//        }
-//        if (is_null($element) === false)
-//        {
-//            // 日付の場合
-//            if (($this->var_type == self::VAR_TYPE_DATE && $element->var_type == self::VAR_TYPE_DATE))
-//            {
-//                if (strtotime($this->value) < strtotime($element->value))
-//                {
-//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以降の日付を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//
-//                    return false;
-//                }
-//            }
-//            // 数値系の場合
-//            if ((
-//                ($this->var_type == self::VAR_TYPE_INT
-//                    || $this->var_type == self::VAR_TYPE_FLOAT
-//                    || $this->var_type == self::VAR_TYPE_NUMERIC
-//                )
-//                &&
-//                ($element->var_type == self::VAR_TYPE_DATE
-//                    || $element->var_type == self::VAR_TYPE_FLOAT
-//                    || $element->var_type == self::VAR_TYPE_NUMERIC
-//                )
-//            ))
-//            {
-//                if (floatVal($this->value) < floatVal($element->value))
-//                {
-//                    CitrusMessage::addError('[ '.$this->name.' ] は ['.$element->name.' ] 以上の値を入力してください。', '', CitrusFormmap::MESSAGE_TAG);
-//
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * filter date
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $value
-//     * @return  string
-//     */
-//    protected function _filterDate($value)
-//    {
-//        return date('Y-m-d', strtotime($value));
-//    }
-//
-//    /**
-//     * filter md5 encrypt
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $value
-//     * @return  string
-//     */
-//    protected function _filterMd5($value)
-//    {
-//        if (empty($value) === false)
-//        {
-//            return md5($value);
-//        }
-//        return $value;
-//    }
-//
-//    /**
-//     * filter UTF8 encode
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $value
-//     * @return  string
-//     */
-//    protected function _filterUtf8($value)
-//    {
-//        if (empty($value) === false)
-//        {
-//            $value = mb_convert_encoding(urldecode($value), 'UTF-8', mb_detect_encoding(urldecode($value), 'UTF-8, SJIS-win, eucJP-win, EUC-JP, SJIS, ASCII, JIS'));
-//        }
-//        return $value;
-//    }
-//
-//    /**
-//     * filter to float encode
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   string  $value
-//     * @return  string
-//     */
-//    protected function _filterToFloat($value)
-//    {
-//        $value = str_replace(',', '', $value);
-//        $value = floatVal($value);
-//        return $value;
-//    }
-//
-//    /**
-//     * set validate_null_safe
-//     *
-//     * @access  public
-//     * @since   0.0.5.1 2012.03.19
-//     * @version 0.0.5.1 2012.03.19
-//     * @param   boolean $validate_null_safe
-//     */
-//    public function setValidateNullSafe($validate_null_safe)
-//    {
-//        $this->validate_null_safe = $validate_null_safe;
-//    }
 
 
     /**
@@ -1550,6 +1326,7 @@ class CitrusFormmapElement extends CitrusObject
     {
         return password_hash($value, PASSWORD_DEFAULT);
     }
+
 
 
     /**

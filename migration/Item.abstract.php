@@ -1,14 +1,7 @@
 <?php
 /**
- * Item.abstract.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Migration
  * @license     http://www.citrus.tk/
  */
 
@@ -49,7 +42,7 @@ abstract class CitrusMigrationItem
     /**
      * query execute
      *
-     * @param $query query string
+     * @param string $query query string
      */
     public function execute($query)
     {
@@ -59,7 +52,7 @@ abstract class CitrusMigrationItem
         $timestamp = microtime(true);
 
         $db = new PDO($this->dsn->toStringWithAuth());
-        $count = $db->exec($query);
+        $db->exec($query);
 
         // 実行終了時間
         $execute_microsecond = microtime(true) - $timestamp;
@@ -82,6 +75,5 @@ abstract class CitrusMigrationItem
                 $error_info[2]
                 );
         }
-
     }
 }

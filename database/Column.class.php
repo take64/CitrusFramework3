@@ -114,18 +114,18 @@ class CitrusDatabaseColumn extends CitrusObject
     public function toCondition()
     {
         $condition_calss_name = get_class($this->callCondition());
-        $condition = new $condition_calss_name();
+        $_condition = new $condition_calss_name();
 
         $primary_keys = $this->callPrimaryKeys();
         foreach ($primary_keys as $primary_key)
         {
             if (isset($this->$primary_key) === true && is_null($this->$primary_key) === false)
             {
-                $condition->$primary_key = $this->$primary_key;
+                $_condition->$primary_key = $this->$primary_key;
             }
         }
 
-        return $condition;
+        return $_condition;
     }
 
 

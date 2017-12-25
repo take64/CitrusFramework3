@@ -77,6 +77,7 @@ switch ($action)
         $version = CitrusNVL::coalesceNull($version, null);
         CitrusMigration::down($application_directory, $dsns, $version);
         break;
+    default:
 }
 
 

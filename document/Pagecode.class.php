@@ -1,14 +1,7 @@
 <?php
 /**
- * Pagecode.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Pagecode
  * @license     http://www.citrus.tk/
  */
 
@@ -17,7 +10,6 @@ namespace Citrus\Document;
 
 use Citrus\Citrus;
 use Citrus\CitrusConfigure;
-use Citrus\CitrusLogger;
 use Citrus\CitrusObject;
 
 class CitrusDocumentPagecode extends CitrusObject
@@ -27,9 +19,6 @@ class CitrusDocumentPagecode extends CitrusObject
 
     /** @var string html sub title */
     public $page_subtitle = '';
-
-//    /** @var string internal page id */
-//    public $page_id = '';
 
     /** @var string site title */
     public $site_title = '';
@@ -126,7 +115,6 @@ class CitrusDocumentPagecode extends CitrusObject
                 $this->addJavascript($path);
                 return;
             }
-//            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
 
