@@ -1,14 +1,7 @@
 <?php
 /**
- * Object.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus.
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -168,9 +161,9 @@ class CitrusObject
     {
         if (is_array($key) === true)
         {
-            foreach ($key as $ky => $vl)
+            foreach ($key as $one)
             {
-                unset($this->$vl);
+                unset($this->$one);
             }
         }
         else
@@ -190,11 +183,11 @@ class CitrusObject
     {
         if (is_array($key) === true)
         {
-            foreach ($key as $ky => $vl)
+            foreach ($key as $one)
             {
-                if (empty($this->$vl) === true)
+                if (empty($this->$one) === true)
                 {
-                    unset($this->$vl);
+                    unset($this->$one);
                 }
             }
         }
@@ -250,7 +243,6 @@ class CitrusObject
      */
     public function bindObject($object = null, $strict = false)
     {
-//        var_dump($object);
         if (is_null($object) === true)
         {
             return ;
@@ -278,9 +270,9 @@ class CitrusObject
         {
             $method = 'get';
             $method_properties = explode('_', $context_list[$i]);
-            foreach ($method_properties as $ky => $vl)
+            foreach ($method_properties as $one)
             {
-                $method .= ucfirst(strtolower($vl));
+                $method .= ucfirst(strtolower($one));
             }
             if (method_exists($object, $method) === true)
             {
@@ -333,68 +325,5 @@ class CitrusObject
             }
             $object = $target;
         }
-
-
-//        $context_get_limit = $context_size - 2;
-//
-//        $object = $this;
-//        for ($i = 0; $i <= $context_get_limit; $i++)
-//        {
-//            $method = 'get';
-//            $method_properties = explode('_', $context_list[$i]);
-//            foreach ($method_properties as $ky => $vl)
-//            {
-//                $method .= ucfirst(strtolower($vl));
-//            }
-//            if (method_exists($object, $method) === true)
-//            {
-//                $object = $object->$method();
-//            }
-//            else
-//            {
-//                $object = $object->get($context_list[$i]);
-//            }
-//        }
-//
-//        if (is_array($value) === false && strtolower($value) == 'null')
-//        {
-//            $value = null;
-//        }
-//
-//        if (empty($context_list[$i]) == true)
-//        {
-//            return ;
-//        }
-//
-//        $method = 'set';
-//        $method_properties = explode('_', $context_list[$i]);
-//        foreach ($method_properties as $ky => $vl)
-//        {
-//            $method .= ucfirst(strtolower($vl));
-//        }
-//
-//        if (method_exists($object, $method) === true)
-//        {
-//            if ($method == 'set')
-//            {
-//                $exist_data = $object->get($context_list[$i]);
-//                if (empty($exist_data) === true)
-//                {
-//                    $object->set($context_list[$i], $value);
-//                }
-//            }
-//            else
-//            {
-//                $object->$method($value);
-//            }
-//        }
-//        else
-//        {
-//            $exist_data = $object->get($context_list[$i]);
-//            if (empty($exist_data) === true)
-//            {
-//                $object->set($context_list[$i], $value);
-//            }
-//        }
     }
 }

@@ -1,14 +1,7 @@
 <?php
 /**
- * Migration.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -31,6 +24,7 @@ class CitrusMigration
 
     /** @var string マイグレーションDOWN */
     const ACTION_MIGRATION_DOWN = 'down';
+
 
 
     /**
@@ -128,12 +122,9 @@ EOT;
                 }
 
                 // バージョン指定時に、対象バージョン以外だったらスルー
-                if (is_null($version) === false)
+                if (is_null($version) === false && strpos($one, $version) === false)
                 {
-                    if (strpos($one, $version) === false)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 // マイグレーションクラス名
@@ -186,12 +177,9 @@ EOT;
                 }
 
                 // バージョン指定時に、対象バージョン以外だったらスルー
-                if (is_null($version) === false)
+                if (is_null($version) === false && strpos($one, $version) === false)
                 {
-                    if (strpos($one, $version) === false)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 // マイグレーションクラス名
