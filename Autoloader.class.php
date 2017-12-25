@@ -12,6 +12,17 @@ use Citrus\Autoloader\CitrusAutoloaderException;
 
 class CitrusAutoloader
 {
+    /** @var string[] 読み込み可能な拡張子  */
+    const EXTENTIONS = [
+        'class',
+        'interface',
+        'abstract',
+        'trait',
+        'enum',
+    ];
+
+
+
     /**
      * autoload framework
      *
@@ -27,8 +38,8 @@ class CitrusAutoloader
                 return ;
             }
 
-            $use_class_name = str_replace('\\', '/', $use_class_name);
-            $use_class_paths = explode('/', $use_class_name);
+            // クラスパス要素の生成
+            $use_class_paths = self::convertSimplePathsFromClassName($use_class_name);
 
             $class_file_path = sprintf('%s/%s.class.php',
                 dirname(__FILE__),
@@ -45,9 +56,9 @@ class CitrusAutoloader
                 $class_file_name = 'Citrus';
             }
 
+            // パス確定
             $is_load_class = false;
-            $extentions = [ 'class', 'interface', 'abstract', 'trait', 'enum' ];
-            foreach ($extentions as $extention)
+            foreach (self::EXTENTIONS as $extention)
             {
                 $class_file_path = sprintf('%s/%s%s.%s.php',
                     dirname(__FILE__),
@@ -55,9 +66,8 @@ class CitrusAutoloader
                     $class_file_name,
                     $extention
                 );
-                if (file_exists($class_file_path) === true)
+                if (self::loadClass($class_file_path) === true)
                 {
-                    include_once $class_file_path;
                     $is_load_class = true;
                     break;
                 }
@@ -88,8 +98,8 @@ class CitrusAutoloader
                 return ;
             }
 
-            $use_class_name = str_replace('\\', '/', $use_class_name);
-            $use_class_paths = explode('/', $use_class_name);
+            // クラスパス要素の生成
+            $use_class_paths = self::convertSimplePathsFromClassName($use_class_name);
 
             // application base path
             $application_base_path = CitrusConfigure::$CONFIGURE_ITEM->application->path;
@@ -129,17 +139,15 @@ class CitrusAutoloader
 
             // パス確定
             $is_load_class = false;
-            $extentions = [ 'class', 'interface', 'abstract', 'trait', 'enum' ];
-            foreach ($extentions as $extention)
+            foreach (self::EXTENTIONS as $extention)
             {
                 $class_file_path = sprintf('%s/%s.%s.php',
                     $application_base_path,
                     implode('/', $use_class_paths),
                     $extention
                 );
-                if (file_exists($class_file_path) === true)
+                if (self::loadClass($class_file_path) === true)
                 {
-                    include_once $class_file_path;
                     $is_load_class = true;
                     break;
                 }
@@ -151,5 +159,38 @@ class CitrusAutoloader
                 throw new CitrusAutoloaderException($error_message);
             }
         });
+    }
+
+
+
+    /**
+     * use で指定されたクラス名から、単純なパスを割り出す
+     *
+     * @param string $use_class_name useで指定されたクラス
+     * @return string[]
+     */
+    private static function convertSimplePathsFromClassName(string $use_class_name) : array
+    {
+        $use_class_name = str_replace('\\', '/', $use_class_name);
+        return explode('/', $use_class_name);
+    }
+
+
+
+    /**
+     * クラスを読み込む
+     *
+     * @param string $class_file_path クラスパス
+     * @return bool true:読込成功,false:読込失敗
+     */
+    private static function loadClass(string $class_file_path) : bool
+    {
+        $result = false;
+        if (file_exists($class_file_path) === true)
+        {
+            include_once $class_file_path;
+            $result = true;
+        }
+        return $result;
     }
 }

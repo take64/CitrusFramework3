@@ -1,16 +1,8 @@
 <?php
 /**
- * Authentication.class.php.
- * 2017/08/08
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
- * @
  */
 
 namespace Citrus;
@@ -29,6 +21,9 @@ class CitrusAuthentication
     /** @var string セッション保存キー */
     const SESSION_KEY = 'authentication';
 
+    /** @var string CitrusConfigureキー */
+    const CONFIGURE_KEY = 'authentication';
+
 
 
     /** @var string 認証テーブル名 */
@@ -37,7 +32,7 @@ class CitrusAuthentication
     /** @var string token生成アルゴリズム */
     public static $TOKEN_ALGO = 'sha256';
 
-    /** @var string ログイン維持時間(秒) */
+    /** @var int ログイン維持時間(秒) */
     public static $KEEP_SECOND = (60 * 60 * 24);
 
     /** @var CitrusAuthenticationProtocol 認証タイプインスタンス */
@@ -64,8 +59,8 @@ class CitrusAuthentication
 
         // 認証設定
         $authentication = [];
-        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($default_configure, 'authentication', []));
-        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($configure, 'authentication', []));
+        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
+        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
 
         // 認証設定はないが初期化する可能性がある
         if (empty($authentication) === false)
@@ -75,6 +70,7 @@ class CitrusAuthentication
                 case self::TYPE_DATABASE :
                     self::$INSTANCE = new CitrusAuthenticationDatabase();
                     break;
+                default:
             }
         }
 

@@ -21,6 +21,17 @@ use Citrus\Dmm\CitrusDmmItem;
 
 class CitrusDmm
 {
+    /** @var string API_IDのキー */
+    const API_ID_KEY = 'api_id';
+
+    /** @var string AFFILIATE_IDのキー */
+    const AFFILIATE_ID_KEY = 'affiliate_id';
+
+    /** @var string CitrusConfigureキー */
+    const CONFIGURE_KEY = 'dmm';
+
+
+
     /** @var string dmm api id */
     public static $API_ID = null;
 
@@ -45,12 +56,12 @@ class CitrusDmm
 
         // configure
         $configure = [];
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT, 'dmm', []));
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN, 'dmm', []));
+        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT, self::CONFIGURE_KEY, []));
+        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN, self::CONFIGURE_KEY, []));
 
         // ids
-        self::$API_ID       = $configure['api_id'];
-        self::$AFFILIATE_ID = $configure['affiliate_id'];
+        self::$API_ID       = $configure[self::API_ID_KEY];
+        self::$AFFILIATE_ID = $configure[self::AFFILIATE_ID_KEY];
 
         // initialize
         self::$IS_INITIALIZED = true;
@@ -161,11 +172,12 @@ class CitrusDmm
 
 
         $volume = 0;
-        if (isset($data['volume']) === true)
+        $volume_key = 'volume';
+        if (isset($data[$volume_key]) === true)
         {
-            if (strpos((string)$data['volume'], ':') !== false)
+            if (strpos((string)$data[$volume_key], ':') !== false)
             {
-                $volumes = explode(':', substr($data['volume'], 0, -3));   // 1:54:00対応
+                $volumes = explode(':', substr($data[$volume_key], 0, -3));   // 1:54:00対応
                 rsort($volumes);
                 foreach ($volumes as $ky => $vl)
                 {
