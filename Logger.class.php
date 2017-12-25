@@ -1,14 +1,7 @@
 <?php
 /**
- * Logger.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -21,32 +14,10 @@ use Citrus\Logger\CitrusLoggerType;
 
 class CitrusLogger
 {
-    /**
-     * logger type file
-     *
-     * @var string
-     */
+    /** @var string logger type file */
     const LOG_TYPE_FILE = 'file';
 
-    /**
-     * logger type database.sh
-     *
-     * @var string
-     */
-//    const LOG_TYPE_DATABASE = 'database.sh';
-
-    /**
-     * logger type smtp mail
-     *
-     * @var string
-     */
-//    const LOG_TYPE_SMTP = 'smtp';
-
-    /**
-     * logger type php syslog
-     *
-     * @var string
-     */
+    /** @var string logger type php syslog */
     const LOG_TYPE_SYSLOG = 'syslog';
 
     /** @var int log level */
@@ -66,6 +37,11 @@ class CitrusLogger
 
     /** @var int log level */
     const LOG_LEVEL_FATAL   = 5;
+
+    /** @var string CitrusConfigureキー */
+    const CONFIGURE_KEY = 'logger';
+
+
 
     /** @var int log level */
     public static $LOG_LEVEL = 0;
@@ -98,36 +74,18 @@ class CitrusLogger
 
         // configure
         $logger = [];
-        $logger = array_merge($logger, CitrusNVL::ArrayVL($default_configure, 'logger', []));
-        $logger = array_merge($logger, CitrusNVL::ArrayVL($configure, 'logger', []));
+        $logger = array_merge($logger, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
+        $logger = array_merge($logger, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
 
-// var_dump($logger, $default_configure, $configure);
         // log type select
         $type = $logger['type'];
-//        if (isset($default_configure['logger']) === true && isset($default_configure['logger']['type']) === true)
-//        {
-//            $type = $default_configure['logger']['type'];
-//        }
-//        if (isset($configure['logger']) === true && isset($configure['logger']['type']) === true)
-//        {
-//            $type = $configure['logger']['type'];
-//        }
 
         // log level
-//        $level = 'debug';
         $level = $logger['level'];
         if (empty($level) === true)
         {
             $level = 'debug';
         }
-//        if (isset($default_configure['logger']) === true && isset($default_configure['logger']['level']) === true)
-//        {
-//            $level = $default_configure['logger']['level'];
-//        }
-//        if (isset($configure['logger']) === true && isset($configure['logger']['level']) === true)
-//        {
-//            $level = $configure['logger']['level'];
-//        }
         switch ($level)
         {
             case 'trace' : self::$LOG_LEVEL = self::LOG_LEVEL_TRACE; break; // trace
@@ -137,6 +95,7 @@ class CitrusLogger
             case 'error' : self::$LOG_LEVEL = self::LOG_LEVEL_ERROR; break; // error
             case 'fatal' : self::$LOG_LEVEL = self::LOG_LEVEL_FATAL; break; // fatal
             case 'trace' : self::$LOG_LEVEL = self::LOG_LEVEL_TRACE; break; // trace
+            default:
         }
 
         // logger instance
@@ -150,13 +109,11 @@ class CitrusLogger
             case self::LOG_TYPE_SYSLOG :
                 self::$INSTANCE = new CitrusLoggerSyslog($logger);
                 break;
+            default:
         }
 
         // display
-// var_dump($logger);
-// var_dump(CitrusConfigure::$CONFIGURE_ITEM);
         self::$LOG_DISPLAY = CitrusNVL::NVL($logger['display'], false);
-
 
         // initialized
         self::$IS_INITIALIZED = true;

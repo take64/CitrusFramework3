@@ -110,10 +110,10 @@ class CitrusFormmap
             {
                 $class_name = $formmap['class'];
                 $prefix     = CitrusNVL::ArrayVL($formmap, 'prefix', '');
-                $elements   = $formmap['elements'];
+                $_elements   = $formmap['elements'];
 
                 // parse element
-                foreach ($elements as $element_id => $element)
+                foreach ($_elements as $element_id => $element)
                 {
                     $form = null;
                     switch ($element['form_type']) {
@@ -233,7 +233,7 @@ class CitrusFormmap
      *
      * @param string|null $form_id
      * @return int
-     * @throws \Exception
+     * @throws CitrusException
      */
     public function validate(string $form_id = null) : int
     {
@@ -246,7 +246,7 @@ class CitrusFormmap
             }
             else
             {
-                foreach ($this->maps as $ns_name => $ns_data)
+                foreach ($this->maps as $ns_data)
                 {
                     foreach ($ns_data as $data_id => $data)
                     {
@@ -299,21 +299,17 @@ class CitrusFormmap
         /** @var CitrusObject $object */
         $object = new $class_name();
 
+        /** @var CitrusFormmapElement[] $properties */
         $properties = $this->maps[$namespace][$form_id];
-
-        /**
-         * @var string               $ky
-         * @var CitrusFormmapElement $vl
-         */
-        foreach ($properties as $ky => $vl)
+        foreach ($properties as $one)
         {
             // object生成対象外はnullが設定されている
-            if (is_null($vl->property) === true)
+            if (is_null($one->property) === true)
             {
                 continue;
             }
-            $value = $vl->filter();
-            $object->setFromContext($vl->property, $value);
+            $value = $one->filter();
+            $object->setFromContext($one->property, $value);
         }
 
         return $object;
