@@ -162,7 +162,6 @@ class CitrusDocumentPagecode extends CitrusObject
                 $this->addStylesheet($path);
                 return;
             }
-//            CitrusLogger::debug('[%s]が存在しません。', $path);
         }
     }
 

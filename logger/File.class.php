@@ -42,7 +42,7 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
     {
         $_directory = $this->directory;
         $_filename  = $this->filename;
-        $logfile    = sprintf('%s%s-%s', $_directory, $_filename, date('Ymd', $_SERVER['REQUEST_TIME']);
+        $logfile    = sprintf('%s%s-%s', $_directory, $_filename, date('Ymd', $_SERVER['REQUEST_TIME']));
 
         $vl_dump = '';
         if (is_string($value) === true)

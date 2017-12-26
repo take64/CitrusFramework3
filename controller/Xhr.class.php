@@ -222,31 +222,6 @@ class CitrusControllerXhr
 
 
 
-//    /**
-//     * call summary record
-//     * サマリの取得
-//     *
-//     * @return  CitrusXhrResult
-//     */
-//    public function view() : CitrusXhrResult
-//    {
-//        // condition
-//        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
-//        $this->callFormmap()->bind();
-//        $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_view_id);
-//
-//        // call list
-//        $list = $this->callService()->detail($condition);
-//
-//        // modify
-//        $list->remove($this->remove_column_view);
-//        $list->null2blank();
-//
-//        return new CitrusXhrResult($list);
-//    }
-
-
-
     /**
      * call summary record
      * サマリの取得
@@ -439,20 +414,13 @@ class CitrusControllerXhr
         else
         {
             $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_toggle_id);
-            if (CitrusConfigure::$DATABSE_ROWIDREV == true)
+            if (empty($entity->getCondition()->rowid) === false && empty($entity->getCondition()->rev) === false)
             {
-                if (empty($entity->getCondition()->rowid) === false && empty($entity->getCondition()->rev) === false)
-                {
-                    $result = $this->callService()->modify($entity);
-                }
-                else
-                {
-                    $result = $this->callService()->regist($entity);
-                }
+                $result = $this->callService()->modify($entity);
             }
             else
             {
-                $result = $this->callService()->modify($entity);
+                $result = $this->callService()->regist($entity);
             }
         }
 

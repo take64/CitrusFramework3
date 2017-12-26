@@ -147,12 +147,9 @@ class CitrusDocumentRouter extends CitrusObject
         }
 
         // /で始まっている場合を考慮
-        if (count($routers) > 0)
+        if (count($routers) > 0 && empty($routers[0]) === true)
         {
-            if (empty($routers[0]) === true)
-            {
-                unset($routers[0]);
-            }
+            unset($routers[0]);
         }
 
         // 添え字振り直し

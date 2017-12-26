@@ -1,48 +1,38 @@
 <?php
 /**
- * Builder.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     .
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Query;
 
 
-use Citrus\CitrusConfigure;
 use Citrus\CitrusNVL;
 use Citrus\Database\CitrusDatabaseColumn;
-use Citrus\Database\CitrusDatabaseDSN;
-use Citrus\Sqlmap\CitrusSqlmapClient;
 use Citrus\Sqlmap\CitrusSqlmapCondition;
 use Citrus\Sqlmap\CitrusSqlmapExecutor;
 use Citrus\Sqlmap\CitrusSqlmapStatement;
 
 class CitrusQueryBuilder
 {
-    /** @var string */
+    /** query type selct */
     const QUERY_TYPE_SELECT = 'select';
 
-    /** @var string */
+    /** query type insert */
     const QUERY_TYPE_INSERT = 'insert';
 
-    /** @var string */
+    /** query type update */
     const QUERY_TYPE_UPDATE = 'update';
 
-    /** @var string */
+    /** query type delete */
     const QUERY_TYPE_DELETE = 'delete';
 
     /** @var CitrusSqlmapStatement $statement */
     public $statement = null;
 
-    /** @var array $parameter_list */
-    public $parameter_list = [];
+    /** @var array $parameters */
+    public $parameters = [];
 
     /** @var string $query_type */
     public $query_type = self::QUERY_TYPE_SELECT;
@@ -69,17 +59,17 @@ class CitrusQueryBuilder
         $select_context = CitrusNVL::EmptyVL($columns, '*', function () use ($columns) {
             return implode(', ', $columns);
         });
-//var_dump([$select_context, $condition->schema, $table_name]);
+
         // ベースクエリー
         $query = sprintf('SELECT %s FROM %s.%s', $select_context, $condition->schema, $table_name);
 
         // 検索条件,取得条件
+        $_parameters = [];
         if (is_null($condition) === false)
         {
             // 検索条件
             $properties = $condition->properties();
             $wheres = [];
-            $parameters = [];
             foreach ($properties as $ky => $vl)
             {
                 if (is_null($vl) === true)
@@ -89,7 +79,7 @@ class CitrusQueryBuilder
 
                 $bind_ky = sprintf(':%s', $ky);
                 $wheres[] = sprintf('%s = %s', $ky, $bind_ky);
-                $parameters[$bind_ky] = $vl;
+                $_parameters[$bind_ky] = $vl;
             }
             // 検索条件がある場合
             if (empty($wheres) === false)
@@ -114,19 +104,19 @@ class CitrusQueryBuilder
                 {
                     $ky = 'limit';
                     $query = sprintf('%s LIMIT :%s', $query, $ky);
-                    $parameters[$ky] = $condition->limit;
+                    $_parameters[$ky] = $condition->limit;
                 }
                 if (is_null($condition->offset) === false)
                 {
                     $ky = 'offset';
                     $query = sprintf('%s OFFSET :%s', $query, $ky);
-                    $parameters[$ky] = $condition->offset;
+                    $_parameters[$ky] = $condition->offset;
                 }
             }
         }
 
         $this->statement->query = $query;
-        $this->parameters = $parameters;
+        $this->parameters = $_parameters;
 
         return $this;
     }
@@ -153,7 +143,7 @@ class CitrusQueryBuilder
 
         // 登録情報
         $columns = [];
-        $parameters = [];
+        $_parameters = [];
         $properties = $value->properties();
         foreach ($properties as $ky => $vl)
         {
@@ -164,7 +154,7 @@ class CitrusQueryBuilder
 
             $bind_ky = sprintf(':%s', $ky);
             $columns[$ky] = $bind_ky;
-            $parameters[$bind_ky] = $vl;
+            $_parameters[$bind_ky] = $vl;
         }
 
         // クエリ
@@ -176,7 +166,7 @@ class CitrusQueryBuilder
             );
 
         $this->statement->query = $query;
-        $this->parameters = $parameters;
+        $this->parameters = $_parameters;
 
         return $this;
     }
@@ -204,7 +194,7 @@ class CitrusQueryBuilder
 
         // 登録情報
         $columns = [];
-        $parameters = [];
+        $_parameters = [];
         $properties = $value->properties();
         foreach ($properties as $ky => $vl)
         {
@@ -215,7 +205,7 @@ class CitrusQueryBuilder
 
             $bind_ky = sprintf(':%s', $ky);
             $columns[$ky] = sprintf('%s = %s', $ky, $bind_ky);
-            $parameters[$bind_ky] = $vl;
+            $_parameters[$bind_ky] = $vl;
         }
         // 登録条件
         $wheres = [];
@@ -229,7 +219,7 @@ class CitrusQueryBuilder
 
             $bind_ky = sprintf(':condition_%s', $ky);
             $wheres[$ky] = sprintf('%s = %s', $ky, $bind_ky);;
-            $parameters[$bind_ky] = $vl;
+            $_parameters[$bind_ky] = $vl;
         }
 
         // クエリ
@@ -241,7 +231,7 @@ class CitrusQueryBuilder
         );
 
         $this->statement->query = $query;
-        $this->parameters = $parameters;
+        $this->parameters = $_parameters;
 
         return $this;
     }
@@ -265,7 +255,7 @@ class CitrusQueryBuilder
 
         // 登録情報
         $wheres = [];
-        $parameters = [];
+        $_parameters = [];
         $properties = $condition->properties();
         foreach ($properties as $ky => $vl)
         {
@@ -276,7 +266,7 @@ class CitrusQueryBuilder
 
             $bind_ky = sprintf(':%s', $ky);
             $wheres[$ky] = sprintf('%s = %s', $ky, $bind_ky);
-            $parameters[$bind_ky] = $vl;
+            $_parameters[$bind_ky] = $vl;
         }
 
         // クエリ
@@ -287,7 +277,7 @@ class CitrusQueryBuilder
         );
 
         $this->statement->query = $query;
-        $this->parameters = $parameters;
+        $this->parameters = $_parameters;
 
         return $this;
     }
@@ -304,26 +294,27 @@ class CitrusQueryBuilder
         $result = null;
 
         // optimize parameters
-        $parameters = self::optimizeParameter($this->statement->query, $this->parameters);
+        $_parameters = self::optimizeParameter($this->statement->query, $this->parameters);
 
         switch ($this->query_type)
         {
             // select
             case self::QUERY_TYPE_SELECT :
-                $result = CitrusSqlmapExecutor::select($this->statement, $parameters);
+                $result = CitrusSqlmapExecutor::select($this->statement, $_parameters);
                 break;
             // insert
             case self::QUERY_TYPE_INSERT :
-                $result = CitrusSqlmapExecutor::insert($this->statement, $parameters);
+                $result = CitrusSqlmapExecutor::insert($this->statement, $_parameters);
                 break;
             // update
             case self::QUERY_TYPE_UPDATE :
-                $result = CitrusSqlmapExecutor::update($this->statement, $parameters);
+                $result = CitrusSqlmapExecutor::update($this->statement, $_parameters);
                 break;
             // delete
             case self::QUERY_TYPE_DELETE :
-                $result = CitrusSqlmapExecutor::delete($this->statement, $parameters);
+                $result = CitrusSqlmapExecutor::delete($this->statement, $_parameters);
                 break;
+            default:
         }
 
         return $result;

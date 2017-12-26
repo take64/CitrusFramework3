@@ -254,6 +254,9 @@ class CitrusFormmapElement extends CitrusObject
         // 閉じタグがあるタイプか否か
         $is_multiple_tag = in_array($tag, [ 'select' ]);
 
+        // 要素フォーマット
+        $element_format = '%s="%s"';
+
         $form_element = [];
         foreach ($elements as $ky => $vl)
         {
@@ -268,15 +271,15 @@ class CitrusFormmapElement extends CitrusObject
 
             if (is_array($vl) === true && $ky === 'class')
             {
-                $form_element[$ky] = sprintf('%s="%s"', $ky, implode(' ', $vl));
+                $form_element[$ky] = sprintf($element_format, $ky, implode(' ', $vl));
             }
             else if (is_array($vl) === true)
             {
-                $form_element[$ky] = sprintf('%s="%s"', $ky, implode(', ', $vl));
+                $form_element[$ky] = sprintf($element_format, $ky, implode(', ', $vl));
             }
             else
             {
-                $form_element[$ky] = sprintf('%s="%s"', $ky, $vl);
+                $form_element[$ky] = sprintf($element_format, $ky, $vl);
             }
         }
 
@@ -424,9 +427,9 @@ class CitrusFormmapElement extends CitrusObject
      */
     public function validate() : int
     {
+        $result = 0;
         try
         {
-            $result = 0;
             // validate require
             if ($this->_validateRequired() === false)
             {
@@ -452,12 +455,12 @@ class CitrusFormmapElement extends CitrusObject
                     $result++;
                 }
             }
-            return $result;
         }
         catch (CitrusException $e)
         {
             throw $e;
         }
+        return $result;
     }
 
 
@@ -528,12 +531,12 @@ class CitrusFormmapElement extends CitrusObject
                     }
                 }
             }
-            return true;
         }
         catch (CitrusException $e)
         {
             throw $e;
         }
+        return true;
     }
 
 
@@ -546,16 +549,14 @@ class CitrusFormmapElement extends CitrusObject
      */
     private function _validateVarType() : bool
     {
+        $result = true;
         try
         {
             // 入力がある場合のみチェックする。
             if (is_null($this->value) === true || $this->value === '')
             {
-                return true;
+                return $result;
             }
-
-            // result
-            $result = true;
 
             // message
             $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
@@ -652,12 +653,12 @@ class CitrusFormmapElement extends CitrusObject
                     $result = true;
                     break;
             }
-            return $result;
         }
         catch (CitrusException $e)
         {
             throw $e;
         }
+        return $result;
     }
 
 
@@ -1151,31 +1152,33 @@ class CitrusFormmapElement extends CitrusObject
      */
     protected function _validateMax()
     {
+        $result = true;
         try
         {
             // 入力がある場合のみチェックする。
             // null もしくは 空文字 はスルー
             if (is_null($this->value) === true || $this->value == '')
             {
-                return true;
+                return $result;
             }
             if (is_null($this->max) === false)
             {
                 // numeric
                 if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
                 {
-                    return $this->_validateNumericMax();
+                    $result = $this->_validateNumericMax();
                 }
                 else if ($this->var_type == self::VAR_TYPE_STRING)
                 {
-                    return $this->_validateLengthMax();
+                    $result = $this->_validateLengthMax();
                 }
             }
         }
-        catch (CitrusException $ee)
+        catch (CitrusException $e)
         {
-            throw $ee;
+            throw $e;
         }
+        return $result;
     }
 
 
@@ -1188,24 +1191,25 @@ class CitrusFormmapElement extends CitrusObject
      */
     protected function _validateMin()
     {
+        $result = true;
         try
         {
             // 入力がある場合のみチェックする。
             // null もしくは 空文字 はスルー
             if (is_null($this->value) === true || $this->value == '')
             {
-                return true;
+                return $result;
             }
             if (is_null($this->min) === false)
             {
                 // numeric
                 if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
                 {
-                    return $this->_validateNumericMin();
+                    $result = $this->_validateNumericMin();
                 }
                 else if ($this->var_type === self::VAR_TYPE_STRING)
                 {
-                    return $this->_validateLengthMin();
+                    $result = $this->_validateLengthMin();
                 }
             }
         }
@@ -1213,7 +1217,7 @@ class CitrusFormmapElement extends CitrusObject
         {
             throw $e;
         }
-        return false;
+        return $result;
     }
 
 

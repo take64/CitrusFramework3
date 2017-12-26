@@ -1,21 +1,13 @@
 <?php
 /**
- * Client.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Sqlmap
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
 
 
-use Citrus\Citrus;
 use Citrus\CitrusConfigure;
 use Citrus\Database\CitrusDatabaseColumn;
 
@@ -32,6 +24,7 @@ class CitrusSqlmapClient
 
     /** @var bool message flag */
     private $flg_message = true;
+
 
 
     /**
