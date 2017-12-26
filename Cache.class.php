@@ -1,14 +1,7 @@
 <?php
 /**
- * Cache.class.php.
- * 2017/09/16
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -28,6 +21,8 @@ class CitrusCache
     /** @var string cache engine memcached */
     const ENGINE_MEMCACHED = 'memcached';
 
+    /** @var string CitrusConfigureキー */
+    const CONFIGURE_KEY = 'cache';
 
 
 
@@ -51,7 +46,6 @@ class CitrusCache
         if (self::$IS_INITIALIZED === true)
         {
             return ;
-//            return self::$INSTANCE;?
         }
 
         // configure auto load
@@ -60,8 +54,8 @@ class CitrusCache
 
         // configure
         $cache = [];
-        $cache = array_merge($cache, CitrusNVL::ArrayVL($default_configure, 'cache', []));
-        $cache = array_merge($cache, CitrusNVL::ArrayVL($configure, 'cache', []));
+        $cache = array_merge($cache, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
+        $cache = array_merge($cache, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
 
         // configure empty
         if (empty($cache) === true)
@@ -90,6 +84,8 @@ class CitrusCache
                 self::$INSTANCE = new CitrusCacheMemcached($prefix, $expire);
                 self::$INSTANCE->connect($cache['host'], $cache['port']);
                 break;
+
+            default:
         }
 
         // initialized

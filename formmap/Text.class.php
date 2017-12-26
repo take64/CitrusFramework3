@@ -1,16 +1,8 @@
 <?php
 /**
- * Text.class.php.
- * 2017/08/06
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Formmap
  * @license     http://www.citrus.tk/
- * @
  */
 
 namespace Citrus\Formmap;
@@ -70,6 +62,7 @@ class CitrusFormmapText extends CitrusFormmapElement
                 case CitrusFormmapElement::VAR_TYPE_DATE :
                     $value = date('Y-m-d', strtotime($this->default));
                     break;
+                default:
             }
         }
         return $value;

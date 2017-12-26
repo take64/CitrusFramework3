@@ -1,14 +1,7 @@
 <?php
 /**
- * Router.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Document
  * @license     http://www.citrus.tk/
  */
 
@@ -21,17 +14,23 @@ use Citrus\Useragent\CitrusUseragentDevice;
 
 class CitrusDocumentRouter extends CitrusObject
 {
-    /** @var string */
-    CONST ROUTE_DEFAULT = 'default';
+    /** CitrusConfigureキー */
+    const CONFIGURE_DEVICE_KEY = 'device';
+
+    /** CitrusConfigureキー */
+    const CONFIGURE_ROUTING_KEY = 'routing';
 
     /** @var string */
-    CONST ROUTE_LOGIN = 'login';
+    const ROUTE_DEFAULT = 'default';
 
     /** @var string */
-    CONST ROUTE_ERROR404 = 'error404';
+    const ROUTE_LOGIN = 'login';
 
     /** @var string */
-    CONST ROUTE_ERROR503 = 'error503';
+    const ROUTE_ERROR404 = 'error404';
+
+    /** @var string */
+    const ROUTE_ERROR503 = 'error503';
 
     /** @var string */
     public $device;
@@ -75,8 +74,8 @@ class CitrusDocumentRouter extends CitrusObject
 
         // デバイス設定
         $devices = [];
-        $devices = array_merge($devices, CitrusNVL::ArrayVL($default_configure, 'device', []));
-        $devices = array_merge($devices, CitrusNVL::ArrayVL($configure, 'device', []));
+        $devices = array_merge($devices, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_DEVICE_KEY, []));
+        $devices = array_merge($devices, CitrusNVL::ArrayVL($configure, self::CONFIGURE_DEVICE_KEY, []));
 
         // デバイスルーティング設定
         foreach ($device_list as $one)
@@ -89,8 +88,8 @@ class CitrusDocumentRouter extends CitrusObject
 
         // アクセス設定
         $accesses = [];
-        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($default_configure, 'routing', []));
-        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($configure, 'routing', []));
+        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_ROUTING_KEY, []));
+        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($configure, self::CONFIGURE_ROUTING_KEY, []));
         self::$ACCESS_ROUTING = $accesses;
 
         // initialized
@@ -148,12 +147,9 @@ class CitrusDocumentRouter extends CitrusObject
         }
 
         // /で始まっている場合を考慮
-        if (count($routers) > 0)
+        if (count($routers) > 0 && empty($routers[0]) === true)
         {
-            if (empty($routers[0]) === true)
-            {
-                unset($routers[0]);
-            }
+            unset($routers[0]);
         }
 
         // 添え字振り直し

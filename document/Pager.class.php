@@ -1,14 +1,7 @@
 <?php
 /**
- * Pager.class.php.
- * 2017/08/25
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Document
  * @license     http://www.citrus.tk/
  */
 
@@ -83,53 +76,51 @@ class CitrusDocumentPager
     private function generate()
     {
         // variables
-        $current    = $this->current;
-        $last       = intval(ceil($this->total / $this->limit));
-        $range      = ($this->range > $last ? $last : $this->range);
+        $_current    = $this->current;
+        $_last       = intval(ceil($this->total / $this->limit));
+        $_range      = ($this->range > $_last ? $_last : $this->range);
 
-        if ($current === 1)
+        if ($_current === 1)
         {
             $range_from = 1;
-            $range_to   = ($range > $last ? $last : $range);
+            $range_to   = ($_range > $_last ? $_last : $_range);
         }
-        else if ($current === $last)
+        else if ($_current === $_last)
         {
-            $range_from = ($range > $last ? 1 : $last - $range + 1);
-            $range_to   = $last;
+            $range_from = ($_range > $_last ? 1 : $_last - $_range + 1);
+            $range_to   = $_last;
         }
         else
         {
-            $range_prev = intval(floor(($range - 1) / 2));
-            $range_next = intval(ceil(($range - 1) / 2));
-            $range_from = $current - $range_prev;
+            $range_prev = intval(floor(($_range - 1) / 2));
+            $range_next = intval(ceil(($_range - 1) / 2));
+            $range_from = $_current - $range_prev;
             if ($range_from < 1)
             {
-//                $range_from = 1;
-                $range_prev = $current - 1;
-                $range_next = $range - $range_prev - 1;
+                $range_prev = $_current - 1;
+                $range_next = $_range - $range_prev - 1;
             }
 
-            $range_to   = $current + $range_next;
-            if ($range_to > $last)
+            $range_to   = $_current + $range_next;
+            if ($range_to > $_last)
             {
-//                $range_to   = $last;
-                $range_next = $last - $current;
-                $range_prev = $range - $range_next - 1;
+                $range_next = $_last - $_current;
+                $range_prev = $_range - $range_next - 1;
             }
 
-            $range_from = $current - $range_prev;
-            $range_to   = $current + $range_next;
+            $range_from = $_current - $range_prev;
+            $range_to   = $_current + $range_next;
         }
 
 
         // range
-        $this->range = intval($range);
+        $this->range = intval($_range);
 
         // first page
-        $this->first = ($current <= 1 ? null : 1);
+        $this->first = ($_current <= 1 ? null : 1);
 
         // prev page
-        $this->prev = ($current <= 1 ? null : $current - 1);
+        $this->prev = ($_current <= 1 ? null : $_current - 1);
 
         // view
         $this->view = array();
@@ -155,16 +146,16 @@ class CitrusDocumentPager
         else
         {
             // next page
-            $this->next = ($last == $current ? null : $current + 1);
+            $this->next = ($_last == $_current ? null : $_current + 1);
 
             // last page
-            $this->last = ($last == $current ? null : $last);
+            $this->last = ($_last == $_current ? null : $_last);
 
             // view from
-            $this->view_from = $this->limit * ($current - 1) + 1;
+            $this->view_from = $this->limit * ($_current - 1) + 1;
 
             // view to
-            $this->view_to = ($last == $current ? $this->total : ($this->limit * $current));
+            $this->view_to = ($_last == $_current ? $this->total : ($this->limit * $_current));
         }
     }
 }

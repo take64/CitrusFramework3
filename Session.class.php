@@ -84,7 +84,6 @@ class CitrusSession extends CitrusObject
         if ($use_ticket === true)
         {
             // get ticket
-//            $citrusTicketKey = $_REQUEST['ctk'];
             $citrus_ticket_key = CitrusNVL::ArrayVL($_REQUEST, 'ctk', '');
             if (empty($citrus_ticket_key) === true)
             {
@@ -111,21 +110,6 @@ class CitrusSession extends CitrusObject
         self::$router   = CitrusDocumentRouter::factory($_REQUEST);
 
         session_regenerate_id(true);
-
-//        if ($use_ticket)
-//        {
-            // disconnect session
-//            session_destroy();
-//
-//            // create session id
-//            self::$sessionId = md5(uniqid(rand()));
-//
-//            // sessing session id
-//            session_id(self::$sessionId);
-//
-//            // session start
-//            session_start();
-//        }
     }
 
 

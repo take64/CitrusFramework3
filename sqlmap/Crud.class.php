@@ -1,14 +1,7 @@
 <?php
 /**
- * Crud.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Sqlmap
  * @license     http://www.citrus.tk/
  */
 
@@ -548,12 +541,6 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
             // validate
             if ($this->isValidate() === true)
             {
-//                // exist check
-//                if ($this->exist($entity->getCondition()) === false)
-//                {
-//                    throw new CitrusSqlmapException(sprintf('編集対象の%sは登録されていないか、他ユーザに更新されています。', $message));
-//                }
-
                 // duplicate check
                 if ($this->exist($entity->getCondition(), $entity->toCondition()) === true)
                 {
@@ -666,6 +653,8 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     {
         return '';
     }
+
+
 
     /**
      * get name

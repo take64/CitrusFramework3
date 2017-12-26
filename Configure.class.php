@@ -21,6 +21,10 @@ use Citrus\Document\CitrusDocumentRouter;
 
 class CitrusConfigure
 {
+    /** @var string CitrusConfigureのデフォルトキー */
+    const CONFIGURE_DEFAULT_KEY = 'default';
+
+
     /** @var CitrusConfigureItem */
     public static $CONFIGURE_ITEM = null;
 
@@ -173,10 +177,10 @@ class CitrusConfigure
         $configures = include($path_configure);
 
         $default_configure = [];
-        if (array_key_exists('default', $configures) === true)
+        if (array_key_exists(self::CONFIGURE_DEFAULT_KEY, $configures) === true)
         {
-            $default_configure = $configures['default'];
-            unset($configures['default']);
+            $default_configure = $configures[self::CONFIGURE_DEFAULT_KEY];
+            unset($configures[self::CONFIGURE_DEFAULT_KEY]);
 
             self::$CONFIGURE_PLAIN_DEFAULT = $default_configure;
         }

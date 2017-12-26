@@ -1,14 +1,7 @@
 <?php
 /**
- * Parser.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Sqlmap
  * @license     http://www.citrus.tk/
  */
 
@@ -16,7 +9,6 @@ namespace Citrus\Sqlmap;
 
 
 use Citrus\CitrusConfigure;
-use Citrus\CitrusLogger;
 use Citrus\Database\CitrusDatabaseColumn;
 use DOMDocument;
 use DOMElement;
@@ -34,7 +26,7 @@ class CitrusSqlmapParser
     /** @var CitrusSqlmapStatement statement */
     public $statement;
 
-    /**@var CitrusDatabaseColumn parameter */
+    /** @var CitrusDatabaseColumn parameter */
     public $parameter;
 
     /** @var array parameters */
@@ -113,9 +105,9 @@ class CitrusSqlmapParser
         {
             preg_match_all('/#[a-zA-Z0-9_\-\>\.]*#/', $_query, $matches, PREG_PATTERN_ORDER);
 
-            foreach ($matches[0] as $ky => $vl)
+            foreach ($matches[0] as $one)
             {
-                $match_code     = str_replace('#', '', $vl);
+                $match_code     = str_replace('#', '', $one);
                 $replace_code   = ':'.str_replace('.', '__', $match_code);
                 $_parameter_list[$replace_code] = $this->callProperty($this->parameter, $match_code);
                 // query in pattern
@@ -130,7 +122,7 @@ class CitrusSqlmapParser
                     unset($_parameter_list[$replace_code]);
                     $replace_code = implode(', ', $array_replace_codes);
                 }
-                $_query = str_replace($vl, $replace_code, $_query);
+                $_query = str_replace($one, $replace_code, $_query);
             }
         }
 
@@ -138,10 +130,10 @@ class CitrusSqlmapParser
         if (strrpos($_query, '$') !== false)
         {
             preg_match_all('/\$[a-zA-Z0-9_\-\>]*\$/', $_query, $matches, PREG_PATTERN_ORDER);
-            foreach ($matches[0] as $ky => $vl)
+            foreach ($matches[0] as $one)
             {
-                $match_code     = str_replace('$', '', $vl);
-                $_query = str_replace($vl, $this->callProperty($this->parameter, $match_code), $_query);
+                $match_code     = str_replace('$', '', $one);
+                $_query = str_replace($one, $this->callProperty($this->parameter, $match_code), $_query);
             }
         }
         $_query = strtr($_query, ["\r"=>' ', "\n"=>' ', "\t"=>' ', '    ' => ' ', '  ' => ' ']);
@@ -524,9 +516,7 @@ class CitrusSqlmapParser
     protected function _include(DOMElement $element) : CitrusSqlmapDynamic
     {
         $dynamic = new CitrusSqlmapDynamic($element->attributes);
-//var_dump(simplexml_import_dom($element));
         $include = new CitrusSqlmapParser();
-//var_dump([$this->_path, $this->_transaction, $dynamic->id, $this->_parameter]);
         $include->parse($this->_path, $this->_transaction, $dynamic->refid, $this->_parameter);
         $dynamic->query = $include->statement->query;
         $this->parameter_list += $include->parameter_list;

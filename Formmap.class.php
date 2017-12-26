@@ -88,34 +88,6 @@ class CitrusFormmap
             return ;
         }
 
-//        // CitrusCache Use possible
-//        if (self::$is_cache === true)
-//        {
-//            $cache_maps_data        = CitrusCache::get(CitrusConfigure::$APPLICATION_CD.':formMap:maps:'.$namespace);
-//            $cache_maps_result      = CitrusCache::getStatus();
-//
-//            $cache_classes_data     = CitrusCache::get(CitrusConfigure::$APPLICATION_CD.':formMap:classes:'.$namespace);
-//            $cache_classes_result   = CitrusCache::getStatus();
-//
-//            if ($cache_maps_result    === CitrusCache::STATUS_SUCCESS
-//                && $cache_classes_result === CitrusCache::STATUS_SUCCESS
-//                && $cache_maps_data    !== null
-//                && $cache_classes_data !== null)
-//            {
-//                foreach ($cache_maps_data as $cache_ns_name => $cache_ns_data)
-//                {
-//                    foreach ($cache_ns_data as $cache_form_id => $cache_form_data)
-//                    {
-//                        $this->elements[$cache_form_id]                         =  $cache_form_data;
-//                        $this->maps[$namespace][$cache_ns_name][$cache_form_id] =& $this->elements[$cache_form_id];
-//                    }
-//                }
-//
-//                $this->classes[$namespace] = $cache_classes_data;
-//                return ;
-//            }
-//        }
-
         // parse xml formmap
 
         // file exists xmls？
@@ -138,10 +110,10 @@ class CitrusFormmap
             {
                 $class_name = $formmap['class'];
                 $prefix     = CitrusNVL::ArrayVL($formmap, 'prefix', '');
-                $elements   = $formmap['elements'];
+                $_elements   = $formmap['elements'];
 
                 // parse element
-                foreach ($elements as $element_id => $element)
+                foreach ($_elements as $element_id => $element)
                 {
                     $form = null;
                     switch ($element['form_type']) {
@@ -168,139 +140,6 @@ class CitrusFormmap
                 
             }
         }
-
-
-
-
-
-
-
-
-
-//        // initialize domdocument
-//        $dom = new DOMDocument();
-//        $dom->load(realpath($path));
-//        $xpath = new DOMXPath($dom);
-//        $formMapNodeList = $xpath->query("/formMap[@namespace='".$namespace."']/forms");
-//        $formMapNodeLength = $formMapNodeList->length;
-//
-//
-//        for($i = 0; $i < $formMapNodeLength; $i++)
-//        {
-//            $formElement    = $formMapNodeList->item($i);
-//
-//            $form_id        = CitrusXmlUtility::getNamedItemValue($formElement->attributes, 'id');
-//            $form_class     = CitrusXmlUtility::getNamedItemValue($formElement->attributes, 'class');
-//            $form_prefix    = CitrusXmlUtility::getNamedItemValue($formElement->attributes, 'prefix');
-//
-//            $this->classes[$namespace][$form_id] = $form_class;
-//
-//            $formNodeList   = $formElement->childNodes;
-//            $formNodeLength = $formNodeList->length;
-//
-//            for($j = 0; $j < $formNodeLength; $j++)
-//            {
-//                $item = $formNodeList->item($j);
-//
-//                if ($item->nodeName == '#text'
-//                    || $item->nodeName == '#comment')
-//                {
-//                    continue;
-//                }
-//
-//                $form = null;
-//                switch($item->tagName)
-//                {
-//                    case CitrusFormElement::FORM_TYPE_BUTTON    : $form = new CitrusFormButton();   break;
-//                    case CitrusFormElement::FORM_TYPE_CHECKBOX  : $form = new CitrusFormCheckbox(); break;
-//                    case CitrusFormElement::FORM_TYPE_FILE      : $form = new CitrusFormFile();     break;
-//                    case CitrusFormElement::FORM_TYPE_HIDDEN    : $form = new CitrusFormHidden();   break;
-//                    case CitrusFormElement::FORM_TYPE_PASSWORD  : $form = new CitrusFormPassword(); break;
-////                    case CitrusFormElement::FORM_TYPE_RADIO     : $form = new CitrusForm();   break;
-//                    case CitrusFormElement::FORM_TYPE_SELECT    : $form = new CitrusFormSelect();   break;
-//                    case CitrusFormElement::FORM_TYPE_SUBMIT    : $form = new CitrusFormSubmit();   break;
-//                    case CitrusFormElement::FORM_TYPE_IMAGE     : $form = new CitrusFormImage();    break;
-//                    case CitrusFormElement::FORM_TYPE_RADIO     : $form = new CitrusFormRadio();    break;
-//                    case CitrusFormElement::FORM_TYPE_TEXT      : $form = new CitrusFormText();     break;
-//                    case CitrusFormElement::FORM_TYPE_TEXTAREA  : $form = new CitrusFormTextarea(); break;
-//                    default                                     : $form = new CitrusFormElement();
-//                }
-//                if ($item->hasAttribute('var_type')  === true) { $form->var_type     = $item->getAttribute('var_type');  }
-//                if ($item->hasAttribute('id')        === true) { $form->id           = $form_prefix.$item->getAttribute('id');        }
-//                if ($item->hasAttribute('name')      === true) { $form->name         = $item->getAttribute('name');      }
-//                if ($item->hasAttribute('style')     === true) { $form->style        = $item->getAttribute('style');     }
-//                if ($item->hasAttribute('class')     === true) { $form->class        = $item->getAttribute('class');     }
-//                if ($item->hasAttribute('value')     === true) { $form->value        = $item->getAttribute('value');     }
-//                if ($item->hasAttribute('max')       === true) { $form->max          = $item->getAttribute('max');       }
-//                if ($item->hasAttribute('min')       === true) { $form->min          = $item->getAttribute('min');       }
-//                if ($item->hasAttribute('filter')    === true) { $form->filter       = $item->getAttribute('filter');    }
-//                if ($item->hasAttribute('default')   === true) { $form->default      = $item->getAttribute('default');   }
-//                if ($item->hasAttribute('accesskey') === true) { $form->accesskey    = $item->getAttribute('accesskey'); }
-//                if ($item->hasAttribute('size')      === true) { $form->size         = $item->getAttribute('size');      }
-//                if ($item->hasAttribute('src')       === true) { $form->src          = $item->getAttribute('src');       }
-//                if ($item->hasAttribute('less')      === true) { $form->less         = $item->getAttribute('less');      }
-//                if ($item->hasAttribute('greater')   === true) { $form->greater      = $item->getAttribute('greater');   }
-//                if (empty($form_prefix)              === false){ $form->prefix       = $form_prefix;                     }
-//                if ($item->hasAttribute('wap_format')=== true) { $form->wap_format   = $item->getAttribute('wap_format');}
-//                if ($item->hasAttribute('empty')     === true) {
-//                    if (strtolower($item->getAttribute('empty')) == 'true') {
-//                        $form->options[''] = '';
-//                    } else {
-//                        $form->options['' . $item->getAttribute('empty')] = '';
-//                    }
-//                }
-//                if ($item->hasAttribute('options')   === true) {
-//                    $form_options = $item->getAttribute('options');
-//                    if ($form_options == 'empty') {
-//                        $form->options[''] = '';
-//                    } else {
-//                        $options = CitrusDefinition::call($form_options);
-//                        if (empty($options) === false) {
-//                            foreach ($options->definitionDetails as $one) {
-//                                $form->options[$one->definition_detail_cd] = $one->definition_detail_value;
-//                            }
-//                        } else {
-//                            $form->options = $form_options;
-//                        }
-//                    }
-//                }
-//                if ($item->hasAttribute('property')  === true) {
-//                    $property = $item->getAttribute('property');
-//                    if (empty($property) === false) {
-//                        // $form->property = $form_class.'.'.$item->getAttribute('property');
-//                        $form->property = $item->getAttribute('property');
-//                    } else {
-//                        $form->property = '';
-//                    }
-//                }
-//                if ($item->hasAttribute('required')  === true) {
-//                    if (strtolower($item->getAttribute('required')) == 'true') {
-//                        $form->required = true;
-//                    } else   {
-//                        $form->required = false;
-//                    }
-//                } else {
-//                    $form->required = false;
-//                }
-//
-//                // 携帯用utf8処理で文字列max指定がある場合はmax値を3倍にする
-//                if ($form->var_type == 'string' && empty($form->max) === false && $form->filter == 'utf8')
-//                {
-//                    $form->max = ($form->max * 3);
-//                }
-//
-//                $element_id = $form->id;
-//                $this->elements[$element_id]                    =  $form;
-//                $this->maps[$namespace][$form_id][$element_id]  =& $this->elements[$element_id];
-//            }
-//        }
-//
-//        // CitrusCache Use possible
-//        if (self::$is_cache === true)
-//        {
-//            CitrusCache::set(CitrusConfigure::$APPLICATION_CD.':formMap:maps:'.$namespace, $this->maps[$namespace]);
-//            CitrusCache::set(CitrusConfigure::$APPLICATION_CD.':formMap:classes:'.$namespace, $this->classes[$namespace]);
-//        }
     }
 
 
@@ -386,49 +225,15 @@ class CitrusFormmap
             }
         }
     }
-//
-//    /** @var string message tag */
-//    const MESSAGE_TAG = 'formmap';
-
-//
-//    /** @var bool validate null is require safe */
-//    public $validate_null_safe = false;
-//
-//
-//
-//
-//    /**
-//     * construct
-//     *
-//     * @access  public
-//     * @since   0.0.4.8 2012.03.19
-//     * @version 0.0.4.8 2012.03.19
-//     * @param   string  $path
-//     */
-//    public function __construct($path = null)
-//    {
-//        // formmap path
-//        $this->load($path);
-//    }
-//
-//
 
 
-    /**
-     * validate
-     *
-     * @access  public
-     * @since   0.0.4.8 2012.03.19
-     * @version 0.0.4.8 2012.03.19
-     * @param   string  $form_id
-     */
 
     /**
      * validate
      *
      * @param string|null $form_id
      * @return int
-     * @throws \Exception
+     * @throws CitrusException
      */
     public function validate(string $form_id = null) : int
     {
@@ -441,7 +246,7 @@ class CitrusFormmap
             }
             else
             {
-                foreach ($this->maps as $ns_name => $ns_data)
+                foreach ($this->maps as $ns_data)
                 {
                     foreach ($ns_data as $data_id => $data)
                     {
@@ -494,22 +299,17 @@ class CitrusFormmap
         /** @var CitrusObject $object */
         $object = new $class_name();
 
+        /** @var CitrusFormmapElement[] $properties */
         $properties = $this->maps[$namespace][$form_id];
-
-//var_dump($properties);
-        /**
-         * @var string               $ky
-         * @var CitrusFormmapElement $vl
-         */
-        foreach ($properties as $ky => $vl)
+        foreach ($properties as $one)
         {
             // object生成対象外はnullが設定されている
-            if (is_null($vl->property) === true)
+            if (is_null($one->property) === true)
             {
                 continue;
             }
-            $value = $vl->filter();
-            $object->setFromContext($vl->property, $value);
+            $value = $one->filter();
+            $object->setFromContext($one->property, $value);
         }
 
         return $object;
@@ -519,46 +319,4 @@ class CitrusFormmap
     {
         return $this->elements[$name];
     }
-//
-//    /**
-//     * getter
-//     *
-//     * @access  public
-//     * @since   0.0.4.8 2012.03.19
-//     * @version 0.0.4.8 2012.03.19
-//     * @param   string  $name
-//     * @return  CitrusFormElement
-//     */
-//    public function get($name)
-//    {
-//        return $this->elements[$name];
-//    }
-//
-//    /**
-//     * setter
-//     *
-//     * @access  public
-//     * @since   0.0.4.8 2012.03.19
-//     * @version 0.0.4.8 2012.03.19
-//     * @param   string  $name
-//     * @param   string  $value
-//     */
-//    public function set($name, $object)
-//    {
-//        $this->elements[$name] = $object;
-//    }
-//
-//    /**
-//     * caller
-//     *
-//     * @access  public
-//     * @since   0.0.4.8 2012.03.19
-//     * @version 0.0.4.8 2012.03.19
-//     * @param   string  $name
-//     * @return  mixed
-//     */
-//    public function call($name)
-//    {
-//        return $this->elements[$name]->value;
-//    }
 }

@@ -52,8 +52,6 @@ class CitrusGateway
             // web pages
             case self::TYPE_CONTROLLER :
                 // セッション処理開始
-//                CitrusSession::factory(CitrusConfigure::$SECURITY_TICKET_ENABLE);
-                // TODO:
                 CitrusSession::factory(true);
                 self::controller();
                 break;
@@ -127,7 +125,8 @@ class CitrusGateway
             // 頭文字だけ大文字で後は小文字のAPPLICATION_CD
             $ucfirst_application_id = ucfirst(strtolower(CitrusConfigure::$CONFIGURE_ITEM->application->id));
 
-            $controller_file_prefix = array_pop($ucfirst_document_codes);
+            // 末尾を取り除く
+            array_pop($ucfirst_document_codes);
             $controller_namespace = '\\' . $ucfirst_application_id . '\\Controller\\' . $ucfirst_device_code;
             foreach ($ucfirst_document_codes as $one)
             {
@@ -192,19 +191,5 @@ class CitrusGateway
         {
             CitrusLogger::debug($e);
         }
-//        catch (CitrusServiceException $se)
-//        {
-//            CitrusLogger::debug($se);
-//            $se->_commit();
-//        }
-//        catch (CitrusErrorException $ee)
-//        {
-//            CitrusLogger::debug($ee);
-//            $ee->_commit();
-//        }
-//        catch (Exception $e)
-//        {
-//            CitrusLogger::debug($e);
-//        }
     }
 }

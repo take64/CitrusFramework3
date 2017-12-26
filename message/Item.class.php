@@ -1,14 +1,7 @@
 <?php
 /**
- * Item.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Message
  * @license     http://www.citrus.tk/
  */
 
@@ -19,21 +12,19 @@ use Citrus\Citrus;
 
 class CitrusMessageItem
 {
-    /** @var string message type */
+    /** message type */
     const TYPE_MESSAGE  = 'message';
 
-    /** @var string message type */
+    /** message type */
     const TYPE_SUCCESS  = 'success';
 
-    /** @var string message type */
+    /** message type */
     const TYPE_WARNING  = 'warning';
 
-    /** @var string message type */
+    /** message type */
     const TYPE_ERROR    = 'error';
 
-
-
-    /** @var string message type */
+    /** message type */
     const TAG_COMMON    = 'common';
 
 
@@ -52,7 +43,6 @@ class CitrusMessageItem
 
     /**  @var string message tag */
     public $tag;
-
 
 
 
@@ -96,18 +86,11 @@ class CitrusMessageItem
         {
             switch($type)
             {
-                case self::TYPE_MESSAGE :
-                    $name = 'メッセージ';
-                    break;
-                case self::TYPE_WARNING :
-                    $name = '注意';
-                    break;
-                case self::TYPE_SUCCESS :
-                    $name = '成功';
-                    break;
-                case self::TYPE_ERROR   :
-                    $name = 'エラー';
-                    break;
+                case self::TYPE_MESSAGE : $name = 'メッセージ'; break;
+                case self::TYPE_WARNING : $name = '注意';      break;
+                case self::TYPE_SUCCESS : $name = '成功';      break;
+                case self::TYPE_ERROR   : $name = 'エラー';    break;
+                default:
             }
         }
         if (is_array($description) === true)

@@ -1,15 +1,7 @@
 <?php
 /**
- * Memcached.class.php.
- * 2017/09/19
- *
- * PHP version 7
- * phpredis version 3.1.3
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Cache
  * @license     http://www.citrus.tk/
  */
 
@@ -30,13 +22,11 @@ class CitrusCacheMemcached extends CitrusCacheDeamon
      * @param int $port
      * @return mixed
      */
-    public function connect(string $host, int $port = 6379)
+    public function connect(string $host, int $port = 11211)
     {
-        // TODO addServerでhostとportを渡すのか、constructorで渡すのか悩む
         $this->handler = new Memcached();
         $this->handler->addServer($host, $port);
     }
-
 
 
 
@@ -126,8 +116,8 @@ class CitrusCacheMemcached extends CitrusCacheDeamon
      */
     public function exists($key): bool
     {
-        // 一旦キー取得(キーがあるかどうかで判断)
-        $result = $this->call($key);
+        // 一旦キー取得(キーがあるかどうかで判断、取得するとステータスが発生する)
+        $this->call($key);
 
         return Memcached::RES_NOTFOUND !== $this->handler->getResultCode();
     }
@@ -162,8 +152,4 @@ class CitrusCacheMemcached extends CitrusCacheDeamon
 
         return $value;
     }
-
-
-
-
 }

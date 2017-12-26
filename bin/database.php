@@ -65,7 +65,7 @@ foreach (CitrusConfigure::$CONFIGURE_ITEMS as $one)
 // 実行
 switch ($type)
 {
-    // Entity生成処理
+    // Property生成処理
     case CitrusDatabaseGenerate::PROPERTY :
         $propertyname = $settings['--property-name'];
         CitrusDatabaseGenerate::property($dsns, $tablename, $propertyname);
@@ -80,6 +80,7 @@ switch ($type)
         $conditionname = $settings['--condition-name'];
         CitrusDatabaseGenerate::condition($tablename, $conditionname);
         break;
+    default:
 }
 
 
