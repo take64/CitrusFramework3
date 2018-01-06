@@ -1,14 +1,7 @@
 <?php
 /**
- * Generate.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Database
  * @license     http://www.citrus.tk/
  */
 
@@ -219,6 +212,11 @@ EOT;
                 else if (strpos($property_value, 'nextval') !== false)
                 {
                     $property_value = 'null';
+                }
+                // 空文字置換
+                else if (strpos($property_value, '\'\'::') !== false)
+                {
+                    $property_value = '\'\'';
                 }
 
 
