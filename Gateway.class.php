@@ -123,7 +123,7 @@ class CitrusGateway
             $ucfirst_device_code  = ucfirst(strtolower($device_code));
 
             // 頭文字だけ大文字で後は小文字のAPPLICATION_CD
-            $ucfirst_application_id = ucfirst(strtolower(CitrusConfigure::$CONFIGURE_ITEM->application->id));
+            $ucfirst_application_id = ucfirst(CitrusConfigure::$CONFIGURE_ITEM->application->id);
 
             // 末尾を取り除く
             array_pop($ucfirst_document_codes);
