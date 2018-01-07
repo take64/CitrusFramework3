@@ -255,7 +255,7 @@ class CitrusFormmapElement extends CitrusObject
     public static function generateTag(string $tag, array $elements = null, $options = null) : string
     {
         // 閉じタグがあるタイプか否か
-        $is_multiple_tag = in_array($tag, [ 'select' ]);
+        $is_multiple_tag = in_array($tag, [ 'select', 'button' ]);
 
         // 要素フォーマット
         $element_format = '%s="%s"';
