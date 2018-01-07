@@ -15,6 +15,7 @@
 namespace Citrus;
 
 
+use Citrus\Formmap\CitrusFormmapButton;
 use Citrus\Formmap\CitrusFormmapElement;
 use Citrus\Formmap\CitrusFormmapHidden;
 use Citrus\Formmap\CitrusFormmapPassword;
@@ -122,6 +123,7 @@ class CitrusFormmap
                         case CitrusFormmapElement::FORM_TYPE_PASSWD : $form = new CitrusFormmapPassword($element);  break;
                         case CitrusFormmapElement::FORM_TYPE_SELECT : $form = new CitrusFormmapSelect($element);    break;
                         case CitrusFormmapElement::FORM_TYPE_SUBMIT : $form = new CitrusFormmapSubmit($element);    break;
+                        case CitrusFormmapElement::FORM_TYPE_BUTTON : $form = new CitrusFormmapButton($element);    break;
                         case CitrusFormmapElement::FORM_TYPE_TEXT   : $form = new CitrusFormmapText($element);      break;
                         case CitrusFormmapElement::FORM_TYPE_SEARCH : $form = new CitrusFormmapSearch($element);    break;
                         default                                     :                                               break;
