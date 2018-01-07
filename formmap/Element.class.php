@@ -128,6 +128,9 @@ class CitrusFormmapElement extends CitrusObject
     /** form type submit */
     const FORM_TYPE_SUBMIT = 'submit';
 
+    /** form type button */
+    const FORM_TYPE_BUTTON = 'button';
+
 
     /** @var string form id */
     public $id;
