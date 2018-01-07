@@ -30,6 +30,6 @@ class CitrusFormmapButton extends CitrusFormmapElement
         ];
         $elements = self::appendOption($elements, $appends);
 
-        return self::generateTag('button', $elements);
+        return self::generateTag('button', $elements, $this->name);
     }
 }
