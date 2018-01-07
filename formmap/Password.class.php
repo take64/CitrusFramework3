@@ -31,7 +31,7 @@ class CitrusFormmapPassword extends CitrusFormmapElement
         $elements = [
             'type'      => 'password',
             'id'        => $this->callPrefixedId(),
-            'name'      => $this->id,
+            'name'      => $this->callPrefixedId(),
             'value'     => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),
             'class'     => $this->class,
             'style'     => $this->style,

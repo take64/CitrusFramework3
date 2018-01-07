@@ -23,7 +23,7 @@ class CitrusFormmapSearch extends CitrusFormmapElement
         $elements = [
             'type'          => 'search',
             'id'            => $this->callPrefixedId(),
-            'name'          => $this->id,
+            'name'          => $this->callPrefixedId(),
             'value'         => CitrusNVL::coalesceNull($this->value, $this->callValue(), $this->callDefault()),
             'default'       => $this->callDefault(),
             'class'         => $this->class,

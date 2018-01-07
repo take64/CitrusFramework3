@@ -22,7 +22,7 @@ class CitrusFormmapButton extends CitrusFormmapElement
         $elements = [
             'type'      => 'button',
             'id'        => $this->callPrefixedId(),
-            'name'      => $this->id,
+            'name'      => $this->callPrefixedId(),
             'value'     => $this->name,
             'class'     => $this->class,
             'style'     => $this->style,
