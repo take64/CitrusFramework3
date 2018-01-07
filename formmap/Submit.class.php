@@ -29,7 +29,7 @@ class CitrusFormmapSubmit extends CitrusFormmapElement
         $elements = [
             'type'      => 'submit',
             'id'        => $this->callPrefixedId(),
-            'name'      => $this->id,
+            'name'      => $this->callPrefixedId(),
             'value'     => $this->name,
             'class'     => $this->class,
             'style'     => $this->style,

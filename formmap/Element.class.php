@@ -412,7 +412,7 @@ class CitrusFormmapElement extends CitrusObject
     {
         $elements = [
             'id'        => $this->callPrefixedId(),
-            'name'      => $this->id,
+            'name'      => $this->callPrefixedId(),
             'class'     => $this->class,
             'style'     => $this->style,
         ];
