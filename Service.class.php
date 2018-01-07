@@ -9,6 +9,7 @@ namespace Citrus;
 
 
 use Citrus\Database\CitrusDatabaseColumn;
+use Citrus\Database\CitrusDatabaseResult;
 use Citrus\Sqlmap\CitrusSqlmapClient;
 use Citrus\Sqlmap\CitrusSqlmapCrud;
 
@@ -93,11 +94,32 @@ class CitrusService
      * call name record
      *
      * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
+     * @return CitrusDatabaseResult[]
      */
     public function names(CitrusDatabaseColumn $condition)
     {
         return $this->callDao()->names($condition);
+    }
+
+
+
+    /**
+     * call name list
+     *
+     * @param CitrusDatabaseColumn $condition
+     * @return array
+     */
+    public function nameForList(CitrusDatabaseColumn $condition)
+    {
+        $result = [];
+
+        $entities = $this->names($condition);
+        foreach ($entities as $entity)
+        {
+            $result[$entity->id] = $entity->name;
+        }
+
+        return $result;
     }
 
 

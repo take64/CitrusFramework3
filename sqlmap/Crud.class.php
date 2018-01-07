@@ -170,7 +170,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * call sqlmap names
      *
      * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
+     * @return CitrusDatabaseResult[]
      * @throws CitrusSqlmapException
      */
     public function names(CitrusDatabaseColumn $condition)
