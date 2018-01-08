@@ -22,10 +22,8 @@
                     prefix: '',
                     service: ''
                 },
-                columns:{
-                },
-                summaries:{
-                },
+                columns:{},
+                summaries:{},
                 dialog:{
                     id: '',
                     type: 'summary',
@@ -63,9 +61,7 @@
                     rowid: null,
                     rev: null
                 },
-                columns:{
-                    
-                },
+                columns:{},
                 dialog:{
                     id: '',
                     options: {
@@ -104,9 +100,7 @@
                     rowid: null,
                     rev: null
                 },
-                columns:{
-                    
-                },
+                columns:{},
                 dialog:{
                     id: '',
                     options: {
@@ -145,9 +139,7 @@
                     rowid: null,
                     rev: null
                 },
-                columns:{
-                    
-                },
+                columns:{},
                 method:{
                     initialize: function(){},
                     release: function(){}
@@ -234,7 +226,6 @@
             .append(listTag)
             .append(listButton);
         
-        
         // edit
         var editTag = null;
         var selector_edit_dialog = $('#' + options.edit.dialog.id);
@@ -263,7 +254,6 @@
                 options.view.method.release(options);
             };
         }
-        
         
         if(options.list.dialog.type === 'summary') {
             if(editTag !== null) {
@@ -308,7 +298,6 @@
                 viewTag.dialog(options.view.dialog.options);
             }
         }
-        
         
         //load list
         var listTable = $('<table />').attr('class', 'faces-list');
@@ -950,7 +939,7 @@
         $('#'+ options.edit.dialog.id).find('.faces-edit [id^=edit_]').each(function(){
             var form_element = $(this);
             var default_value = form_element.attr('default');
-            if (default_value == undefined) {
+            if (default_value === undefined) {
                 default_value = '';
             }
             switch(form_element.get(0).tagName) {
@@ -1147,20 +1136,20 @@
         formatNumber: function(_options){
             var options = jQuery.extend(true, {
                 number: 0,
-                decimals: 0,
+                decimals: 0
             }, _options);
             
             var number = options.number;
             
             // remove ','
-            number = new String(number);
+            number = String(number);
             number = number.replace(/,/g, '');
             
             // parse float
             number = parseFloat(number);
             
             // infinity
-            number = new String(number);
+            number = String(number);
             
             // parse '123456'.'789'
             var numbers = number.split('.');
@@ -1306,15 +1295,15 @@
     });
 })(jQuery);
 
-if (String.prototype.replaceAll == undefined) {
+if (String.prototype.replaceAll === undefined) {
     String.prototype.replaceAll = function (org, dest) {
         return this.split(org).join(dest);
     };
 }
-if (String.prototype.format == undefined) {
+if (String.prototype.format === undefined) {
     String.prototype.format = function(arg) {
         var replace_function = undefined;
-        if (typeof arg == 'object') {
+        if (typeof arg === 'object') {
             replace_function = function(m, k) { return arg[k]; }
         }
         else {
