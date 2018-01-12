@@ -146,6 +146,23 @@ class CitrusSqlmapParser
 
 
     /**
+     * replace sqlmap parameter
+     *
+     * @param CitrusDatabaseColumn|null $parameter
+     */
+    public function replaceParameter(CitrusDatabaseColumn $parameter = null)
+    {
+        $keys = array_keys($this->parameter_list);
+        foreach ($keys as $key)
+        {
+            $column_key = str_replace(':', '', $key);
+            $this->parameter_list[$key] = $parameter->get($column_key);
+        }
+    }
+
+
+
+    /**
      * text node parser
      * テキストノード処理
      *
@@ -524,17 +541,7 @@ class CitrusSqlmapParser
         return $dynamic;
     }
 
-    /**
-     * call nested property
-     * ネストの深いプロパティーを取得する。
-     *
-     * @access  public
-     * @since   0.0.1.1 2012.02.06
-     * @version 0.0.1.1 2012.02.06
-     * @param   object  $parameter
-     * @param   string  $property
-     * @return  string
-     */
+
 
     /**
      * call nested property
@@ -553,5 +560,23 @@ class CitrusSqlmapParser
             $result = $result->$one;
         }
         return $result;
+    }
+
+
+
+    /**
+     * generate sqlmap xml parser
+     *
+     * @param string                    $path
+     * @param string                    $transaction
+     * @param string                    $id
+     * @param CitrusDatabaseColumn|null $parameter
+     * @return CitrusSqlmapParser
+     */
+    public static function generateParser(string $path, string $transaction = null, string $id, CitrusDatabaseColumn $parameter = null) : CitrusSqlmapParser
+    {
+        $parser = new static();
+        $parser->parse($path, $transaction, $id, $parameter);
+        return $parser;
     }
 }

@@ -81,9 +81,8 @@ class CitrusSqlmapClient
     {
         try
         {
-            $insert = new CitrusSqlmapParser();
-            $insert->parse($this->sqlmap_path, 'insert', $id, $parameter);
-            return CitrusSqlmapExecutor::insert($insert->statement, $insert->parameter_list);
+            $parser = CitrusSqlmapParser::generateParser($this->sqlmap_path, 'insert', $id, $parameter);
+            return CitrusSqlmapExecutor::insert($parser->statement, $parser->parameter_list);
         }
         catch (CitrusSqlmapException $e)
         {
@@ -105,9 +104,8 @@ class CitrusSqlmapClient
     {
         try
         {
-            $update = new CitrusSqlmapParser();
-            $update->parse($this->sqlmap_path, 'update', $id, $parameter);
-            return CitrusSqlmapExecutor::update($update->statement, $update->parameter_list);
+            $parser = CitrusSqlmapParser::generateParser($this->sqlmap_path, 'update', $id, $parameter);
+            return CitrusSqlmapExecutor::update($parser->statement, $parser->parameter_list);
         }
         catch (CitrusSqlmapException $e)
         {
@@ -129,9 +127,8 @@ class CitrusSqlmapClient
     {
         try
         {
-            $delete = new CitrusSqlmapParser();
-            $delete->parse($this->sqlmap_path, 'delete', $id, $parameter);
-            return CitrusSqlmapExecutor::delete($delete->statement, $delete->parameter_list);
+            $parser = CitrusSqlmapParser::generateParser($this->sqlmap_path, 'delete', $id, $parameter);
+            return CitrusSqlmapExecutor::delete($parser->statement, $parser->parameter_list);
         }
         catch (CitrusSqlmapException $e)
         {
@@ -144,18 +141,18 @@ class CitrusSqlmapClient
     /**
      * Executes a mapped SQL SELECT statement that returns data to populate
      *
-     * @param string               $id
-     * @param CitrusDatabaseColumn $parameter
+     * @param string                  $id        クエリID
+     * @param CitrusDatabaseColumn    $parameter パラメーター
+     * @param CitrusSqlmapParser|null $parser    パーサーのキャッシュ
      * @return array|CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function queryForList(string $id, CitrusDatabaseColumn $parameter) : array
+    public function queryForList(string $id, CitrusDatabaseColumn $parameter, CitrusSqlmapParser $parser = null) : array
     {
         try
         {
-            $select = new CitrusSqlmapParser();
-            $select->parse($this->sqlmap_path, 'select', $id, $parameter);
-            return CitrusSqlmapExecutor::select($select->statement, $select->parameter_list);
+            $parser = $parser ?: CitrusSqlmapParser::generateParser($this->sqlmap_path, 'select', $id, $parameter);
+            return CitrusSqlmapExecutor::select($parser->statement, $parser->parameter_list);
         }
         catch (CitrusSqlmapException $e)
         {
@@ -168,12 +165,13 @@ class CitrusSqlmapClient
     /**
      * Executes a mapped SQL SELECT statement that returns data to populate
      *
-     * @param string               $id
-     * @param CitrusDatabaseColumn $parameter
+     * @param string                  $id        クエリID
+     * @param CitrusDatabaseColumn    $parameter パラメーター
+     * @param CitrusSqlmapParser|null $parser    パーサーのキャッシュ
      * @return CitrusDatabaseColumn|null
      * @throws CitrusSqlmapException
      */
-    public function queryForObject(string $id, CitrusDatabaseColumn $parameter)
+    public function queryForObject(string $id, CitrusDatabaseColumn $parameter, CitrusSqlmapParser $parser = null)
     {
         try
         {
@@ -187,9 +185,8 @@ class CitrusSqlmapClient
                 $parameter->limit = 1;
             }
 
-            $select = new CitrusSqlmapParser();
-            $select->parse($this->sqlmap_path, 'select', $id, $parameter);
-            $result = CitrusSqlmapExecutor::select($select->statement, $select->parameter_list);
+            $parser = $parser ?: CitrusSqlmapParser::generateParser($this->sqlmap_path, 'select', $id, $parameter);
+            $result = CitrusSqlmapExecutor::select($parser->statement, $parser->parameter_list);
             return count($result) > 0 ? $result[0] : null;
         }
         catch (CitrusSqlmapException $e)
@@ -212,9 +209,8 @@ class CitrusSqlmapClient
     {
         try
         {
-            $statement = new CitrusSqlmapParser();
-            $statement->parse($this->sqlmap_path, 'statement', $id, $parameter);
-            $result = CitrusSqlmapExecutor::select($statement->statement, $statement->parameter_list);
+            $parser = CitrusSqlmapParser::generateParser($this->sqlmap_path, 'statement', $id, $parameter);
+            $result = CitrusSqlmapExecutor::select($parser->statement, $parser->parameter_list);
             return count($result) > 0 ? $result[0] : null;
         }
         catch (CitrusSqlmapException $e)
