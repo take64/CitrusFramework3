@@ -210,6 +210,9 @@ class CitrusConfigure
         // 認証処理初期化
         CitrusAuthentication::initialize($default_configure, $configures[$domain]);
 
+        // メッセージ処理初期化
+        CitrusMessage::initialize($default_configure, $configures[$domain]);
+
         // ロガー処理
         CitrusLogger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
     }
