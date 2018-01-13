@@ -19,6 +19,9 @@ class Citrus
     /** @var string */
     public static $JAVASCRIPT_FACES;
 
+    /** @var string */
+    public static $JAVASCRIPT_EXTENDS;
+
     /** @var bool */
     public static $IS_INITIALIZED = false;
 
@@ -53,7 +56,8 @@ class Citrus
         $base_path = dirname(__FILE__);
 
         // static files
-        self::$JAVASCRIPT_FACES = $base_path . '/javascript/Faces.js';
+        self::$JAVASCRIPT_FACES     = $base_path . '/javascript/Faces.js';
+        self::$JAVASCRIPT_EXTENDS   = $base_path . '/javascript/Extends.js';
 
         // timestamp
         self::$TIMESTAMP_INT    = $_SERVER['REQUEST_TIME'];
