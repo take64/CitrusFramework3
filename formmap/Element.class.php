@@ -299,7 +299,7 @@ class CitrusFormmapElement extends CitrusObject
                     {
                         $inner_tags[] = sprintf('<option value="%s" %s>%s</option>',
                             $ky,
-                            ($ky === $elements['value'] ? 'selected' : ''),
+                            ($ky == $elements['value'] ? 'selected' : ''), // postデータはstringなので、曖昧比較する
                             $vl
                             );
                     }
