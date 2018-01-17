@@ -82,7 +82,11 @@ class CitrusControllerPage
             $this->callSmarty()->assign('pagecode', $this->callPagecode());
             $this->callSmarty()->assign('formmap',  $this->callFormmap());
             $this->callSmarty()->assign('errors',   CitrusMessage::popErrors());
-            $this->callSmarty()->assign('message',  CitrusMessage::popMessages());
+            $this->callSmarty()->assign('messages', CitrusMessage::popMessages());
+            $this->callSmarty()->assign('successes',CitrusMessage::popSuccesses());
+
+            // セッションのコミット
+            CitrusSession::commit();
 
             // リソース読み込み
             $this->loadResource($router);

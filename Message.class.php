@@ -38,9 +38,10 @@ class CitrusMessage extends CitrusClass
 
         // メッセージ設定
         $configures = [];
-        $configures = array_merge($configures, CitrusNVL::ArrayVL($default_configure, 'device', []));
-        $configures = array_merge($configures, CitrusNVL::ArrayVL($configure, 'device', []));
-        self::bind($configures);
+        $configures = array_merge($configures, CitrusNVL::ArrayVL($default_configure, 'message', []));
+        $configures = array_merge($configures, CitrusNVL::ArrayVL($configure, 'message', []));
+
+        self::$enable_session = $configures['enable_session'];
 
         // initialized
         self::$IS_INITIALIZED = true;
@@ -60,14 +61,7 @@ class CitrusMessage extends CitrusClass
         {
             return false;
         }
-        if (count($items) > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (count($items) > 0);
     }
 
 
@@ -116,7 +110,7 @@ class CitrusMessage extends CitrusClass
         // 走査
         foreach ($items as $item)
         {
-            if ($item->tag == $tag)
+            if ($item->tag === $tag)
             {
                 $result[] = $item;
             }
@@ -147,7 +141,7 @@ class CitrusMessage extends CitrusClass
         // 走査
         foreach (self::$items as $item)
         {
-            if ($item->type == $type)
+            if ($item->type === $type)
             {
                 $result[] = $item;
             }
@@ -212,7 +206,7 @@ class CitrusMessage extends CitrusClass
      * @param string $type
      * @return CitrusMessageItem[]
      */
-    public static function popItemsForType($type = null)
+    public static function popItemsForType(string $type = null)
     {
         // 結果
         $result = [];
@@ -226,12 +220,17 @@ class CitrusMessage extends CitrusClass
         // 走査
         foreach (self::$items as $ky => $item)
         {
-            if ($item->type == $type)
+            if ($item->type === $type)
             {
                 $result[] = $item;
+                unset(self::$items[$ky]);
             }
+        }
 
-            unset(self::$items[$ky]);
+        // セッション利用
+        if (self::isSession() === true)
+        {
+            CitrusSession::$session->regist('messages', self::$items);
         }
 
         return $result;
@@ -298,17 +297,14 @@ class CitrusMessage extends CitrusClass
         self::initialize();
 
         // 既に配列の場合は追加
-        if (is_array(self::$items) === true)
+        if (is_array(self::$items) === false)
         {
-            self::$items[] = $item;
+            self::$items = [];
         }
-        else
-        {
-            self::$items = [$item];
-        }
+        self::$items[] = $item;
 
         // セッション利用
-        if (self::isSession() == true)
+        if (self::isSession() === true)
         {
             CitrusSession::$session->regist('messages', self::$items);
         }
@@ -384,7 +380,7 @@ class CitrusMessage extends CitrusClass
         self::$items = [];
 
         // セッションから削除
-        if (self::isSession() == true)
+        if (self::isSession() === true)
         {
             CitrusSession::$session->remove('messages');
         }
@@ -428,7 +424,7 @@ class CitrusMessage extends CitrusClass
         self::$items = $items;
 
         // セッション利用の場合はセッションに登録
-        if (self::isSession() == true)
+        if (self::isSession() === true)
         {
             CitrusSession::$session->regist('messages', self::$items);
         }
