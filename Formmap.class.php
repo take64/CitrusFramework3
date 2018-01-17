@@ -47,6 +47,12 @@ class CitrusFormmap
     /** @var bool validate null is require safe */
     public $validate_null_safe = false;
 
+    /** @var string[] ファイル読み込みリスト */
+    private $loaded_files = [];
+
+    /** @var bool bind済みかどうか */
+    private $is_bound = false;
+
 
     /**
      * initialize formmap
@@ -101,6 +107,12 @@ class CitrusFormmap
             }
         }
 
+        // 多重読み込み防止
+        if (in_array($path, $this->loaded_files) === true)
+        {
+            return ;
+        }
+
         // load formmap
         $formlist = include($path);
 
@@ -142,6 +154,11 @@ class CitrusFormmap
                 
             }
         }
+
+        // 多重読み込み防止
+        $this->loaded_files[] = $path;
+        // 多重バインド防止
+        $this->is_bound = false;
     }
 
 
@@ -151,6 +168,12 @@ class CitrusFormmap
      */
     public function bind()
     {
+        // 多重バインド防止
+        if ($this->is_bound === true)
+        {
+            return ;
+        }
+
         $request_list = CitrusSession::$request->properties()
                       + CitrusSession::$filedata->properties();
 
@@ -200,6 +223,9 @@ class CitrusFormmap
                 }
             }
         }
+
+        // 多重バインド防止
+        $this->is_bound = true;
     }
 
 
