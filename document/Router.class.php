@@ -220,7 +220,7 @@ class CitrusDocumentRouter extends CitrusObject
     {
         if ($url != null)
         {
-            header('Location: '. $url);
+            header('Location: ' . $url);
             exit;
         }
     }
