@@ -165,11 +165,13 @@ class CitrusFormmap
 
     /**
      * form data binder
+     *
+     * @param bool $force 強制バインド
      */
-    public function bind()
+    public function bind(bool $force = false)
     {
         // 多重バインド防止
-        if ($this->is_bound === true)
+        if ($this->is_bound === true && $force === false)
         {
             return ;
         }
