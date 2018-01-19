@@ -46,7 +46,7 @@
             
             return number;
         },
-        
+
         uniqueID: function(_options){
             var options = jQuery.extend(true, {
                 length: 16,
@@ -54,7 +54,7 @@
                 suffix: '',
                 retry: 16
             }, _options);
-            
+
             var wk = 0;
             var result = '';
             for (var i = 0; i < options.retry; i++) {
@@ -75,6 +75,64 @@
                 }
             }
             return options.prefix + result + options.suffix;
+        },
+        sizeFormat: function(_options){
+            var options = jQuery.extend(true, {
+                byte: 0,
+                suffix: true,
+                format: 'auto'
+            }, _options);
+
+            var byte = parseFloat(options.byte);
+            var format = options.format;
+            var optimize = byte;
+
+            if (format === 'B') {
+                optimize = byte;
+            } else if (format === 'KB') {
+                optimize = (byte / 1024);
+            } else if (format === 'MB') {
+                optimize = (byte / (1024 * 1024));
+            } else if (format === 'auto') {
+                // B
+                format = 'B';
+                // KB
+                if (optimize > 1024) {
+                    optimize = (optimize / 1024);
+                    format = 'KB';
+                }
+                // MB
+                if (optimize > 1024) {
+                    optimize = (optimize / 1024);
+                    format = 'MB';
+                }
+            }
+
+            var result = Math.round(optimize * 10) / 10;
+            if (options.suffix === true) {
+                result = result + ' ' + format;
+            }
+            return result;
+        },
+        percentFormat: function(_options){
+            var options = jQuery.extend(true, {
+                numerator: 0,
+                denominator: 0
+            }, _options);
+
+            var percent = (options.numerator / options.denominator) * 100;
+            var result = Math.round(percent * 10) / 10;
+            result = result + ' %';
+            return result;
+        },
+        escapeText: function(text){
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                ;
         }
     });
 })(jQuery);
