@@ -135,6 +135,13 @@
                 ;
         }
     });
+    $.fn.attrs = function() {
+        var result = {};
+        $.each(this.get(0).attributes, function () {
+            result[this.name] = this.value;
+        });
+        return result;
+    }
 })(jQuery);
 
 if (String.prototype.replaceAll === undefined) {
