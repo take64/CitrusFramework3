@@ -95,10 +95,8 @@ class CitrusDatabaseColumn extends CitrusObject
      */
     public function callCondition()
     {
-        var_dump(__LINE__);
         if (is_null($this->condition) === true)
         {
-            var_dump(__LINE__);
             $this->condition = new CitrusDatabaseColumn();
         }
         return $this->condition;

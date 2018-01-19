@@ -165,21 +165,18 @@ class CitrusSqlmapClient
     /**
      * Executes a mapped SQL SELECT statement that returns data to populate
      *
-     * @param string                  $id        クエリID
-     * @param CitrusDatabaseColumn    $parameter パラメーター
-     * @param CitrusSqlmapParser|null $parser    パーサーのキャッシュ
+     * @param string                    $id        クエリID
+     * @param CitrusDatabaseColumn|null $_parameter パラメーター
+     * @param CitrusSqlmapParser|null   $parser    パーサーのキャッシュ
      * @return CitrusDatabaseColumn|null
      * @throws CitrusSqlmapException
      */
-    public function queryForObject(string $id, CitrusDatabaseColumn $parameter, CitrusSqlmapParser $parser = null)
+    public function queryForObject(string $id, CitrusDatabaseColumn $_parameter = null, CitrusSqlmapParser $parser = null)
     {
         try
         {
             /** @var CitrusSqlmapCondition $parameter */
-            if (is_null($parameter) === true)
-            {
-                $parameter = new CitrusDatabaseColumn();
-            }
+            $parameter = (is_null($_parameter) === true ? new CitrusDatabaseColumn() : clone $_parameter);
             if (is_null($parameter->limit) === true)
             {
                 $parameter->limit = 1;
