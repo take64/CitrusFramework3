@@ -18,29 +18,19 @@ class CitrusMailImap
     /** @var resource IMAP */
     public $imap_handle;
 
-    /** @var string mail server */
-    public $mail_server;
-
-    /** @var string username */
-    public $username;
-
-    /** @var string password */
-    public $password;
+    /** @var CitrusMailImapAccount アカウント */
+    public $account;
 
 
 
     /**
      * CitrusMailImap constructor.
      *
-     * @param string $mail_server メールサーバー
-     * @param string $username    メールユーザー
-     * @param string $password    メールパスワード
+     * @param CitrusMailImapAccount $account アカウント情報
      */
-    public function __construct(string $mail_server, string $username, string $password)
+    public function __construct(CitrusMailImapAccount $account)
     {
-        $this->mail_server = $mail_server;
-        $this->username = $username;
-        $this->password = $password;
+        $this->account = $account;
     }
 
 
@@ -73,8 +63,8 @@ class CitrusMailImap
         {
             $this->imap_handle = imap_open(
                 $mailbox_name,
-                $this->username,
-                $this->password
+                $this->account->username,
+                $this->account->password
             );
         }
         // すでにオープンされている場合は、再度オープンする(フォルダ指定されている場合だけ)
@@ -301,7 +291,7 @@ class CitrusMailImap
     {
         if ($folder_name === '')
         {
-            return sprintf('{%s}', $this->mail_server);
+            return sprintf('{%s}', $this->account->mail_server);
         }
 
         $decoration_mailbox_ref = $this->callMailBox();
