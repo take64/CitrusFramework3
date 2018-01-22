@@ -184,7 +184,6 @@ EOT;
                     $comment = $comments[$column_name]['description'];
                 }
                 $property_name = '$' . $column['column_name'];
-                $property_value = $column['column_default'];
 
                 // デフォルトカラムはスルー
                 if (in_array($column_name, $default_columns) === true)
@@ -195,42 +194,24 @@ EOT;
                 // クラス名置換
                 switch ($data_type)
                 {
-                    case 'character varying'            : $data_type = 'string';                            break;
-                    case 'text'                         : $data_type = 'string';                            break;
-                    case 'date'                         : $data_type = 'string';                            break;
-                    case 'numeric'                      : $data_type = 'int';                               break;
-                    case 'timestamp without time zone'  : $data_type = 'string'; $property_value = 'null';  break;
+                    case 'character varying'            : $data_type = 'string'; break;
+                    case 'text'                         : $data_type = 'string'; break;
+                    case 'date'                         : $data_type = 'string'; break;
+                    case 'numeric'                      : $data_type = 'int';    break;
+                    case 'timestamp without time zone'  : $data_type = 'string'; break;
                     default                             :
                 }
-
-                // デフォルト値置換
-                if (is_null($property_value) === true)
-                {
-                    $property_value = 'null';
-                }
-                // serial置換
-                else if (strpos($property_value, 'nextval') !== false)
-                {
-                    $property_value = 'null';
-                }
-                // 空文字置換
-                else if (strpos($property_value, '\'\'::') !== false)
-                {
-                    $property_value = '\'\'';
-                }
-
 
                 // ベース文字列
                 $property = <<<PTY
     /** @var {#class-name#} {#comment#} */
-    public {#property_name#} = {#property_value#};
+    public {#property_name#};
 
 PTY;
                 // 置換
-                $property = str_replace('{#class-name#}',       $data_type,    $property);
-                $property = str_replace('{#comment#}',          $comment,       $property);
-                $property = str_replace('{#property_name#}',    $property_name, $property);
-                $property = str_replace('{#property_value#}',   $property_value,$property);
+                $property = str_replace('{#class-name#}',   $data_type,     $property);
+                $property = str_replace('{#comment#}',      $comment,       $property);
+                $property = str_replace('{#property_name#}',$property_name, $property);
                 $properties[] = $property;
             }
 
