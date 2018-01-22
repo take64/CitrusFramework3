@@ -219,6 +219,28 @@ class CitrusSqlmapClient
 
 
     /**
+     * vague transaction enable
+     */
+    public function enableVague()
+    {
+        $this->disableValidate();
+        $this->disableMessage();
+    }
+
+
+
+    /**
+     * vague transaction disable
+     */
+    public function disableVague()
+    {
+        $this->enableValidate();
+        $this->enableMessage();
+    }
+
+
+
+    /**
      * validate enable
      */
     public function enableValidate()
