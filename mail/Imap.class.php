@@ -9,6 +9,7 @@ namespace Citrus\Mail;
 
 
 use Citrus\Mail\Header\CitrusMailHeaderItem;
+use Citrus\Mail\Imap\CitrusMailImapAccount;
 use Citrus\Mail\Imap\CitrusMailImapBox;
 use Citrus\Mail\Imap\CitrusMailImapQuota;
 use Citrus\Mail\Search\CitrusMailSearchCondition;
@@ -56,7 +57,7 @@ class CitrusMailImap
         // メールボックス名
         $mailbox_name = $this->callMailBox($folder_name);
         // メールボックスが UTF-8 だった場合は UTF7-IMAP に変更
-        $mailbox_name = mb_convert_encoding($mailbox_name, 'UTF7-IMAP');
+        $mailbox_name = self::encodeImap($mailbox_name);
 
         // resource IMAP のオープン
         if (is_null($this->imap_handle) === true)
@@ -114,7 +115,7 @@ class CitrusMailImap
         );
         foreach ($folders as $folder)
         {
-            $result[] = mb_convert_encoding($folder, 'UTF-8', 'UTF7-IMAP');
+            $result[] = self::decodeImap($folder);
         }
 
         return $result;
@@ -156,7 +157,7 @@ class CitrusMailImap
     public function folderPureName(string $folder_name)
     {
         return str_replace(
-            sprintf('{%s}', $this->mail_server),
+            sprintf('{%s}', $this->account->mail_server),
             '',
             $folder_name
         );
@@ -198,7 +199,18 @@ class CitrusMailImap
         else
         {
             $mailBox = new CitrusMailImapBox(imap_check($handle));
-            $sequence = sprintf('1:%d', $mailBox->quantity);
+            // メールが1件だった場合に'1:1'にするとnoticeが発生する
+            $sequence = '1';
+            if ($mailBox->quantity > 1)
+            {
+                $sequence = sprintf('1:%d', $mailBox->quantity);
+            }
+
+            // メールが0件だった場合はメールが存在していないのでスキップ
+            if ($mailBox->quantity === 0)
+            {
+                return [];
+            }
         }
 
         // メール取得
@@ -223,7 +235,7 @@ class CitrusMailImap
     public function move(CitrusMailSearchCondition $condition, string $folder_path_to)
     {
         // エンコード変更
-        $folder_path_to = mb_convert_encoding($folder_path_to, 'UTF7-IMAP', 'UTF-8');
+        $folder_path_to = self::encodeImap($folder_path_to);
 
         // 条件がない場合は処理しない
         if (empty($condition->uids) === true && empty($condition->msgnos) === true)
@@ -276,7 +288,7 @@ class CitrusMailImap
         $mailbox_ref = $this->callMailBox($folder_path);
 
         // メールフォルダの作成
-        imap_create($this->open(), mb_convert_encoding($mailbox_ref, 'UTF7-IMAP', 'UTF-8'));
+        imap_create($this->open(), self::encodeImap($mailbox_ref));
     }
 
 
@@ -299,5 +311,31 @@ class CitrusMailImap
             $decoration_mailbox_ref,
             str_replace($decoration_mailbox_ref, '', $folder_name)
         );
+    }
+
+
+
+    /**
+     * IMAP用文字列にエンコードする
+     *
+     * @param string $context
+     * @return string
+     */
+    private static function encodeImap(string $context)
+    {
+        return mb_convert_encoding($context, 'UTF7-IMAP', 'UTF-8');
+    }
+
+
+
+    /**
+     * IMAP用文字列からデコードする
+     *
+     * @param string $context
+     * @return string
+     */
+    private static function decodeImap(string $context)
+    {
+        return mb_convert_encoding($context, 'UTF-8', 'UTF7-IMAP');
     }
 }
