@@ -56,10 +56,10 @@ class CitrusSlackAttachments extends CitrusObject implements CitrusSlackItem
     public $thumb_url = '';
 
     /** @var string footer */
-    public $footer = '';
+    public $footer = 'Citrus Slack';
 
     /** @var string footer_icon */
-    public $footer_icon = '';
+    public $footer_icon = 'https://platform.slack-edge.com/img/default_application_icon.png';
 
     /** @var int ts */
     public $ts = 0;

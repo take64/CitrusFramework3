@@ -77,4 +77,23 @@ class CitrusSlack
 
         CitrusHttp::post(self::$WEBHOOK_URLS[$key], json_encode($slack_data));
     }
+
+
+
+    /**
+     * slack attachments fields 用の配列に変換
+     *
+     * @param string $title
+     * @param string $value
+     * @param bool $short
+     * @return array
+     */
+    public static function toFields(string $title, string $value, bool $short = true)
+    {
+        return [
+            'title' => $title,
+            'value' => $value,
+            'short' => $short,
+        ];
+    }
 }
