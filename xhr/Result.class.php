@@ -37,7 +37,11 @@ class CitrusXhrResult
      */
     public function __construct(array $items = [])
     {
-        if (empty($items) === false || is_array($items) === true)
+        if ($items == [false])
+        {
+            $this->result = false;
+        }
+        else if (empty($items) === false || is_array($items) === true)
         {
             $this->result = true;
         }
