@@ -287,8 +287,122 @@ class CitrusMailImap
         // 完全なメールフォルダパス
         $mailbox_ref = $this->callMailBox($folder_path);
 
+        // フォルダ購読
+        $this->subscribe($folder_path);
+
         // メールフォルダの作成
         imap_create($this->open(), self::encodeImap($mailbox_ref));
+    }
+
+
+
+    /**
+     * フォルダの削除
+     *
+     * @param string $folder_path 削除フォルダパス
+     */
+    public function removeFolder(string $folder_path)
+    {
+        // 完全なメールフォルダパス
+        $mailbox_ref = $this->callMailBox($folder_path);
+
+        // フォルダ購読しているか
+        if ($this->is_subscribe($folder_path) === true)
+        {
+            // フォルダ購読解除
+            $this->unsubscribe($folder_path);
+        }
+
+        // メールフォルダの作成
+        imap_deletemailbox($this->open(), self::encodeImap($mailbox_ref));
+    }
+
+
+
+    /**
+     * フォルダー移動
+     *
+     * @param string $folder_path_from 移動元フォルダパス
+     * @param string $folder_path_to   移動先フォルダパス
+     * @param bool   $is_subscribe     購読情報も移動する
+     */
+    public function rename(string $folder_path_from, string $folder_path_to, bool $is_subscribe = false)
+    {
+        // エンコード変更
+        $encoded_folder_path_from   = self::encodeImap($folder_path_from);
+        $encoded_folder_path_to     = self::encodeImap($folder_path_to);
+
+        // サーバー修飾子の追加
+        $encoded_folder_path_from   = sprintf('{%s}%s', $this->account->mail_server, $encoded_folder_path_from);
+        $encoded_folder_path_to     = sprintf('{%s}%s', $this->account->mail_server, $encoded_folder_path_to);
+
+        // 購読情報の移動
+        if ($is_subscribe === true)
+        {
+            // フォルダ購読しているか
+            if ($this->is_subscribe($folder_path_from) === true)
+            {
+                // フォルダ購読解除
+                $this->unsubscribe($folder_path_from);
+            }
+            else
+            {
+                // フォルダ購読していないのに購読解除しようとした場合は、購読処理しない
+                $is_subscribe = false;
+            }
+        }
+
+        // フォルダ移動
+        imap_rename($this->open(), $encoded_folder_path_from, $encoded_folder_path_to);
+
+        // フォルダ購読
+        if ($is_subscribe === true)
+        {
+            $this->subscribe($folder_path_to);
+        }
+    }
+
+
+
+    /**
+     * フォルダ購読をしているか
+     *
+     * @param string $folder_path 購読確認するフォルダパス
+     * @return bool true:購読している,false:購読していない
+     */
+    public function is_subscribe(string $folder_path)
+    {
+        return is_array(imap_listsubscribed($this->open(), $this->callMailBox(), self::encodeImap($folder_path)));
+    }
+
+
+
+    /**
+     * フォルダの購読
+     *
+     * @param string $folder_path 購読するフォルダパス
+     * @return bool
+     */
+    public function subscribe(string $folder_path)
+    {
+        return imap_subscribe($this->open(),
+            sprintf('{%s}%s', $this->account->mail_server, self::encodeImap($folder_path))
+        );
+    }
+
+
+
+    /**
+     * フォルダの購読解除
+     *
+     * @param string $folder_path 購読解除するフォルダパス
+     * @return bool
+     */
+    public function unsubscribe(string $folder_path)
+    {
+        return imap_unsubscribe($this->open(),
+            sprintf('{%s}%s', $this->account->mail_server, self::encodeImap($folder_path))
+        );
     }
 
 
