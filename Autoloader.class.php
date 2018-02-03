@@ -73,11 +73,8 @@ class CitrusAutoloader
                 }
             }
 
-            if ($is_load_class === false)
-            {
-                $error_message = 'load faild = ' . $class_file_path;
-                throw new CitrusAutoloaderException($error_message);
-            }
+            // 読み込み失敗時にExceptionを投げる
+            self::exceptionLoadFaild($is_load_class, $class_file_path);
         });
     }
 
@@ -121,24 +118,11 @@ class CitrusAutoloader
             }
 
             // パスに含まれる重複文字列の除去
-            $_use_class_paths = $use_class_paths;
-            $_use_class = array_pop($_use_class_paths);
-            foreach ($_use_class_paths as $one)
-            {
-                if (empty($one) === true)
-                {
-                    continue;
-                }
-                if (strpos($_use_class, $one) === 0)
-                {
-                    $_use_class = str_replace($one, '', $_use_class);
-                }
-            }
-            $_use_class_paths[] = $_use_class;
-            $use_class_paths = $_use_class_paths;
+            $use_class_paths = self::cleaningUsePaths($use_class_paths);
 
             // パス確定
             $is_load_class = false;
+            $class_file_path = null;
             foreach (self::EXTENTIONS as $extention)
             {
                 $class_file_path = sprintf('%s/%s.%s.php',
@@ -153,12 +137,54 @@ class CitrusAutoloader
                 }
             }
 
-            if ($is_load_class === false)
-            {
-                $error_message = 'load faild = ' . $class_file_path;
-                throw new CitrusAutoloaderException($error_message);
-            }
+            // 読み込み失敗時にExceptionを投げる
+            self::exceptionLoadFaild($is_load_class, $class_file_path);
         });
+    }
+
+
+
+    /**
+     * パスに含まれる重複文字列の除去
+     * @param string[] $use_class_paths
+     * @return string[]
+     */
+    private static function cleaningUsePaths(array $use_class_paths)
+    {
+        $_use_class_paths = $use_class_paths;
+        $_use_class = array_pop($_use_class_paths);
+        foreach ($_use_class_paths as $one)
+        {
+            if (empty($one) === true)
+            {
+                continue;
+            }
+            if (strpos($_use_class, $one) === 0)
+            {
+                $_use_class = str_replace($one, '', $_use_class);
+            }
+        }
+        $_use_class_paths[] = $_use_class;
+
+        return $_use_class_paths;
+    }
+
+
+
+    /**
+     * 読み込み失敗時にExceptionを投げる
+     *
+     * @param bool   $is_load_class   読み込みの可否 true:成功, false:失敗
+     * @param string $class_file_path クラスファイルのパス
+     * @throws CitrusAutoloaderException
+     */
+    private static function exceptionLoadFaild(bool $is_load_class, string $class_file_path)
+    {
+        if ($is_load_class === false)
+        {
+            $error_message = 'load faild = ' . $class_file_path;
+            throw new CitrusAutoloaderException($error_message);
+        }
     }
 
 

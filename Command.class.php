@@ -1,14 +1,7 @@
 <?php
 /**
- * Command.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -22,6 +15,7 @@ class CitrusCommand extends CitrusObject
 
     /** @var string domain */
     public $domain = '';
+
 
 
     /**
@@ -99,8 +93,6 @@ class CitrusCommand extends CitrusObject
         include_once($class_path);
 
         /** @var CitrusCommand $command */
-        $command = new $class_name();
-
-        return $command;
+        return new $class_name();
     }
 }

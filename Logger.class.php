@@ -92,7 +92,6 @@ class CitrusLogger
             case 'warn'  : self::$LOG_LEVEL = self::LOG_LEVEL_WARN;  break; // warn
             case 'error' : self::$LOG_LEVEL = self::LOG_LEVEL_ERROR; break; // error
             case 'fatal' : self::$LOG_LEVEL = self::LOG_LEVEL_FATAL; break; // fatal
-            case 'trace' : self::$LOG_LEVEL = self::LOG_LEVEL_TRACE; break; // trace
             default:
         }
 

@@ -63,12 +63,10 @@ class CitrusAuthentication
         // 認証設定はないが初期化する可能性がある
         if (empty($configure) === false)
         {
-            switch ($configure['type'])
+            // 複数設定できるまでifで処理
+            if ($configure['type'] === self::TYPE_DATABASE)
             {
-                case self::TYPE_DATABASE :
-                    self::$INSTANCE = new CitrusAuthenticationDatabase();
-                    break;
-                default:
+                self::$INSTANCE = new CitrusAuthenticationDatabase();
             }
         }
 
@@ -157,10 +155,8 @@ class CitrusAuthentication
         // tokenキー
         $key = CitrusNVL::NVL($key, CitrusSession::$sessionId);
 
-        // token生成
-        $token = hash(self::$TOKEN_ALGO, $key);
-
-        return $token;
+        // token生成し返却
+        return hash(self::$TOKEN_ALGO, $key);
     }
 
 

@@ -230,8 +230,6 @@ class CitrusConfigure
 
         $configure = [];
         $configure = array_merge($configure, CitrusNVL::ArrayVL($configure_default, $configure_key, []));
-        $configure = array_merge($configure, CitrusNVL::ArrayVL($configure_addition, $configure_key, []));
-
-        return $configure;
+        return array_merge($configure, CitrusNVL::ArrayVL($configure_addition, $configure_key, []));
     }
 }
