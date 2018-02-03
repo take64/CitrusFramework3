@@ -61,10 +61,10 @@ class CitrusLogger
      * initialize logger
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      * @return CitrusLoggerType
      */
-    public static function initialize($default_configure = [], $configure = []) : CitrusLoggerType
+    public static function initialize($default_configure = [], $configure_domain = []) : CitrusLoggerType
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -73,15 +73,13 @@ class CitrusLogger
         }
 
         // configure
-        $logger = [];
-        $logger = array_merge($logger, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
-        $logger = array_merge($logger, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
+        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // log type select
-        $type = $logger['type'];
+        $type = $configure['type'];
 
         // log level
-        $level = $logger['level'];
+        $level = $configure['level'];
         if (empty($level) === true)
         {
             $level = 'debug';
@@ -103,17 +101,17 @@ class CitrusLogger
         {
             // file
             case self::LOG_TYPE_FILE :
-                self::$INSTANCE = new CitrusLoggerFile($logger);
+                self::$INSTANCE = new CitrusLoggerFile($configure);
                 break;
             // syslog
             case self::LOG_TYPE_SYSLOG :
-                self::$INSTANCE = new CitrusLoggerSyslog($logger);
+                self::$INSTANCE = new CitrusLoggerSyslog($configure);
                 break;
             default:
         }
 
         // display
-        self::$LOG_DISPLAY = CitrusNVL::NVL($logger['display'], false);
+        self::$LOG_DISPLAY = CitrusNVL::NVL($configure['display'], false);
 
         // initialized
         self::$IS_INITIALIZED = true;

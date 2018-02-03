@@ -47,9 +47,9 @@ class CitrusAuthentication
      * initialize authentication
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      */
-    public static function initialize(array $default_configure = [], array $configure = [])
+    public static function initialize(array $default_configure = [], array $configure_domain = [])
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -58,14 +58,12 @@ class CitrusAuthentication
         }
 
         // 認証設定
-        $authentication = [];
-        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
-        $authentication = array_merge($authentication, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
+        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // 認証設定はないが初期化する可能性がある
-        if (empty($authentication) === false)
+        if (empty($configure) === false)
         {
-            switch ($authentication['type'])
+            switch ($configure['type'])
             {
                 case self::TYPE_DATABASE :
                     self::$INSTANCE = new CitrusAuthenticationDatabase();

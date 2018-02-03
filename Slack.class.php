@@ -1,14 +1,7 @@
 <?php
 /**
- * Slack.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -41,9 +34,7 @@ class CitrusSlack
         }
 
         // configure
-        $configure = [];
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT, 'slack', []));
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN, 'slack', []));
+        $configure = CitrusConfigure::configureMerge('slack');
 
         // ids
         self::$WEBHOOK_URLS = [];
