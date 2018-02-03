@@ -58,9 +58,9 @@ class CitrusFormmap
      * initialize formmap
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      */
-    public static function initialize($default_configure = [], $configure = [])
+    public static function initialize($default_configure = [], $configure_domain = [])
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -69,12 +69,10 @@ class CitrusFormmap
         }
 
         // configure
-        $formmap = [];
-        $formmap = array_merge($formmap, CitrusNVL::ArrayVL($default_configure, 'formmap', []));
-        $formmap = array_merge($formmap, CitrusNVL::ArrayVL($configure, 'formmap', []));
+        $configure = CitrusConfigure::configureMerge('formmap', $default_configure, $configure_domain);
 
         // cache
-        self::$IS_CACHE = $formmap['cache'];
+        self::$IS_CACHE = $configure['cache'];
 
         // initialized
         self::$IS_INITIALIZED = true;

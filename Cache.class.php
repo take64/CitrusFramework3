@@ -38,9 +38,9 @@ class CitrusCache
      * initialize cache
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      */
-    public static function initialize($default_configure = [], $configure = [])
+    public static function initialize($default_configure = [], $configure_domain = [])
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -48,41 +48,33 @@ class CitrusCache
             return ;
         }
 
-        // configure auto load
-        $default_configure = CitrusNVL::coalesceEmpty($default_configure, CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT);
-        $configure = CitrusNVL::coalesceEmpty($configure, CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN);
-
         // configure
-        $cache = [];
-        $cache = array_merge($cache, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_KEY, []));
-        $cache = array_merge($cache, CitrusNVL::ArrayVL($configure, self::CONFIGURE_KEY, []));
+        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // configure empty
-        if (empty($cache) === true)
+        if (empty($configure) === true)
         {
             return ;
         }
 
         // cache engine type select
-        $engine = $cache['engine'];
+        $engine = $configure['engine'];
 
         // cache engine instance
+        $prefix = CitrusNVL::ArrayVL($configure, 'prefix', '');
+        $expire = CitrusNVL::ArrayVL($configure, 'expire', 0);
         switch ($engine)
         {
             // redis
             case self::ENGINE_REDIS :
-                $prefix = CitrusNVL::ArrayVL($cache, 'prefix', '');
-                $expire = CitrusNVL::ArrayVL($cache, 'expire', 0);
                 self::$INSTANCE = new CitrusCacheRedis($prefix, $expire);
-                self::$INSTANCE->connect($cache['host'], $cache['port']);
+                self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;
 
             // redis
             case self::ENGINE_MEMCACHED :
-                $prefix = CitrusNVL::ArrayVL($cache, 'prefix', '');
-                $expire = CitrusNVL::ArrayVL($cache, 'expire', 0);
                 self::$INSTANCE = new CitrusCacheMemcached($prefix, $expire);
-                self::$INSTANCE->connect($cache['host'], $cache['port']);
+                self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;
 
             default:

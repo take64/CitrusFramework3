@@ -1,14 +1,7 @@
 <?php
 /**
- * Dmm.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -55,9 +48,7 @@ class CitrusDmm
         }
 
         // configure
-        $configure = [];
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT, self::CONFIGURE_KEY, []));
-        $configure = array_merge($configure, CitrusNVL::ArrayVL(CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN, self::CONFIGURE_KEY, []));
+        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY);
 
         // ids
         self::$API_ID       = $configure[self::API_ID_KEY];

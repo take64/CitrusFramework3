@@ -26,9 +26,9 @@ class CitrusMessage extends CitrusClass
      * initialize message
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      */
-    public static function initialize(array $default_configure = [], array $configure = [])
+    public static function initialize(array $default_configure = [], array $configure_domain = [])
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -37,11 +37,9 @@ class CitrusMessage extends CitrusClass
         }
 
         // メッセージ設定
-        $configures = [];
-        $configures = array_merge($configures, CitrusNVL::ArrayVL($default_configure, 'message', []));
-        $configures = array_merge($configures, CitrusNVL::ArrayVL($configure, 'message', []));
+        $configure = CitrusConfigure::configureMerge('message', $default_configure, $configure_domain);
 
-        self::$enable_session = $configures['enable_session'];
+        self::$enable_session = $configure['enable_session'];
 
         // initialized
         self::$IS_INITIALIZED = true;

@@ -7,7 +7,7 @@
 
 namespace Citrus\Document;
 
-use Citrus\CitrusNVL;
+use Citrus\CitrusConfigure;
 use Citrus\CitrusObject;
 use Citrus\CitrusUseragent;
 use Citrus\Useragent\CitrusUseragentDevice;
@@ -59,9 +59,9 @@ class CitrusDocumentRouter extends CitrusObject
      * initialize router
      *
      * @param array $default_configure
-     * @param array $configure
+     * @param array $configure_domain
      */
-    public static function initialize(array $default_configure = [], array $configure = [])
+    public static function initialize(array $default_configure = [], array $configure_domain = [])
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -73,24 +73,20 @@ class CitrusDocumentRouter extends CitrusObject
         $device_list = CitrusUseragentDevice::callDeviceList();
 
         // デバイス設定
-        $devices = [];
-        $devices = array_merge($devices, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_DEVICE_KEY, []));
-        $devices = array_merge($devices, CitrusNVL::ArrayVL($configure, self::CONFIGURE_DEVICE_KEY, []));
+        $configure_devices = CitrusConfigure::configureMerge(self::CONFIGURE_DEVICE_KEY, $default_configure, $configure_domain);
 
         // デバイスルーティング設定
         foreach ($device_list as $one)
         {
-            if (isset($devices[$one]) === true)
+            if (isset($configure_devices[$one]) === true)
             {
-                self::$DEVICE_ROUTING[$one] = $devices[$one];
+                self::$DEVICE_ROUTING[$one] = $configure_devices[$one];
             }
         }
 
         // アクセス設定
-        $accesses = [];
-        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($default_configure, self::CONFIGURE_ROUTING_KEY, []));
-        $accesses = array_merge($accesses, CitrusNVL::ArrayVL($configure, self::CONFIGURE_ROUTING_KEY, []));
-        self::$ACCESS_ROUTING = $accesses;
+        $configure_accesses = CitrusConfigure::configureMerge(self::CONFIGURE_ROUTING_KEY, $default_configure, $configure_domain);
+        self::$ACCESS_ROUTING = $configure_accesses;
 
         // initialized
         self::$IS_INITIALIZED = true;

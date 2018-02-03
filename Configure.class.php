@@ -1,14 +1,7 @@
 <?php
 /**
- * Configure.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -78,6 +71,8 @@ class CitrusConfigure
 
     /** @var bool */
     private static $IS_INITIALIZED_CONFIGURE = false;
+
+
 
     /**
      * configure initilize
@@ -215,5 +210,28 @@ class CitrusConfigure
 
         // ロガー処理
         CitrusLogger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
+    }
+
+
+
+    /**
+     * configure設定のマージ処理
+     *
+     * @param string     $configure_key      設定キー
+     * @param array|null $configure_default  設定(デフォルト)
+     * @param array|null $configure_addition 設定(追加設定)
+     * @return array
+     */
+    public static function configureMerge(string $configure_key, array $configure_default = null, array $configure_addition = null)
+    {
+        // デフォルト設定
+        $configure_default  = CitrusNVL::coalesceEmpty($configure_default, CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT);
+        $configure_addition = CitrusNVL::coalesceEmpty($configure_addition, CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN);
+
+        $configure = [];
+        $configure = array_merge($configure, CitrusNVL::ArrayVL($configure_default, $configure_key, []));
+        $configure = array_merge($configure, CitrusNVL::ArrayVL($configure_addition, $configure_key, []));
+
+        return $configure;
     }
 }
