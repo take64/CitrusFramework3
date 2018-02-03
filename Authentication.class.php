@@ -61,13 +61,10 @@ class CitrusAuthentication
         $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // 認証設定はないが初期化する可能性がある
-        if (empty($configure) === false)
+        // 複数設定できるまでifで処理
+        if (empty($configure) === false && $configure['type'] === self::TYPE_DATABASE)
         {
-            // 複数設定できるまでifで処理
-            if ($configure['type'] === self::TYPE_DATABASE)
-            {
-                self::$INSTANCE = new CitrusAuthenticationDatabase();
-            }
+            self::$INSTANCE = new CitrusAuthenticationDatabase();
         }
 
         // initialized

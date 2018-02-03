@@ -148,13 +148,13 @@ class CitrusService
         return $this->callDao()->details($condition);
     }
 
+
+
     /**
      * call detail record
      *
      * @access  public
-     * @since   0.0.6.1 2012.03.20
-     * @version 0.0.6.1 2012.03.20
-     * @param   CitrusDatabaseColumn   $condition
+     * @param   CitrusDatabaseColumn $condition
      * @return  CitrusDatabaseColumn
      */
     public function detail(CitrusDatabaseColumn $condition)

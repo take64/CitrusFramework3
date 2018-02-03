@@ -18,6 +18,7 @@ use Citrus\CitrusSession;
 use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Document\CitrusDocumentPager;
 use Citrus\Message\CitrusMessageItem;
+use Citrus\Sqlmap\CitrusSqlmapCondition;
 use Citrus\Xhr\CitrusXhrElement;
 use Citrus\Xhr\CitrusXhrResult;
 
@@ -177,7 +178,7 @@ class CitrusControllerXhr
         // get form data
         $this->callFormmap()->load($this->formmap_namespace . '.php');
         $this->callFormmap()->bind();
-        /** @var CitrusDatabaseColumn $condition */
+        /** @var CitrusDatabaseColumn|CitrusSqlmapCondition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_call_id);
         $condition->toLike($this->search_column_to_like);
 
@@ -231,8 +232,9 @@ class CitrusControllerXhr
     public function facesDetail() : CitrusXhrResult
     {
         // condition
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
+        /** @var CitrusDatabaseColumn|CitrusSqlmapCondition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_view_id);
 
         // call detail
@@ -250,15 +252,12 @@ class CitrusControllerXhr
      * regist item
      * の登録
      *
-     * @access  public
-     * @since   0.0.6.3 2012.03.31
-     * @version 0.0.6.3 2012.03.31
      * @return  CitrusXhrResult
      */
     public function modify()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
 
         // validate
@@ -287,18 +286,16 @@ class CitrusControllerXhr
      * remove & item
      * の削除
      *
-     * @access  public
-     * @since   0.0.6.3 2012.03.31
-     * @version 0.0.6.3 2012.03.31
      * @return  CitrusXhrResult
      */
     public function remove()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
 
         // remove
+        /** @var CitrusDatabaseColumn $entity */
         $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_edit_id);
         return new CitrusXhrResult([$this->callService()->remove($entity->getCondition())]);
     }
@@ -307,18 +304,16 @@ class CitrusControllerXhr
      * call summary list
      * サマリリストの取得
      *
-     * @access  public
-     * @since   0.0.6.3 2012.03.31
-     * @version 0.0.6.3 2012.03.31
      * @return  CitrusXhrResult
      */
     public function selections()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
 
         // condition
+        /** @var CitrusDatabaseColumn|CitrusSqlmapCondition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_call_id);
         $condition->toLike($this->search_column_to_like);
 
@@ -357,22 +352,22 @@ class CitrusControllerXhr
         return $result;
     }
 
+
+
     /**
      * call summary list
      * サマリリストの取得
      *
-     * @access  public
-     * @since   0.0.6.3 2012.03.31
-     * @version 0.0.6.3 2012.03.31
      * @return  CitrusXhrResult
      */
     public function suggests()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
         
         // call
+        /** @var CitrusDatabaseColumn|CitrusSqlmapCondition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_suggest_id);
         if (empty($condition->orderby) === true)
         {
@@ -382,9 +377,7 @@ class CitrusControllerXhr
         $condition->toLike($this->search_column_to_like);
         $list = $this->callService()->names($condition);
 
-        $result = array();
-        // $value = $this->suggest_value;
-        // $label = $this->suggest_label;
+        $result = [];
         foreach ($list as $one)
         {
             $result[] = array('label' => $one->name, 'value' => $one->id);
@@ -403,7 +396,7 @@ class CitrusControllerXhr
     public function on()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
 
         // validate
@@ -413,6 +406,7 @@ class CitrusControllerXhr
         }
         else
         {
+            /** @var CitrusDatabaseColumn $entity */
             $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_toggle_id);
             if (empty($entity->getCondition()->rowid) === false && empty($entity->getCondition()->rev) === false)
             {
@@ -427,6 +421,8 @@ class CitrusControllerXhr
         return new CitrusXhrResult($result);
     }
 
+
+
     /**
      * toggle document_role off
      * 画面ロールの登録
@@ -436,7 +432,7 @@ class CitrusControllerXhr
     public function off()
     {
         // get form data
-        $this->callFormmap()->load($this->formmap_namespace.'.php', $this->formmap_namespace);
+        $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
 
         // validate
@@ -447,6 +443,7 @@ class CitrusControllerXhr
         else
         {
             // regist
+            /** @var CitrusDatabaseColumn $entity */
             $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_toggle_id);
             $result = $this->callService()->remove($entity->toCondition());
         }

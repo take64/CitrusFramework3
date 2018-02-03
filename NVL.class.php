@@ -114,12 +114,9 @@ class CitrusNVL
 
         $result = $replace;
 
-        if (is_array($value) === true)
+        if (is_array($value) === true && isset($value[$key]) === true)
         {
-            if (isset($value[$key]) === true)
-            {
-                $result = $value[$key];
-            }
+            $result = $value[$key];
         }
 
         return $result;

@@ -1,14 +1,7 @@
 <?php
 /**
- * Paths.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Configure
  * @license     http://www.citrus.tk/
  */
 
@@ -161,11 +154,6 @@ class CitrusConfigurePaths extends CitrusObject
      */
     private function replace(string $search, string $append_path = null)
     {
-        $result = $search;
-        $result = str_replace('{#domain#}', $this->domain, $result);
-
-        $result .= $append_path;
-
-        return $result;
+        return str_replace('{#domain#}', $this->domain, $search) . $append_path;
     }
 }
