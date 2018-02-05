@@ -78,12 +78,12 @@ class CitrusDocumentPager
         // variables
         $_current    = $this->current;
         $_last       = intval(ceil($this->total / $this->limit));
-        $_range      = ($this->range > $_last ? $_last : $this->range);
+        $_range      = min($_last, $this->range);
 
         if ($_current === 1)
         {
             $range_from = 1;
-            $range_to   = ($_range > $_last ? $_last : $_range);
+            $range_to   = min($_last, $_range);
         }
         else if ($_current === $_last)
         {
@@ -112,7 +112,6 @@ class CitrusDocumentPager
             $range_to   = $_current + $range_next;
         }
 
-
         // range
         $this->range = intval($_range);
 
@@ -129,13 +128,13 @@ class CitrusDocumentPager
             $this->view[] = $i;
         }
 
+        // next page
+        $this->next = null;
+        // last page
+        $this->last = null;
+
         if ($this->total == 0)
         {
-            // next page
-            $this->next = null;
-
-            // last page
-            $this->last = null;
 
             // view from
             $this->view_from = 0;
@@ -145,17 +144,26 @@ class CitrusDocumentPager
         }
         else
         {
-            // next page
-            $this->next = ($_last == $_current ? null : $_current + 1);
+            if ($_last !== $_current)
+            {
+                // next page
+                $this->next = ($_current + 1);
 
-            // last page
-            $this->last = ($_last == $_current ? null : $_last);
+                // last page
+                $this->last = $_last;
+
+                // view to
+                $this->view_to = ($this->limit * $_current);
+
+            }
+            else
+            {
+                // view to
+                $this->view_to = $this->total;
+            }
 
             // view from
             $this->view_from = $this->limit * ($_current - 1) + 1;
-
-            // view to
-            $this->view_to = ($_last == $_current ? $this->total : ($this->limit * $_current));
         }
     }
 }

@@ -73,39 +73,6 @@ class CitrusFormmapElement extends CitrusObject
     /** var type email */
     const VAR_TYPE_EMAIL = 'email';
 
-    /** var type text */
-    const VAR_TYPE_TEXT = 'text';
-
-    /** var type password */
-    const VAR_TYPE_PASSWD = 'password';
-
-    /** var type textarea */
-    const VAR_TYPE_TEXTAREA = 'textarea';
-
-    /** var type select */
-    const VAR_TYPE_SELECT = 'select';
-
-    /** var type radio */
-    const VAR_TYPE_RADIO = 'radio';
-
-    /** var type checkbox */
-    const VAR_TYPE_CHECKBOX = 'checkbox';
-
-    /** var type button */
-    const VAR_TYPE_BUTTON = 'button';
-
-    /** var type submit */
-    const VAR_TYPE_SUBMIT = 'submit';
-
-    /** var type image */
-    const VAR_TYPE_IMAGE = 'image';
-
-    /** var type hidden */
-    const VAR_TYPE_HIDDEN = 'hidden';
-
-    /** var type element */
-    const VAR_TYPE_ELEMENT = 'element';
-
 
     /** form type element */
     const FORM_TYPE_ELEMENT = 'element';
@@ -255,7 +222,7 @@ class CitrusFormmapElement extends CitrusObject
     public static function generateTag(string $tag, array $elements = null, $options = null) : string
     {
         // 閉じタグがあるタイプか否か
-        $is_multiple_tag = in_array($tag, [ 'select', 'button' ]);
+        $is_multiple_tag = in_array($tag, [ self::FORM_TYPE_SELECT, self::FORM_TYPE_BUTTON ]);
 
         // 要素フォーマット
         $element_format = '%s="%s"';
@@ -293,7 +260,7 @@ class CitrusFormmapElement extends CitrusObject
             if (is_array($options) === true)
             {
                 // select
-                if ($tag == 'select')
+                if ($tag == self::FORM_TYPE_SELECT)
                 {
                     foreach ($options as $ky => $vl)
                     {
@@ -437,37 +404,30 @@ class CitrusFormmapElement extends CitrusObject
     public function validate() : int
     {
         $result = 0;
-        try
+        // validate require
+        if ($this->_validateRequired() === false)
         {
-            // validate require
-            if ($this->_validateRequired() === false)
+            $result++;
+        }
+        else
+        {
+            // validate type
+            if ($this->_validateVarType() === false)
             {
                 $result++;
             }
-            else
+
+            // validate max
+            if ($this->_validateMax() === false)
             {
-                // validate type
-                if ($this->_validateVarType() === false)
-                {
-                    $result++;
-                }
-
-                // validate max
-                if ($this->_validateMax() === false)
-                {
-                    $result++;
-                }
-
-                // validate min
-                if ($this->_validateMin() === false)
-                {
-                    $result++;
-                }
+                $result++;
             }
-        }
-        catch (CitrusException $e)
-        {
-            throw $e;
+
+            // validate min
+            if ($this->_validateMin() === false)
+            {
+                $result++;
+            }
         }
         return $result;
     }
@@ -522,28 +482,21 @@ class CitrusFormmapElement extends CitrusObject
      */
     protected function _validateRequired() : bool
     {
-        try
+        if ($this->required === true)
         {
-            if ($this->required === true)
+            $message = sprintf('「%s」は入力必須です。', $this->name);
+            if (is_numeric($this->value) === true)
             {
-                $message = sprintf('「%s」は入力必須です。', $this->name);
-                if (is_numeric($this->value) === true)
+                return true;
+            }
+            else if (empty($this->value) === true)
+            {
+                if (($this->validate_null_safe === true && is_null($this->value) === true) === false)
                 {
-                    return true;
-                }
-                else if (empty($this->value) === true)
-                {
-                    if (($this->validate_null_safe === true && is_null($this->value) === true) === false)
-                    {
-                        $this->addError($message);
-                        return false;
-                    }
+                    $this->addError($message);
+                    return false;
                 }
             }
-        }
-        catch (CitrusException $e)
-        {
-            throw $e;
         }
         return true;
     }
@@ -559,113 +512,106 @@ class CitrusFormmapElement extends CitrusObject
     private function _validateVarType() : bool
     {
         $result = true;
-        try
+        // 入力がある場合のみチェックする。
+        if (is_null($this->value) === true || $this->value === '')
         {
-            // 入力がある場合のみチェックする。
-            if (is_null($this->value) === true || $this->value === '')
-            {
-                return $result;
-            }
-
-            // message
-            $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
-            $message_form_validate_type_float = sprintf('「%s」には少数を入力してください。', $this->name);
-            $message_form_validate_type_numeric = sprintf('「%s」には数字を入力してください。', $this->name);
-            $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, PHP_INT_MAX);
-            $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, PHP_INT_MIN);
-            $message_form_validate_length_max = sprintf('「%s」には「%s」文字以下で入力してください。', $this->name, 0);
-            $message_form_validate_length_min = sprintf('「%s」には「%s」文字以上で入力してください。', $this->name, 0);
-
-            $message_form_validate_type_alphabet = sprintf('「%s」には半角英字を入力してください。', $this->name);
-            $message_form_validate_type_alphanumeric = sprintf('「%s」には半角英数字を入力してください。', $this->name);
-            $message_form_validate_type_an_marks = sprintf('「%s」には半角英数字および記号を入力してください。', $this->name);
-            $message_form_validate_type_date = sprintf('「%s」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', $this->name);
-            $message_form_validate_type_time = sprintf('「%s」には時分秒または時分を入力してください。', $this->name);
-            $message_form_validate_type_datetime = sprintf('「%s」には年月日時分秒を入力してください。', $this->name);
-            $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
-            $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
-            $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
-
-            
-            // filter
-            $filtered_value = $this->filter();
-
-            // validate
-            switch($this->var_type)
-            {
-                // int
-                case self::VAR_TYPE_INT :
-                    $result = $this->_validateVarTypeInt($filtered_value);
-                    break;
-
-                // float
-                case self::VAR_TYPE_FLOAT :
-                    $result = $this->_validateVarTypeFloat($filtered_value);
-                    break;
-
-                // numeric
-                case self::VAR_TYPE_NUMERIC :
-                    $result = $this->_validateVarTypeNumeric($filtered_value);
-                    break;
-
-                // string
-                case self::VAR_TYPE_STRING :
-                    break;
-
-                // alphabet
-                case self::VAR_TYPE_ALPHABET :
-                    $result = $this->_validateVarTypeAlphabet($filtered_value);
-                    break;
-
-                // alphabet & numeric
-                case self::VAR_TYPE_ALPHANUMERIC :
-                    $result = $this->_validateVarTypeAlphanumeric($filtered_value);
-                    break;
-
-                // alphabet & numeric & marks
-                case self::VAR_TYPE_AN_MARKS :
-                    $result = $this->_validateVarTypeANMarks($filtered_value);
-                    break;
-
-                // date
-                case self::VAR_TYPE_DATE :
-                    $result = $this->_validateVarTypeDate($filtered_value);
-                    break;
-
-                // time
-                case self::VAR_TYPE_TIME :
-                    $result = $this->_validateVarTypeTime($filtered_value);
-                    break;
-
-                // datetime
-                case self::VAR_TYPE_DATETIME :
-                    $result = $this->_validateVarTypeDatetime($filtered_value);
-                    break;
-
-                // tel
-                case self::VAR_TYPE_TEL :
-                    $result = $this->_validateVarTypeTel($filtered_value);
-                    break;
-
-                // fax
-                case self::VAR_TYPE_FAX :
-                    $result = $this->_validateVarTypeFax($filtered_value);
-                    break;
-
-                // email
-                case self::VAR_TYPE_EMAIL :
-                    $result = $this->_validateVarTypeEmail($filtered_value);
-                    break;
-
-                // other
-                default :
-                    $result = true;
-                    break;
-            }
+            return $result;
         }
-        catch (CitrusException $e)
+
+        // message
+        $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
+        $message_form_validate_type_float = sprintf('「%s」には少数を入力してください。', $this->name);
+        $message_form_validate_type_numeric = sprintf('「%s」には数字を入力してください。', $this->name);
+        $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, PHP_INT_MAX);
+        $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, PHP_INT_MIN);
+        $message_form_validate_length_max = sprintf('「%s」には「%s」文字以下で入力してください。', $this->name, 0);
+        $message_form_validate_length_min = sprintf('「%s」には「%s」文字以上で入力してください。', $this->name, 0);
+
+        $message_form_validate_type_alphabet = sprintf('「%s」には半角英字を入力してください。', $this->name);
+        $message_form_validate_type_alphanumeric = sprintf('「%s」には半角英数字を入力してください。', $this->name);
+        $message_form_validate_type_an_marks = sprintf('「%s」には半角英数字および記号を入力してください。', $this->name);
+        $message_form_validate_type_date = sprintf('「%s」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', $this->name);
+        $message_form_validate_type_time = sprintf('「%s」には時分秒または時分を入力してください。', $this->name);
+        $message_form_validate_type_datetime = sprintf('「%s」には年月日時分秒を入力してください。', $this->name);
+        $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
+        $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
+        $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
+
+
+        // filter
+        $filtered_value = $this->filter();
+
+        // validate
+        switch($this->var_type)
         {
-            throw $e;
+            // int
+            case self::VAR_TYPE_INT :
+                $result = $this->_validateVarTypeInt($filtered_value);
+                break;
+
+            // float
+            case self::VAR_TYPE_FLOAT :
+                $result = $this->_validateVarTypeFloat($filtered_value);
+                break;
+
+            // numeric
+            case self::VAR_TYPE_NUMERIC :
+                $result = $this->_validateVarTypeNumeric($filtered_value);
+                break;
+
+            // string
+            case self::VAR_TYPE_STRING :
+                break;
+
+            // alphabet
+            case self::VAR_TYPE_ALPHABET :
+                $result = $this->_validateVarTypeAlphabet($filtered_value);
+                break;
+
+            // alphabet & numeric
+            case self::VAR_TYPE_ALPHANUMERIC :
+                $result = $this->_validateVarTypeAlphanumeric($filtered_value);
+                break;
+
+            // alphabet & numeric & marks
+            case self::VAR_TYPE_AN_MARKS :
+                $result = $this->_validateVarTypeANMarks($filtered_value);
+                break;
+
+            // date
+            case self::VAR_TYPE_DATE :
+                $result = $this->_validateVarTypeDate($filtered_value);
+                break;
+
+            // time
+            case self::VAR_TYPE_TIME :
+                $result = $this->_validateVarTypeTime($filtered_value);
+                break;
+
+            // datetime
+            case self::VAR_TYPE_DATETIME :
+                $result = $this->_validateVarTypeDatetime($filtered_value);
+                break;
+
+            // tel
+            case self::VAR_TYPE_TEL :
+                $result = $this->_validateVarTypeTel($filtered_value);
+                break;
+
+            // fax
+            case self::VAR_TYPE_FAX :
+                $result = $this->_validateVarTypeFax($filtered_value);
+                break;
+
+            // email
+            case self::VAR_TYPE_EMAIL :
+                $result = $this->_validateVarTypeEmail($filtered_value);
+                break;
+
+            // other
+            default :
+                $result = true;
+                break;
         }
         return $result;
     }
