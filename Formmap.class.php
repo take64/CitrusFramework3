@@ -1,14 +1,7 @@
 <?php
 /**
- * Formmap.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
@@ -23,6 +16,7 @@ use Citrus\Formmap\CitrusFormmapSearch;
 use Citrus\Formmap\CitrusFormmapSelect;
 use Citrus\Formmap\CitrusFormmapSubmit;
 use Citrus\Formmap\CitrusFormmapText;
+use Exception;
 
 class CitrusFormmap
 {
@@ -188,7 +182,7 @@ class CitrusFormmap
             unset($request_list['url']);
         }
 
-        $prefix = (isset($request_list['prefix']) === true ? $request_list['prefix'] : '');
+        $prefix = CitrusNVL::ArrayVL($request_list, 'prefix', '');
 
         // $this->mapsには$this->elementsの参照から渡される。
         foreach ($request_list as $ky => $vl)
@@ -305,9 +299,9 @@ class CitrusFormmap
             }
             return $result;
         }
-        catch (CitrusException $e)
+        catch (Exception $e)
         {
-            throw $e;
+            throw CitrusException::convert($e);
         }
     }
 

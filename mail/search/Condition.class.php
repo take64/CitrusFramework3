@@ -12,8 +12,11 @@ use Citrus\CitrusObject;
 
 class CitrusMailSearchCondition extends CitrusObject
 {
+    /** サーバーフォルダのINBOX */
+    const FOLDER_INBOX = 'INBOX';
+
     /** @var string フォルダ名 */
-    public $folder_path = 'INBOX';
+    public $folder_path = self::FOLDER_INBOX;
 
     /** @var int[] uid の配列 */
     public $uids = [];
@@ -29,7 +32,7 @@ class CitrusMailSearchCondition extends CitrusObject
      * @param string $folder_path フォルダパス
      * @return CitrusMailSearchCondition
      */
-    public static function generateCondition(string $folder_path = 'INBOX') : CitrusMailSearchCondition
+    public static function generateCondition(string $folder_path = self::FOLDER_INBOX) : CitrusMailSearchCondition
     {
         $condition = new static();
         $condition->folder_path = $folder_path;
@@ -45,7 +48,7 @@ class CitrusMailSearchCondition extends CitrusObject
      * @param string $folder_path フォルダパス
      * @return CitrusMailSearchCondition
      */
-    public static function generateUids(array $uids, string $folder_path = 'INBOX') : CitrusMailSearchCondition
+    public static function generateUids(array $uids, string $folder_path = self::FOLDER_INBOX) : CitrusMailSearchCondition
     {
         $condition = self::generateCondition($folder_path);
         $condition->uids = $uids;
@@ -61,7 +64,7 @@ class CitrusMailSearchCondition extends CitrusObject
      * @param string $folder_path フォルダパス
      * @return CitrusMailSearchCondition
      */
-    public static function generateMsgnos(array $msgnos, string $folder_path = 'INBOX') : CitrusMailSearchCondition
+    public static function generateMsgnos(array $msgnos, string $folder_path = self::FOLDER_INBOX) : CitrusMailSearchCondition
     {
         $condition = self::generateCondition($folder_path);
         $condition->msgnos = $msgnos;

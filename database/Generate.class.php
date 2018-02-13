@@ -43,73 +43,14 @@ class CitrusDatabaseGenerate
             $db = new PDO($dsn->toStringWithAuth());
 
             // カラム定義の取得
-            $stmt = $db->prepare('SELECT 
-      column_name
-    , column_default
-    , data_type
-FROM information_schema.columns 
-WHERE table_catalog = :database
-  AND table_schema = :schema 
-  AND table_name = :table 
-ORDER BY ordinal_position');
-            $stmt->execute([
-                ':database' => $dsn->database,
-                ':schema'   => $dsn->schema,
-                ':table'    => $tablename,
-            ]);
-            $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $columns = self::callTableColumns($db, $dsn, $tablename);
 
             // コメント定義の取得
-            $stmt = $db->prepare('SELECT
-      pg_stat_all_tables.relname
-    , pg_attribute.attname
-    , pg_description.description
-FROM pg_stat_all_tables
-INNER JOIN pg_description
-        ON pg_description.objoid = pg_stat_all_tables.relid
-       AND pg_description.objsubid <> 0
-INNER JOIN pg_attribute
-        ON pg_attribute.attrelid = pg_description.objoid
-       AND pg_attribute.attnum = pg_description.objsubid
-WHERE pg_stat_all_tables.schemaname = :schema
-  AND pg_stat_all_tables.relname = :table
-ORDER BY pg_description.objsubid');
-            $stmt->execute([
-                ':schema'   => $dsn->schema,
-                ':table'    => $tablename,
-            ]);
-            $comment_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            // コメントデータ
-            $comments = [];
-            foreach ($comment_results as $one)
-            {
-                $comments[$one['attname']] = $one;
-            }
+            $comments = self::callTableColumnComments($db, $dsn, $tablename);
 
 
             // プライマリキーの取得
-            $stmt = $db->prepare('SELECT
-      information_schema.constraint_column_usage.column_name
-FROM information_schema.table_constraints
-INNER JOIN information_schema.constraint_column_usage
-        ON information_schema.constraint_column_usage.constraint_name = information_schema.table_constraints.constraint_name
-       AND information_schema.constraint_column_usage.table_name = information_schema.table_constraints.table_name
-       AND information_schema.constraint_column_usage.table_schema = information_schema.table_constraints.table_schema
-       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
-       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
-WHERE information_schema.table_constraints.constraint_type = \'PRIMARY KEY\'
-  AND information_schema.table_constraints.table_name = :table');
-            $stmt->execute([
-                ':table'    => $tablename,
-            ]);
-            $primarykey_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            // プライマリキーデータ
-            $primary_keys = [];
-            foreach ($primarykey_results as $one)
-            {
-                $column_name = $one['column_name'];
-                $primary_keys[$column_name] = sprintf('\'%s\'', $column_name);
-            }
+            $primary_keys = self::callTablePrimaryKeys($db, $tablename);
 
             // デフォルトカラム
             $default_columns = array_keys(get_class_vars(CitrusDatabaseColumn::class));
@@ -194,12 +135,16 @@ EOT;
                 // クラス名置換
                 switch ($data_type)
                 {
-                    case 'character varying'            : $data_type = 'string'; break;
-                    case 'text'                         : $data_type = 'string'; break;
-                    case 'date'                         : $data_type = 'string'; break;
-                    case 'numeric'                      : $data_type = 'int';    break;
-                    case 'timestamp without time zone'  : $data_type = 'string'; break;
-                    default                             :
+                    case 'character varying' :
+                    case 'text' :
+                    case 'date' :
+                    case 'timestamp without time zone' :
+                        $data_type = 'string';
+                        break;
+                    case 'numeric' :
+                        $data_type = 'int';
+                        break;
+                    default:
                 }
 
                 // ベース文字列
@@ -332,5 +277,121 @@ EOT;
         }
 
         return $path;
+    }
+
+
+
+    /**
+     * テーブルのカラム定義の取得
+     *
+     * @param PDO               $db        PDOハンドル
+     * @param CitrusDatabaseDSN $dsn       DSN設定
+     * @param string            $tablename テーブル名
+     * @return array
+     */
+    private static function callTableColumns(PDO $db, CitrusDatabaseDSN $dsn, string $tablename)
+    {
+        $stmt = $db->prepare(<<<SQL
+SELECT 
+      column_name
+    , column_default
+    , data_type
+FROM information_schema.columns 
+WHERE table_catalog = :database
+  AND table_schema = :schema 
+  AND table_name = :table 
+ORDER BY ordinal_position
+SQL
+);
+        $stmt->execute([
+            ':database' => $dsn->database,
+            ':schema'   => $dsn->schema,
+            ':table'    => $tablename,
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    /**
+     * テーブルのカラム定義の取得
+     *
+     * @param PDO               $db        PDOハンドル
+     * @param CitrusDatabaseDSN $dsn       DSN設定
+     * @param string            $tablename テーブル名
+     * @return array
+     */
+    private static function callTableColumnComments(PDO $db, CitrusDatabaseDSN $dsn, string $tablename)
+    {
+        $stmt = $db->prepare(<<<SQL
+SELECT
+      pg_stat_all_tables.relname
+    , pg_attribute.attname
+    , pg_description.description
+FROM pg_stat_all_tables
+INNER JOIN pg_description
+        ON pg_description.objoid = pg_stat_all_tables.relid
+       AND pg_description.objsubid <> 0
+INNER JOIN pg_attribute
+        ON pg_attribute.attrelid = pg_description.objoid
+       AND pg_attribute.attnum = pg_description.objsubid
+WHERE pg_stat_all_tables.schemaname = :schema
+  AND pg_stat_all_tables.relname = :table
+ORDER BY pg_description.objsubid
+SQL
+);
+        $stmt->execute([
+            ':schema'   => $dsn->schema,
+            ':table'    => $tablename,
+        ]);
+        $comment_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // コメントデータ
+        $comments = [];
+        foreach ($comment_results as $one)
+        {
+            $comments[$one['attname']] = $one;
+        }
+
+        return $comments;
+    }
+
+
+
+    /**
+     * テーブルのプライマリキー定義の取得
+     *
+     * @param PDO               $db        PDOハンドル
+     * @param string            $tablename テーブル名
+     * @return array
+     */
+    private static function callTablePrimaryKeys(PDO $db, string $tablename)
+    {
+        $stmt = $db->prepare(<<<SQL
+SELECT
+      information_schema.constraint_column_usage.column_name
+FROM information_schema.table_constraints
+INNER JOIN information_schema.constraint_column_usage
+        ON information_schema.constraint_column_usage.constraint_name = information_schema.table_constraints.constraint_name
+       AND information_schema.constraint_column_usage.table_name = information_schema.table_constraints.table_name
+       AND information_schema.constraint_column_usage.table_schema = information_schema.table_constraints.table_schema
+       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
+       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
+WHERE information_schema.table_constraints.constraint_type = 'PRIMARY KEY'
+  AND information_schema.table_constraints.table_name = :table
+SQL
+);
+        $stmt->execute([
+            ':table'    => $tablename,
+        ]);
+        $primarykey_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // プライマリキーデータ
+        $primary_keys = [];
+        foreach ($primarykey_results as $one)
+        {
+            $column_name = $one['column_name'];
+            $primary_keys[$column_name] = sprintf('\'%s\'', $column_name);
+        }
+
+        return $primary_keys;
     }
 }

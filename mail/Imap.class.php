@@ -16,6 +16,9 @@ use Citrus\Mail\Search\CitrusMailSearchCondition;
 
 class CitrusMailImap
 {
+    /** サーバーパスフォーマット */
+    const FORMAT_SERVER_PATH = '{%s}%s';
+
     /** @var resource IMAP */
     public $imap_handle;
 
@@ -333,8 +336,8 @@ class CitrusMailImap
         $encoded_folder_path_to     = self::encodeImap($folder_path_to);
 
         // サーバー修飾子の追加
-        $encoded_folder_path_from   = sprintf('{%s}%s', $this->account->mail_server, $encoded_folder_path_from);
-        $encoded_folder_path_to     = sprintf('{%s}%s', $this->account->mail_server, $encoded_folder_path_to);
+        $encoded_folder_path_from   = sprintf(self::FORMAT_SERVER_PATH, $this->account->mail_server, $encoded_folder_path_from);
+        $encoded_folder_path_to     = sprintf(self::FORMAT_SERVER_PATH, $this->account->mail_server, $encoded_folder_path_to);
 
         // 購読情報の移動
         if ($is_subscribe === true)

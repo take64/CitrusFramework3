@@ -16,6 +16,7 @@ namespace Citrus;
 
 
 use Citrus\Autoloader\CitrusAutoloaderException;
+use Citrus\Controller\CitrusControllerPage;
 use Citrus\Document\CitrusDocumentRouter;
 use Citrus\Http\CitrusHttpHeader;
 use Citrus\Sqlmap\CitrusSqlmapException;
@@ -62,29 +63,6 @@ class CitrusGateway
                 CitrusSession::part();
                 self::command();
                 break;
-
-            // service client
-            case self::TYPE_CLIENT :
-                // セッション処理開始
-                CitrusSession::part();
-                self::client();
-                break;
-
-            // file request
-            case self::TYPE_REQUEST :
-                CitrusSession::part();
-                self::request();
-                break;
-
-            // binary output
-            case self::TYPE_OUTPUT :
-                CitrusSession::part();
-                self::output();
-                break;
-
-            default :
-                CitrusGateway::main(TYPE_CONTROLLER);
-                break;
         }
     }
 
@@ -100,7 +78,6 @@ class CitrusGateway
             // ルートパース
             $device_code    = CitrusSession::$router->get('device');
             $document_code  = CitrusSession::$router->get('document');
-            $action_code    = CitrusSession::$router->get('action');
 
             // ドキュメントコード
             $ucfirst_document_code = '';
@@ -110,13 +87,6 @@ class CitrusGateway
                 $ucfirst_code = ucfirst($one);
                 $ucfirst_document_code .= $ucfirst_code;
                 $ucfirst_document_codes[] = $ucfirst_code;
-            }
-
-            // デバイス取得
-            if (is_null($device_code) === true)
-            {
-                $useragent = CitrusStatus::callUseragent();
-                $device_code = $useragent->device;
             }
 
             // 頭文字だけ大文字で後は小文字のterm
@@ -138,6 +108,7 @@ class CitrusGateway
             // I have control
             $controller_namespace_class_name = $controller_namespace . '\\' . $controller_class_name;
             spl_autoload_call($controller_namespace_class_name);
+            /** @var CitrusControllerPage $controller */
             $controller = new $controller_namespace_class_name();
             $controller->run();
 
@@ -161,16 +132,12 @@ class CitrusGateway
             );
             self::controller();
         }
-        catch (CitrusErrorException $ee)
-        {
-            CitrusLogger::debug($ee);
-            $ee->_commit();
-        }
         catch (Exception $e)
         {
             CitrusLogger::debug($e);
         }
     }
+
 
 
     /**

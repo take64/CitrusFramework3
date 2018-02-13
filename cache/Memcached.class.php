@@ -58,11 +58,10 @@ class CitrusCacheMemcached extends CitrusCacheDeamon
         // serialized value
         $serialized_value = $this->handler->get($cache_key);
 
-        // unserialize
-        $value = unserialize($serialized_value);
-
-        return $value;
+        // unserialize and return
+        return unserialize($serialized_value);
     }
+
 
 
     /**

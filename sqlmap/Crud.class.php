@@ -34,14 +34,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function summaries(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('summary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('summary', $condition);
     }
 
 
@@ -55,14 +48,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function summary(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('summary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('summary', $condition);
     }
 
 
@@ -76,16 +62,9 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function count(CitrusDatabaseColumn $condition) : int
     {
-        try
-        {
-            /** @var CitrusDatabaseResult $record */
-            $record = $this->queryForObject('count', $condition);
-            return $record->count;
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        /** @var CitrusDatabaseResult $record */
+        $record = $this->queryForObject('count', $condition);
+        return $record->count;
     }
 
 
@@ -99,18 +78,11 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function last(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            /** @var CitrusSqlmapCondition $condition */
-            $condition->limit   = 1;
-            $condition->offset  = 0;
-            $condition->orderby = 'modified_at DESC';
-            return $this->queryForObject('detail', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        /** @var CitrusSqlmapCondition $condition */
+        $condition->limit   = 1;
+        $condition->offset  = 0;
+        $condition->orderby = 'modified_at DESC';
+        return $this->queryForObject('detail', $condition);
     }
 
 
@@ -126,41 +98,34 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function exist(CitrusDatabaseColumn $condition, CitrusDatabaseColumn $source = null) : bool
     {
-        try
+        // 主にregist時のcheckに使われる
+        if (is_null($source) === true)
         {
-            // 主にregist時のcheckに使われる
-            if (is_null($source) === true)
+            $record = $this->queryForObject('detail', $condition);
+            $result = (empty($record) === false);
+            unset($record);
+            return $result;
+        }
+        // 主にmodify時のcheckに使われる
+        else
+        {
+            $record = $this->queryForObject('detail', $condition);
+            $compare= $this->queryForObject('detail', $source);
+
+            if (empty($record) === false
+                && empty($compare) === false
+                && $record->rowid != $compare->rowid)
             {
-                $record = $this->queryForObject('detail', $condition);
-                $result = (empty($record) === false);
                 unset($record);
-                return $result;
+                unset($compare);
+                return true;
             }
-            // 主にmodify時のcheckに使われる
             else
             {
-                $record = $this->queryForObject('detail', $condition);
-                $compare= $this->queryForObject('detail', $source);
-
-                if (empty($record) === false
-                    && empty($compare) === false
-                    && $record->rowid != $compare->rowid)
-                {
-                    unset($record);
-                    unset($compare);
-                    return true;
-                }
-                else
-                {
-                    unset($record);
-                    unset($compare);
-                    return false;
-                }
+                unset($record);
+                unset($compare);
+                return false;
             }
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
         }
     }
 
@@ -175,14 +140,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function names(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('name', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('name', $condition);
     }
 
 
@@ -196,14 +154,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function name(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('name', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('name', $condition);
     }
 
 
@@ -217,14 +168,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function details(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('detail', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('detail', $condition);
     }
 
 
@@ -238,14 +182,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function detail(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('detail', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('detail', $condition);
     }
 
 
@@ -259,14 +196,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function selections(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('selection', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('selection', $condition);
     }
 
 
@@ -280,14 +210,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function selection(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('selection', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('selection', $condition);
     }
 
 
@@ -301,14 +224,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function facesSummaries(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('facesSummary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('facesSummary', $condition);
     }
 
 
@@ -322,14 +238,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function facesSummary(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('facesSummary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('facesSummary', $condition);
     }
 
 
@@ -343,14 +252,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function facesDetails(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('facesDetail', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('facesDetail', $condition);
     }
 
 
@@ -364,14 +266,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function facesDetail(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('facesDetail', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('facesDetail', $condition);
     }
 
 
@@ -385,14 +280,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function nameSummaries(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForList('nameSummary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForList('nameSummary', $condition);
     }
 
 
@@ -406,14 +294,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function nameSummary(CitrusDatabaseColumn $condition)
     {
-        try
-        {
-            return $this->queryForObject('nameSummary', $condition);
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        return $this->queryForObject('nameSummary', $condition);
     }
 
 
@@ -427,16 +308,9 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function nameCount(CitrusDatabaseColumn $condition) : int
     {
-        try
-        {
-            /** @var CitrusDatabaseResult $record */
-            $record = $this->queryForObject('nameCount', $condition);
-            return $record->count;
-        }
-        catch (CitrusSqlmapException $e)
-        {
-            throw $e;
-        }
+        /** @var CitrusDatabaseResult $record */
+        $record = $this->queryForObject('nameCount', $condition);
+        return $record->count;
     }
 
 
@@ -642,9 +516,6 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     /**
      * call name
      *
-     * @access  protected
-     * @since   0.0.1.2 2012.02.06
-     * @version 0.0.1.2 2012.02.06
      * @param   CitrusDatabaseColumn   $condition
      * @return  boolean
      * @deprecated
@@ -659,9 +530,6 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     /**
      * get name
      *
-     * @access  protected
-     * @since   0.0.1.2 2012.02.06
-     * @version 0.0.1.2 2012.02.06
      * @param   CitrusDatabaseColumn   $entity
      * @return  boolean
      * @deprecated

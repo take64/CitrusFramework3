@@ -28,6 +28,7 @@ class CitrusQueryBuilder
     /** query type delete */
     const QUERY_TYPE_DELETE = 'delete';
 
+
     /** @var CitrusSqlmapStatement $statement */
     public $statement = null;
 

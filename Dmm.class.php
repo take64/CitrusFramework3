@@ -73,14 +73,14 @@ class CitrusDmm
 
         $baseurl = 'https://api.dmm.com/affiliate/v3/ItemList';
         $params = [
-            'api_id'        => self::$API_ID,
-            'affiliate_id'  => self::$AFFILIATE_ID,
-            'site'          => $condition->site,
-            'service'       => $condition->service,
-            'hits'          => $condition->hits,
-            'sort'          => $condition->sort,
-            'offset'        => $condition->offset,
-            'output'        => 'json',
+            self::API_ID_KEY        => self::$API_ID,
+            self::AFFILIATE_ID_KEY  => self::$AFFILIATE_ID,
+            'site'                  => $condition->site,
+            'service'               => $condition->service,
+            'hits'                  => $condition->hits,
+            'sort'                  => $condition->sort,
+            'offset'                => $condition->offset,
+            'output'                => 'json',
         ];
         if (is_null($condition->floor) === false)
         {
