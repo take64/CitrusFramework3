@@ -141,6 +141,7 @@ EOT;
                     case 'timestamp without time zone' :
                         $data_type = 'string';
                         break;
+                    case 'integer' :
                     case 'numeric' :
                         $data_type = 'int';
                         break;

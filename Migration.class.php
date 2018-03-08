@@ -25,6 +25,9 @@ class CitrusMigration
     /** @var string マイグレーションDOWN */
     const ACTION_MIGRATION_DOWN = 'down';
 
+    /** @var string マイグレーションREBIRTH */
+    const ACTION_MIGRATION_REBIRTH = 'rebirth';
+
 
 
     /**
@@ -193,9 +196,25 @@ EOT;
 
                 // 実行
                 $instance->down($dsn);
-
             }
         }
+    }
+
+
+
+    /**
+     * マイグレーションREBIRTHの実行
+     *
+     * @param string              $directory アプリディレクトリ名
+     * @param CitrusDatabaseDSN[] $dsns      マイグレーション対象DSNリスト
+     * @param string|null         $version   バージョン指定
+     */
+    public static function rebirth(string $directory, array $dsns, string $version = null)
+    {
+        // DOWN
+        self::down($directory, $dsns, $version);
+        // UP
+        self::up($directory, $dsns, $version);
     }
 
 

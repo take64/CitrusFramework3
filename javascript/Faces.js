@@ -389,7 +389,9 @@
         
         this.options = options;
 
-        $('.datepicker').datepicker();
+        $('.datepicker').datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
         $('.datetimepicker').datetimepicker({
             dateFormat: 'yy-mm-dd',
             timeFormat: 'HH:mm:ss'
@@ -418,6 +420,7 @@
         if(!service) {
             service = id;
         }
+        options.input = sub;
         options.queries.service = service;
         options.queries.prefix = 'suggest_'+ id + '_';
         
@@ -429,7 +432,11 @@
                 var condition = {'keyword': request.term};
                 $.each(options.queries, function(ky, vl){
                     if(ky !== 'service' && ky !== 'method') {
-                        condition[ky] = vl;
+                        if(typeof vl === 'function') {
+                            condition[ky] = vl();
+                        } else {
+                            condition[ky] = vl;
+                        }
                     }
                 });
                 
@@ -867,9 +874,9 @@
                     var pager_status = selector_list_dialog.find('table.faces-search tfoot tr.pager th.status');
                     var pager_navigation = selector_list_dialog.find('table.faces-search tfoot tr.pager th.navigation');
 
-                    pager_status.find('.total').html($.formatNumber({number:response.results.pager.total}));
-                    pager_status.find('.from').html($.formatNumber({number:response.results.pager.view_from}));
-                    pager_status.find('.to').html($.formatNumber({number:response.results.pager.view_to}));
+                    pager_status.find('.total').html($.numberFormat({number:response.results.pager.total}));
+                    pager_status.find('.from').html($.numberFormat({number:response.results.pager.view_from}));
+                    pager_status.find('.to').html($.numberFormat({number:response.results.pager.view_to}));
                     
                     var navigation = $('<ul />').attr('id', options.list.queries.prefix + 'pager');
                     navigation.append($('<li />').attr('page', response.results.pager.first).html('&lt;&lt;'));
@@ -925,11 +932,13 @@
             if(response.results.result === true) {
                 var selector_edit_dialog = $('#'+ options.edit.dialog.id);
                 $.each(response.results.items, function(ky, vl){
-                    if(selector_edit_dialog.find('.faces-edit #edit_' + options.edit.faces.id + '_' + ky).length > 0) {
-                        selector_edit_dialog.find('.faces-edit #edit_' + options.edit.faces.id + '_' + ky).val(vl).change();
+                    var edit_faces_tag = selector_edit_dialog.find('.faces-edit #edit_' + options.edit.faces.id + '_' + ky);
+                    var view_faces_tag = selector_edit_dialog.find('.faces-edit #view_' + options.view.faces.id + '_' + ky);
+                    if(edit_faces_tag.length > 0) {
+                        edit_faces_tag.val(vl).html(vl).change();
                     }
-                    else if(selector_edit_dialog.find('.faces-edit #view_' + options.view.faces.id + '_' + ky).length > 0) {
-                        selector_edit_dialog.find('.faces-edit #view_' + options.view.faces.id + '_' + ky).html(vl).change();
+                    else if(view_faces_tag.length > 0) {
+                        view_faces_tag.html(vl);
                     }
                 });
             }

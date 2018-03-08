@@ -17,7 +17,6 @@ namespace Citrus\Sqlmap;
 
 use Citrus\CitrusException;
 use PDOException;
-use Throwable;
 
 class CitrusSqlmapException extends CitrusException
 {
