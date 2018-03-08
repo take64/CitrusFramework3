@@ -14,7 +14,7 @@
             });
             return count;
         },
-        formatNumber: function(_options){
+        numberFormat: function(_options){
             var options = jQuery.extend(true, {
                 number: 0,
                 decimals: 0
@@ -46,7 +46,6 @@
             
             return number;
         },
-
         uniqueID: function(_options){
             var options = jQuery.extend(true, {
                 length: 16,
@@ -124,6 +123,42 @@
             var result = Math.round(percent * 10) / 10;
             result = result + ' %';
             return result;
+        },
+        // 日数フォーマット
+        dayFormat: function(_options){
+            var options = jQuery.extend(true, {
+                second: 0,
+                format: 'auto'
+            }, _options);
+
+            var second = options.second;
+            var minute = second / 60;
+            var hour = minute / 60;
+            var day = hour / 24;
+            second = parseInt('' + (second % 60));
+            minute = parseInt('' + (minute % 60));
+            hour = parseInt('' + (hour % 24));
+            day = parseInt(day);
+
+            var format = options.format;
+            if (format === 'auto') {
+                format = '%d days %H:%i:%s';
+                if (day === 0) {
+                    format = '%H:%i:%s';
+                    if (hour === 0) {
+                        format = '%i:%s';
+                        if (minute === 0) {
+                            format = '%s';
+                        }
+                    }
+                }
+            }
+
+            return format
+                .replace('%d', day)
+                .replace('%H', ('00' + hour).slice(-2))
+                .replace('%i', ('00' + minute).slice(-2))
+                .replace('%s', ('00' + second).slice(-2));
         },
         escapeText: function(text){
             return text
