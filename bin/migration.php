@@ -77,6 +77,12 @@ switch ($action)
         $version = CitrusNVL::coalesceNull($version, null);
         CitrusMigration::down($application_directory, $dsns, $version);
         break;
+    // マイグレーションREBIRTH実行
+    case CitrusMigration::ACTION_MIGRATION_REBIRTH :
+        $version = CitrusNVL::ArrayVL($settings, '--version', null);
+        $version = CitrusNVL::coalesceNull($version, null);
+        CitrusMigration::rebirth($application_directory, $dsns, $version);
+        break;
     default:
 }
 
