@@ -102,6 +102,10 @@ class CitrusFormmapElement extends CitrusObject
     const FORM_TYPE_LABEL = 'label';
 
 
+    /** html tag span */
+    const HTML_TAG_SPAN = 'span';
+
+
     /** @var string form id */
     public $id;
 
@@ -225,7 +229,12 @@ class CitrusFormmapElement extends CitrusObject
     public static function generateTag(string $tag, array $elements = null, $options = null) : string
     {
         // 閉じタグがあるタイプか否か
-        $is_multiple_tag = in_array($tag, [ self::FORM_TYPE_SELECT, self::FORM_TYPE_BUTTON, self::FORM_TYPE_LABEL ]);
+        $is_multiple_tag = in_array($tag, [
+            self::FORM_TYPE_SELECT,
+            self::FORM_TYPE_BUTTON,
+            self::FORM_TYPE_LABEL,
+            self::HTML_TAG_SPAN
+        ]);
 
         // 要素フォーマット
         $element_format = '%s="%s"';
