@@ -466,6 +466,41 @@ class CitrusFormmapElement extends CitrusObject
 
 
     /**
+     * value convert type
+     */
+    public function convertType()
+    {
+        // result value
+        $result = $this->value;
+
+        // null return
+        if (is_null($result) === true)
+        {
+            return ;
+        }
+
+        // convert
+        $is_converted = false;
+        switch ($this->var_type)
+        {
+            case self::VAR_TYPE_INT:
+                $is_converted = settype($result, 'int');
+                break;
+            case self::VAR_TYPE_FLOAT:
+            case self::VAR_TYPE_NUMERIC:
+                $is_converted = settype($result, 'float');
+                break;
+        }
+
+        if ($is_converted === true)
+        {
+            $this->value = $result;
+        }
+    }
+
+
+
+    /**
      * value filter
      *
      * @return mixed|null

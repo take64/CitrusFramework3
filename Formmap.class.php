@@ -332,6 +332,7 @@ class CitrusFormmap
             {
                 continue;
             }
+            $one->convertType();
             $value = $one->filter();
             $object->setFromContext($one->property, $value);
         }
