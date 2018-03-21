@@ -744,12 +744,13 @@
                                             options.primaries[ky] = $(tr).attr(ky);
                                         });
                                         if(checkbox.attr('checked') === 'checked') {
-                                            dataOn(options);
-                                            $(checkbox).button({label: '選択済'});
-                                        } else {
                                             dataOff(options);
                                             $(checkbox).button({label: '未選択'});
+                                        } else {
+                                            dataOn(options);
+                                            $(checkbox).button({label: '選択済'});
                                         }
+                                        dataLoadList(options);
                                     });
                                 } else {
                                     if(typeof vl['class'] === 'function') {
@@ -845,6 +846,7 @@
                                         dataOn(options);
                                         $(checkbox).button({label: '選択済'});
                                     }
+                                    dataLoadList(options);
                                 });
                                 if(vl['class']) {
                                     td.attr('class', vl['class']);

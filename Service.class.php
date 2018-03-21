@@ -229,9 +229,9 @@ class CitrusService
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function selections(CitrusDatabaseColumn $condition)
+    public function facesSelections(CitrusDatabaseColumn $condition)
     {
-        return $this->callDao()->selections($condition);
+        return $this->callDao()->facesSelections($condition);
     }
 
 

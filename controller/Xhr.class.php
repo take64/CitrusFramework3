@@ -328,10 +328,8 @@ class CitrusControllerXhr
         }
         $condition->pageLimit();
         
-        // count
-        
         // call list
-        $list = $this->callService()->selections($condition);
+        $list = $this->callService()->facesSelections($condition);
         $count = 0;
 
         // data exist
