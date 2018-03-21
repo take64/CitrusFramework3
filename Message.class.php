@@ -11,6 +11,11 @@ use Citrus\Message\CitrusMessageItem;
 
 class CitrusMessage extends CitrusClass
 {
+    /** messages key */
+    const KEY_MESSAGES = 'messages';
+
+
+
     /** @var CitrusMessageItem[] messages */
     public static $items = [];
 
@@ -77,7 +82,7 @@ class CitrusMessage extends CitrusClass
         // セッションが正の場合
         if (self::isSession() === true)
         {
-            self::$items = CitrusSession::$session->call('messages');
+            self::$items = CitrusSession::$session->call(self::KEY_MESSAGES);
         }
 
         return self::$items;
@@ -228,7 +233,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist('messages', self::$items);
+            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
         }
 
         return $result;
@@ -304,7 +309,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist('messages', self::$items);
+            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
         }
     }
 
@@ -380,7 +385,7 @@ class CitrusMessage extends CitrusClass
         // セッションから削除
         if (self::isSession() === true)
         {
-            CitrusSession::$session->remove('messages');
+            CitrusSession::$session->remove(self::KEY_MESSAGES);
         }
     }
 
@@ -424,7 +429,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用の場合はセッションに登録
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist('messages', self::$items);
+            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
         }
     }
 
