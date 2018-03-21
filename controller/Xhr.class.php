@@ -173,6 +173,7 @@ class CitrusControllerXhr
      * サマリリストの取得
      *
      * @return CitrusXhrResult
+     * @throws CitrusException
      */
     public function facesSummaries() : CitrusXhrResult
     {
@@ -228,7 +229,7 @@ class CitrusControllerXhr
      * call summary record
      * サマリの取得
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
      * @throws CitrusSqlmapException
      */
     public function facesDetail() : CitrusXhrResult
@@ -250,11 +251,14 @@ class CitrusControllerXhr
         return new CitrusXhrResult($detail->properties());
     }
 
+
+
     /**
      * regist item
      * の登録
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
+     * @throws CitrusException
      */
     public function modify()
     {
@@ -284,11 +288,13 @@ class CitrusControllerXhr
         return new CitrusXhrResult([$result]);
     }
 
+
+
     /**
      * remove & item
      * の削除
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
      * @throws CitrusSqlmapException
      */
     public function remove()
@@ -302,12 +308,14 @@ class CitrusControllerXhr
         $entity = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_edit_id);
         return new CitrusXhrResult([$this->callService()->remove($entity->getCondition())]);
     }
-    
+
+
+
     /**
      * call summary list
      * サマリリストの取得
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
      * @throws CitrusSqlmapException
      */
     public function selections()
@@ -341,8 +349,7 @@ class CitrusControllerXhr
             foreach ($list as &$one)
             {
                 $one->remove(array('status', 'schema',
-                                   'resist_user_cd', 'resist_timestamp',
-                                   'modify_user_cd', 'modify_timestamp',
+                                   'resisted_at', 'modified_at',
                                    'condition'));
                 $one->null2blank();
             }
@@ -360,7 +367,7 @@ class CitrusControllerXhr
      * call summary list
      * サマリリストの取得
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
      * @throws CitrusSqlmapException
      */
     public function suggests()
@@ -389,12 +396,13 @@ class CitrusControllerXhr
         return new CitrusXhrResult($result);
     }
 
+
+
     /**
-     * on document_role toggle
-     * 画面ロールの登録
+     * toggle on
      *
-     * @access  public
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
+     * @throws CitrusException
      */
     public function on()
     {
@@ -421,16 +429,16 @@ class CitrusControllerXhr
             }
         }
 
-        return new CitrusXhrResult($result);
+        return new CitrusXhrResult([$result]);
     }
 
 
 
     /**
-     * toggle document_role off
-     * 画面ロールの登録
+     * toggle off
      *
-     * @return  CitrusXhrResult
+     * @return CitrusXhrResult
+     * @throws CitrusException
      */
     public function off()
     {
@@ -451,8 +459,10 @@ class CitrusControllerXhr
             $result = $this->callService()->remove($entity->toCondition());
         }
 
-        return new CitrusXhrResult($result);
+        return new CitrusXhrResult([$result]);
     }
+
+
 
     /**
      * call service
