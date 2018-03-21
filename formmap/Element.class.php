@@ -193,6 +193,23 @@ class CitrusFormmapElement extends CitrusObject
 
 
     /**
+     * generate id and value
+     *
+     * @param string $id
+     * @param mixed  $value
+     * @return CitrusFormmapElement
+     */
+    public static function generateIdAndValue($id, $value)
+    {
+        return new static([
+            'id' => $id,
+            'value' => $value,
+        ]);
+    }
+
+
+
+    /**
      * option appends
      *
      * @param array $elements
