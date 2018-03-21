@@ -389,7 +389,7 @@ class CitrusMailImap
     public function subscribe(string $folder_path)
     {
         return imap_subscribe($this->open(),
-            sprintf('{%s}%s', $this->account->mail_server, self::encodeImap($folder_path))
+            sprintf(self::FORMAT_SERVER_PATH, $this->account->mail_server, self::encodeImap($folder_path))
         );
     }
 
@@ -404,7 +404,7 @@ class CitrusMailImap
     public function unsubscribe(string $folder_path)
     {
         return imap_unsubscribe($this->open(),
-            sprintf('{%s}%s', $this->account->mail_server, self::encodeImap($folder_path))
+            sprintf(self::FORMAT_SERVER_PATH, $this->account->mail_server, self::encodeImap($folder_path))
         );
     }
 
