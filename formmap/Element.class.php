@@ -544,7 +544,6 @@ class CitrusFormmapElement extends CitrusObject
      * validate value required
      *
      * @return bool
-     * @throws CitrusException
      */
     protected function _validateRequired() : bool
     {
