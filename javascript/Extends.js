@@ -160,6 +160,23 @@
                 .replace('%i', ('00' + minute).slice(-2))
                 .replace('%s', ('00' + second).slice(-2));
         },
+        // 日付フォーマット
+        dateFormat: function(_options) {
+            var options = jQuery.extend(true, {
+                date: new Date(),
+                format: 'Y-m-d H:i:s'
+            }, _options);
+
+            var date = options.date;
+            var result = options.format;
+            result = result.replace(/Y/g, date.getFullYear());
+            result = result.replace(/m/g, ('0' + (date.getMonth() + 1)).slice(-2));
+            result = result.replace(/d/g, ('0' + date.getDate()).slice(-2));
+            result = result.replace(/H/g, ('0' + date.getHours()).slice(-2));
+            result = result.replace(/i/g, ('0' + date.getMinutes()).slice(-2));
+            result = result.replace(/s/g, ('0' + date.getSeconds()).slice(-2));
+            return result;
+        },
         escapeText: function(text){
             return text
                 .replace(/&/g, '&amp;')
