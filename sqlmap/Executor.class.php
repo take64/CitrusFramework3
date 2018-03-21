@@ -13,6 +13,7 @@ use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Database\CitrusDatabaseResult;
 use PDO;
 use PDOException;
+use PDOStatement;
 
 class CitrusSqlmapExecutor
 {
@@ -36,9 +37,7 @@ class CitrusSqlmapExecutor
     /**
      * connect db connection
      *
-     * @access  public
-     * @since   0.0.1.0 2012.02.06
-     * @version 0.0.1.0 2012.02.06
+     * @throws CitrusSqlmapException
      */
     public static function connect()
     {
@@ -85,6 +84,8 @@ class CitrusSqlmapExecutor
     
     /**
      * begin transaction
+     *
+     * @throws CitrusSqlmapException
      */
     public static function begin()
     {
@@ -98,6 +99,8 @@ class CitrusSqlmapExecutor
 
     /**
      * commit transaction
+     *
+     * @throws CitrusSqlmapException
      */
     public static function commit()
     {
@@ -108,9 +111,10 @@ class CitrusSqlmapExecutor
     }
 
 
-
     /**
      * commit transaction
+     *
+     * @throws CitrusSqlmapException
      */
     public static function rollback()
     {
@@ -118,37 +122,6 @@ class CitrusSqlmapExecutor
         {
             self::$IS_TRANSACTIONS = false;
         }
-    }
-
-
-
-    /**
-     * transaction validate
-     *
-     * @param CitrusSqlmapStatement     $statement
-     * @param CitrusDatabaseColumn|null $parameter
-     * @return bool
-     * @deprecated
-     */
-    private static function _validate(CitrusSqlmapStatement $statement, CitrusDatabaseColumn $parameter = null) : bool
-    {
-        $query = $statement->query;
-
-        // クエリ文字列に':'に含まれていない場合は検査の必要なし
-        $startPos = strrpos($query, ':');
-        if ($startPos === false)
-        {
-            return true;
-        }
-        $array = explode(substr($query, $startPos), ' ');
-        foreach ($array as $one)
-        {
-            if (strrpos($one, ':') === 0 && property_exists($parameter, substr($one, 1)) === true)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
 
@@ -164,37 +137,13 @@ class CitrusSqlmapExecutor
     public static function select(CitrusSqlmapStatement $statement, array $parameters = null) : array
     {
         // 結果クラス
-        $instance = null;
-        $resultClass = $statement->result_class;
-        if (is_null($resultClass) === false && class_exists($resultClass) === true)
-        {
-            $instance = new $resultClass();
-        }
-        else
-        {
-            $instance = new CitrusDatabaseResult();
-        }
-
+        $instance = self::generateResultInstance($statement);
 
         // クエリ実行
         try
         {
             // prepare cache
-            $sth = null;
-            if (empty(self::$_prepareQueries) === false)
-            {
-                $ky = array_search($statement->query, self::$_prepareQueries);
-                if ($ky !== false)
-                {
-                    $sth = self::$_prepareStatements[$ky];
-                }
-            }
-            if (empty($sth) === true)
-            {
-                $sth = self::callHandler()->prepare($statement->query);
-                self::$_prepareQueries[] = $statement->query;
-                self::$_prepareStatements[] = $sth;
-            }
+            $sth = self::prepareStatementCache($statement);
 
             // execute
             if ($sth->execute($parameters) === false)
@@ -267,21 +216,7 @@ class CitrusSqlmapExecutor
         try
         {
             // prepare cache
-            $sth = null;
-            if (empty(self::$_prepareQueries) === false)
-            {
-                $ky = array_search($statement->query, self::$_prepareQueries);
-                if ($ky !== false)
-                {
-                    $sth = self::$_prepareStatements[$ky];
-                }
-            }
-            if (is_null($sth) === true)
-            {
-                $sth = self::callHandler()->prepare($statement->query);
-                self::$_prepareQueries[] = $statement->query;
-                self::$_prepareStatements[] = $sth;
-            }
+            $sth = self::prepareStatementCache($statement);
 
             // execute
             $result = $sth->execute($parameters);
@@ -304,7 +239,6 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return 0;
     }
 
 
@@ -323,21 +257,7 @@ class CitrusSqlmapExecutor
         try
         {
             // prepare cache
-            $sth = null;
-            if (empty(self::$_prepareQueries) === false)
-            {
-                $ky = array_search($statement->query, self::$_prepareQueries);
-                if ($ky !== false)
-                {
-                    $sth = self::$_prepareStatements[$ky];
-                }
-            }
-            if (empty($sth) === true)
-            {
-                $sth = self::callHandler()->prepare($statement->query);
-                self::$_prepareQueries[] = $statement->query;
-                self::$_prepareStatements[] = $sth;
-            }
+            $sth = self::prepareStatementCache($statement);
 
             // execute
             $result = $sth->execute($parameters);
@@ -360,7 +280,6 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return 0;
     }
 
 
@@ -385,22 +304,9 @@ class CitrusSqlmapExecutor
             }
 
             // prepare cache
-            $sth = null;
-            if (empty(self::$_prepareQueries) === false)
-            {
-                $ky = array_search($statement->query, self::$_prepareQueries);
-                if ($ky !== false)
-                {
-                    $sth = self::$_prepareStatements[$ky];
-                }
-            }
-            if (empty($sth) === true)
-            {
-                $sth = self::callHandler()->prepare($statement->query);
-                self::$_prepareQueries[] = $statement->query;
-                self::$_prepareStatements[] = $sth;
-            }
+            $sth = self::prepareStatementCache($statement);
 
+            // execute
             $result = $sth->execute($parameters);
 
             if ($result === false)
@@ -421,7 +327,6 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return 0;
     }
 
 
@@ -442,6 +347,7 @@ class CitrusSqlmapExecutor
             // prepare
             $sth = self::callHandler()->prepare($statement->query);
 
+            // execute
             $result = $sth->execute($parameters);
 
             if ($result === false)
@@ -462,7 +368,6 @@ class CitrusSqlmapExecutor
             self::$IS_TRANSACTIONS = false;
             throw $e;
         }
-        return false;
     }
 
 
@@ -471,6 +376,7 @@ class CitrusSqlmapExecutor
      * call & generate handler
      *
      * @return PDO
+     * @throws CitrusSqlmapException
      */
     public static function callHandler()
     {
@@ -479,5 +385,51 @@ class CitrusSqlmapExecutor
             self::connect();
         }
         return self::$HANDLER;
+    }
+
+
+
+    /**
+     * resultClass のインスタンスを取得
+     *
+     * @param CitrusSqlmapStatement $statement ステートメント
+     * @return CitrusDatabaseResult
+     */
+    private static function generateResultInstance(CitrusSqlmapStatement $statement)
+    {
+        $resultClass = $statement->result_class;
+        if (is_null($resultClass) === false && class_exists($resultClass) === true)
+        {
+            return new $resultClass();
+        }
+        return new CitrusDatabaseResult();
+    }
+
+
+    /**
+     * prepare statement cache
+     *
+     * @param CitrusSqlmapStatement $statement ステートメント
+     * @return PDOStatement|null
+     * @throws CitrusSqlmapException
+     */
+    private static function prepareStatementCache(CitrusSqlmapStatement $statement)
+    {
+        $sth = null;
+        if (empty(self::$_prepareQueries) === false)
+        {
+            $ky = array_search($statement->query, self::$_prepareQueries);
+            if ($ky !== false)
+            {
+                $sth = self::$_prepareStatements[$ky];
+            }
+        }
+        if (empty($sth) === true)
+        {
+            $sth = self::callHandler()->prepare($statement->query);
+            self::$_prepareQueries[] = $statement->query;
+            self::$_prepareStatements[] = $sth;
+        }
+        return $sth;
     }
 }
