@@ -10,7 +10,7 @@ namespace Citrus\Formmap;
 
 use Citrus\CitrusNVL;
 
-class CitrusFormmapSearch extends CitrusFormmapElement
+class CitrusFormmapSearch extends CitrusFormmapText
 {
     /**
      * to string
@@ -35,36 +35,5 @@ class CitrusFormmapSearch extends CitrusFormmapElement
         $elements = self::appendOption($elements, $appends);
 
         return self::generateTag('input', $elements);
-    }
-
-
-
-    /**
-     * call default value
-     *
-     * @return false|mixed|string
-     */
-    public function callDefault()
-    {
-        $value = $this->default;
-
-        // デフォルト設定
-        if (empty($value) === false)
-        {
-            // 変数タイプ別処理
-            switch ($this->var_type)
-            {
-                // datetime
-                case CitrusFormmapElement::VAR_TYPE_DATETIME :
-                    $value = date('Y-m-d H:i:s', strtotime($this->default));
-                    break;
-                // date
-                case CitrusFormmapElement::VAR_TYPE_DATE :
-                    $value = date('Y-m-d', strtotime($this->default));
-                    break;
-                default:
-            }
-        }
-        return $value;
     }
 }
