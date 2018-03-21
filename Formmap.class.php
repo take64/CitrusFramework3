@@ -16,6 +16,7 @@ use Citrus\Formmap\CitrusFormmapSearch;
 use Citrus\Formmap\CitrusFormmapSelect;
 use Citrus\Formmap\CitrusFormmapSubmit;
 use Citrus\Formmap\CitrusFormmapText;
+use Citrus\Formmap\CitrusFormmapTextarea;
 use Exception;
 
 class CitrusFormmap
@@ -122,15 +123,16 @@ class CitrusFormmap
                 {
                     $form = null;
                     switch ($element['form_type']) {
-                        case CitrusFormmapElement::FORM_TYPE_ELEMENT: $form = new CitrusFormmapElement($element);   break;
-                        case CitrusFormmapElement::FORM_TYPE_HIDDEN : $form = new CitrusFormmapHidden($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_PASSWD : $form = new CitrusFormmapPassword($element);  break;
-                        case CitrusFormmapElement::FORM_TYPE_SELECT : $form = new CitrusFormmapSelect($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_SUBMIT : $form = new CitrusFormmapSubmit($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_BUTTON : $form = new CitrusFormmapButton($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_TEXT   : $form = new CitrusFormmapText($element);      break;
-                        case CitrusFormmapElement::FORM_TYPE_SEARCH : $form = new CitrusFormmapSearch($element);    break;
-                        default                                     :                                               break;
+                        case CitrusFormmapElement::FORM_TYPE_ELEMENT    : $form = new CitrusFormmapElement($element);   break;
+                        case CitrusFormmapElement::FORM_TYPE_HIDDEN     : $form = new CitrusFormmapHidden($element);    break;
+                        case CitrusFormmapElement::FORM_TYPE_PASSWD     : $form = new CitrusFormmapPassword($element);  break;
+                        case CitrusFormmapElement::FORM_TYPE_SELECT     : $form = new CitrusFormmapSelect($element);    break;
+                        case CitrusFormmapElement::FORM_TYPE_SUBMIT     : $form = new CitrusFormmapSubmit($element);    break;
+                        case CitrusFormmapElement::FORM_TYPE_BUTTON     : $form = new CitrusFormmapButton($element);    break;
+                        case CitrusFormmapElement::FORM_TYPE_TEXT       : $form = new CitrusFormmapText($element);      break;
+                        case CitrusFormmapElement::FORM_TYPE_TEXTAREA   : $form = new CitrusFormmapTextarea($element);  break;
+                        case CitrusFormmapElement::FORM_TYPE_SEARCH     : $form = new CitrusFormmapSearch($element);    break;
+                        default                                         :                                               break;
                     }
                     // 外部情報の設定
                     $form->id = $element_id;

@@ -80,6 +80,9 @@ class CitrusFormmapElement extends CitrusObject
     /** form type text */
     const FORM_TYPE_TEXT = 'text';
 
+    /** form type text */
+    const FORM_TYPE_TEXTAREA = 'textarea';
+
     /** form type search */
     const FORM_TYPE_SEARCH = 'search';
 
@@ -233,7 +236,8 @@ class CitrusFormmapElement extends CitrusObject
             self::FORM_TYPE_SELECT,
             self::FORM_TYPE_BUTTON,
             self::FORM_TYPE_LABEL,
-            self::HTML_TAG_SPAN
+            self::HTML_TAG_SPAN,
+            self::FORM_TYPE_TEXTAREA,
         ]);
 
         // 要素フォーマット
