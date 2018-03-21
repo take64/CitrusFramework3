@@ -479,6 +479,28 @@ class CitrusSqlmapParser
 
 
     /**
+     * isNumeric element node parser
+     * isNumericエレメント処理
+     *
+     * @param DOMElement $element
+     * @return CitrusSqlmapDynamic
+     */
+    protected function _isNumeric(DOMElement $element) : CitrusSqlmapDynamic
+    {
+        $dynamic = new CitrusSqlmapDynamic($element->attributes);
+
+        $property = $this->callProperty($this->parameter, $dynamic->property);
+
+        if (is_numeric($property) === true)
+        {
+            $dynamic->query = $this->_nodes($element->childNodes);
+        }
+        return $dynamic;
+    }
+
+
+
+    /**
      * node element general parser
      * node エレメント汎用処理
      *
