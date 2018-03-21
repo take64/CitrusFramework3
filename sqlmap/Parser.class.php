@@ -523,6 +523,28 @@ class CitrusSqlmapParser
 
 
     /**
+     * isTrue element node parser
+     * isTrueエレメント処理
+     *
+     * @param DOMElement $element
+     * @return CitrusSqlmapDynamic
+     */
+    protected function _isTrue(DOMElement $element) : CitrusSqlmapDynamic
+    {
+        $dynamic = new CitrusSqlmapDynamic($element->attributes);
+
+        $property = $this->callProperty($this->parameter, $dynamic->property);
+
+        if ($property === true)
+        {
+            $dynamic->query = $this->_nodes($element->childNodes);
+        }
+        return $dynamic;
+    }
+
+
+
+    /**
      * node element general parser
      * node エレメント汎用処理
      *
