@@ -25,8 +25,6 @@ class CitrusAutoloader
 
     /**
      * autoload framework
-     *
-     * @throws CitrusAutoloaderException
      */
     public static function autoloadFramework()
     {
@@ -82,8 +80,6 @@ class CitrusAutoloader
 
     /**
      * autoload application
-     *
-     * @throws CitrusAutoloaderException
      */
     public static function autoloadApplication()
     {

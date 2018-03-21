@@ -78,7 +78,6 @@ class CitrusConfigure
      * configure initilize
      *
      * @param string $path_configure
-     * @throws Autoloader\CitrusAutoloaderException
      */
     public static function initialize($path_configure)
     {
