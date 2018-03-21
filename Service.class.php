@@ -12,6 +12,7 @@ use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Database\CitrusDatabaseResult;
 use Citrus\Sqlmap\CitrusSqlmapClient;
 use Citrus\Sqlmap\CitrusSqlmapCrud;
+use Citrus\Sqlmap\CitrusSqlmapException;
 
 class CitrusService
 {
@@ -30,6 +31,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn[]
+     * @throws CitrusSqlmapException
      */
     public function summaries(CitrusDatabaseColumn $condition)
     {
@@ -43,6 +45,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function summary(CitrusDatabaseColumn $condition)
     {
@@ -56,6 +59,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return int
+     * @throws CitrusSqlmapException
      */
     public function count(CitrusDatabaseColumn $condition)
     {
@@ -69,6 +73,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function last(CitrusDatabaseColumn $condition)
     {
@@ -82,6 +87,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return bool
+     * @throws CitrusSqlmapException
      */
     public function exist(CitrusDatabaseColumn $condition)
     {
@@ -95,6 +101,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseResult[]
+     * @throws CitrusSqlmapException
      */
     public function names(CitrusDatabaseColumn $condition)
     {
@@ -108,6 +115,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return array
+     * @throws CitrusSqlmapException
      */
     public function nameForList(CitrusDatabaseColumn $condition)
     {
@@ -129,6 +137,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function name(CitrusDatabaseColumn $condition)
     {
@@ -142,6 +151,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn[]
+     * @throws CitrusSqlmapException
      */
     public function details(CitrusDatabaseColumn $condition)
     {
@@ -153,9 +163,9 @@ class CitrusService
     /**
      * call detail record
      *
-     * @access  public
-     * @param   CitrusDatabaseColumn $condition
-     * @return  CitrusDatabaseColumn
+     * @param CitrusDatabaseColumn $condition
+     * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function detail(CitrusDatabaseColumn $condition)
     {
@@ -169,6 +179,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $entity
      * @return bool
+     * @throws CitrusSqlmapException
      */
     public function regist(CitrusDatabaseColumn $entity)
     {
@@ -185,6 +196,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $entity
      * @return bool
+     * @throws CitrusSqlmapException
      */
     public function modify(CitrusDatabaseColumn $entity)
     {
@@ -201,6 +213,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return bool
+     * @throws CitrusSqlmapException
      */
     public function remove(CitrusDatabaseColumn $condition)
     {
@@ -214,6 +227,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn[]
+     * @throws CitrusSqlmapException
      */
     public function selections(CitrusDatabaseColumn $condition)
     {
@@ -227,6 +241,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn[]
+     * @throws CitrusSqlmapException
      */
     public function facesSummaries(CitrusDatabaseColumn $condition)
     {
@@ -240,6 +255,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function facesSummary(CitrusDatabaseColumn $condition)
     {
@@ -253,6 +269,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn[]
+     * @throws CitrusSqlmapException
      */
     public function facesDetails(CitrusDatabaseColumn $condition)
     {
@@ -266,6 +283,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function facesDetail(CitrusDatabaseColumn $condition)
     {
@@ -279,6 +297,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return array
+     * @throws CitrusSqlmapException
      */
     public function nameSummaries(CitrusDatabaseColumn $condition)
     {
@@ -292,6 +311,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return CitrusDatabaseColumn
+     * @throws CitrusSqlmapException
      */
     public function nameSummary(CitrusDatabaseColumn $condition)
     {
@@ -305,6 +325,7 @@ class CitrusService
      *
      * @param CitrusDatabaseColumn $condition
      * @return int
+     * @throws CitrusSqlmapException
      */
     public function nameCount(CitrusDatabaseColumn $condition)
     {
@@ -317,7 +338,8 @@ class CitrusService
      * call dao
      * なるべく継承しabstractとして扱う、エラー回避としてCitruSqlmapClientを返す
      *
-     * @return  CitrusSqlmapCrud
+     * @return CitrusSqlmapCrud
+     * @throws CitrusSqlmapException
      */
     public function callDao()
     {

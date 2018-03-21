@@ -19,6 +19,7 @@ use Citrus\Database\CitrusDatabaseColumn;
 use Citrus\Document\CitrusDocumentPager;
 use Citrus\Message\CitrusMessageItem;
 use Citrus\Sqlmap\CitrusSqlmapCondition;
+use Citrus\Sqlmap\CitrusSqlmapException;
 use Citrus\Xhr\CitrusXhrElement;
 use Citrus\Xhr\CitrusXhrResult;
 
@@ -228,6 +229,7 @@ class CitrusControllerXhr
      * サマリの取得
      *
      * @return  CitrusXhrResult
+     * @throws CitrusSqlmapException
      */
     public function facesDetail() : CitrusXhrResult
     {
@@ -287,6 +289,7 @@ class CitrusControllerXhr
      * の削除
      *
      * @return  CitrusXhrResult
+     * @throws CitrusSqlmapException
      */
     public function remove()
     {
@@ -305,6 +308,7 @@ class CitrusControllerXhr
      * サマリリストの取得
      *
      * @return  CitrusXhrResult
+     * @throws CitrusSqlmapException
      */
     public function selections()
     {
@@ -359,6 +363,7 @@ class CitrusControllerXhr
      * サマリリストの取得
      *
      * @return  CitrusXhrResult
+     * @throws CitrusSqlmapException
      */
     public function suggests()
     {
