@@ -60,10 +60,8 @@ class CitrusCacheRedis extends CitrusCacheDeamon
         // serialized value
         $serialized_value = $this->handler->get($cache_key);
 
-        // unserialize
-        $value = unserialize($serialized_value);
-
-        return $value;
+        // unserialize and return
+        return unserialize($serialized_value);
     }
 
 
@@ -133,12 +131,13 @@ class CitrusCacheRedis extends CitrusCacheDeamon
      * @param Closure $valueFunction
      * @param int     $expire
      * @return mixed
+     * @throws CitrusCacheException
+     * @throws CitrusException
      */
     public function callWithBind($key, Closure $valueFunction, int $expire = 0)
     {
-        $exists = $this->exists($key);
-
         // あれば返却
+        $exists = $this->exists($key);
         if ($exists === true)
         {
             return $this->call($key);
