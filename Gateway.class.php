@@ -48,21 +48,17 @@ class CitrusGateway
         foreach ($_REQUEST as &$one) { $one = str_replace($search, $replace, $one); }
 
         // logic selecter
-        switch ($type)
+        if ($type == self::TYPE_CONTROLLER)
         {
-            // web pages
-            case self::TYPE_CONTROLLER :
-                // セッション処理開始
-                CitrusSession::factory(true);
-                self::controller();
-                break;
-
-            // cli command
-            case self::TYPE_COMMAND :
-                // セッション処理開始
-                CitrusSession::part();
-                self::command();
-                break;
+            // セッション処理開始
+            CitrusSession::factory(true);
+            self::controller();
+        }
+        else if ($type == self::TYPE_COMMAND)
+        {
+            // セッション処理開始
+            CitrusSession::part();
+            self::command();
         }
     }
 
