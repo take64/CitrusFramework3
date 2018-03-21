@@ -257,6 +257,68 @@ class CitrusFormmapElement extends CitrusObject
             self::FORM_TYPE_TEXTAREA,
         ]);
 
+        // フォーム要素
+        $form_element = self::generateTagElement($elements);
+
+        // 閉じタグが無いタイプ
+        if ($is_multiple_tag === false)
+        {
+            return sprintf('<%s %s />',
+                $tag,
+                implode(' ', $form_element)
+            );
+        }
+
+        // 閉じタグがあるタイプ
+        $inner_tags = [];
+        if (is_array($options) === true)
+        {
+            // select
+            if ($tag == self::FORM_TYPE_SELECT)
+            {
+                foreach ($options as $ky => $vl)
+                {
+                    $selected = $elements['value'];
+                    if (empty($selected) === true)
+                    {
+                        $selected = $elements['default'];
+                    }
+
+                    $inner_tags[] = sprintf('<option value="%s" %s>%s</option>',
+                        $ky,
+                        ($ky == $selected ? 'selected' : ''), // postデータはstringなので、曖昧比較する
+                        $vl
+                        );
+                }
+            }
+        }
+        // その他のタグ
+        else if (is_string($options) === true)
+        {
+            $inner_tags[] = $options;
+        }
+
+        // valueは渡されてきてもいらなくなる
+        unset($form_element['value']);
+
+        return sprintf('<%s %s>%s</%s>',
+            $tag,
+            implode(' ', $form_element),
+            implode(PHP_EOL, $inner_tags),
+            $tag
+        );
+    }
+
+
+
+    /**
+     * フォーム要素を補完する
+     *
+     * @param array|null $elements
+     * @return array
+     */
+    private static function generateTagElement(array $elements = null)
+    {
         // 要素フォーマット
         $element_format = '%s="%s"';
 
@@ -286,52 +348,7 @@ class CitrusFormmapElement extends CitrusObject
             }
         }
 
-        // 閉じタグがあるタイプ
-        if ($is_multiple_tag === true)
-        {
-            $inner_tags = [];
-            if (is_array($options) === true)
-            {
-                // select
-                if ($tag == self::FORM_TYPE_SELECT)
-                {
-                    foreach ($options as $ky => $vl)
-                    {
-                        $selected = $elements['value'];
-                        if (empty($selected) === true)
-                        {
-                            $selected = $elements['default'];
-                        }
-
-                        $inner_tags[] = sprintf('<option value="%s" %s>%s</option>',
-                            $ky,
-                            ($ky == $selected ? 'selected' : ''), // postデータはstringなので、曖昧比較する
-                            $vl
-                            );
-                    }
-                }
-            }
-            // その他のタグ
-            else if (is_string($options) === true)
-            {
-                $inner_tags[] = $options;
-            }
-
-            // valueは渡されてきてもいらなくなる
-            unset($form_element['value']);
-
-            return sprintf('<%s %s>%s</%s>',
-                $tag,
-                implode(' ', $form_element),
-                implode(PHP_EOL, $inner_tags),
-                $tag
-            );
-        }
-        // 閉じタグがないタイプ
-        return sprintf('<%s %s />',
-            $tag,
-            implode(' ', $form_element)
-            );
+        return $form_element;
     }
 
 
@@ -507,6 +524,7 @@ class CitrusFormmapElement extends CitrusObject
             case self::VAR_TYPE_NUMERIC:
                 $is_converted = settype($result, 'float');
                 break;
+            default:
         }
 
         if ($is_converted === true)
@@ -564,21 +582,23 @@ class CitrusFormmapElement extends CitrusObject
      */
     protected function _validateRequired() : bool
     {
-        if ($this->required === true)
+        // 必須でなければtrue
+        if ($this->required === false)
         {
-            $message = sprintf('「%s」は入力必須です。', $this->name);
-            if (is_numeric($this->value) === true)
-            {
-                return true;
-            }
-            else if (empty($this->value) === true)
-            {
-                if (($this->validate_null_safe === true && is_null($this->value) === true) === false)
-                {
-                    $this->addError($message);
-                    return false;
-                }
-            }
+            return true;
+        }
+        // 数値として認識できるということはtrue
+        if (is_numeric($this->value) === true)
+        {
+            return true;
+        }
+
+        $message = sprintf('「%s」は入力必須です。', $this->name);
+        if (empty($this->value) === true
+        && ($this->validate_null_safe === true && is_null($this->value) === true) === false)
+        {
+            $this->addError($message);
+            return false;
         }
         return true;
     }
@@ -593,37 +613,17 @@ class CitrusFormmapElement extends CitrusObject
      */
     private function _validateVarType() : bool
     {
-        $result = true;
         // 入力がある場合のみチェックする。
         if (is_null($this->value) === true || $this->value === '')
         {
-            return $result;
+            return true;
         }
-
-        // message
-        $message_form_validate_type_int = sprintf('「%s」には整数を入力してください。', $this->name);
-        $message_form_validate_type_float = sprintf('「%s」には少数を入力してください。', $this->name);
-        $message_form_validate_type_numeric = sprintf('「%s」には数字を入力してください。', $this->name);
-        $message_form_validate_numeric_max = sprintf('「%s」には「%s」以下の値を入力してください。', $this->name, PHP_INT_MAX);
-        $message_form_validate_numeric_min = sprintf('「%s」には「%s」以上の値を入力してください。', $this->name, PHP_INT_MIN);
-        $message_form_validate_length_max = sprintf('「%s」には「%s」文字以下で入力してください。', $this->name, 0);
-        $message_form_validate_length_min = sprintf('「%s」には「%s」文字以上で入力してください。', $this->name, 0);
-
-        $message_form_validate_type_alphabet = sprintf('「%s」には半角英字を入力してください。', $this->name);
-        $message_form_validate_type_alphanumeric = sprintf('「%s」には半角英数字を入力してください。', $this->name);
-        $message_form_validate_type_an_marks = sprintf('「%s」には半角英数字および記号を入力してください。', $this->name);
-        $message_form_validate_type_date = sprintf('「%s」には年月日を「yyyy-mm-dd」「yyyy/mm/dd」「yyyymmdd」のいずれかの形式で入力してください。', $this->name);
-        $message_form_validate_type_time = sprintf('「%s」には時分秒または時分を入力してください。', $this->name);
-        $message_form_validate_type_datetime = sprintf('「%s」には年月日時分秒を入力してください。', $this->name);
-        $message_form_validate_type_tel = sprintf('「%s」には電話番号を入力してください。', $this->name);
-        $message_form_validate_type_fax = sprintf('「%s」にはFAX番号を入力してください。', $this->name);
-        $message_form_validate_type_email = sprintf('「%s」にはメールアドレスを入力してください。', $this->name);
-
 
         // filter
         $filtered_value = $this->filter();
 
         // validate
+        $result = true;
         switch($this->var_type)
         {
             // int
@@ -1185,35 +1185,29 @@ class CitrusFormmapElement extends CitrusObject
      * validate max
      *
      * @return bool
-     * @throws CitrusException
      */
     protected function _validateMax()
     {
-        $result = true;
-        try
+        // 入力がある場合のみチェックする。
+        // null もしくは 空文字 はスルー
+        if (is_null($this->value) === true || $this->value == '')
         {
-            // 入力がある場合のみチェックする。
-            // null もしくは 空文字 はスルー
-            if (is_null($this->value) === true || $this->value == '')
-            {
-                return $result;
-            }
-            if (is_null($this->max) === false)
-            {
-                // numeric
-                if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
-                {
-                    $result = $this->_validateNumericMax();
-                }
-                else if ($this->var_type == self::VAR_TYPE_STRING)
-                {
-                    $result = $this->_validateLengthMax();
-                }
-            }
+            return true;
         }
-        catch (CitrusException $e)
+
+        // 入力値チェック
+        $result = true;
+        if (is_null($this->max) === false)
         {
-            throw $e;
+            // numeric
+            if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+            {
+                $result = $this->_validateNumericMax();
+            }
+            else if ($this->var_type == self::VAR_TYPE_STRING)
+            {
+                $result = $this->_validateLengthMax();
+            }
         }
         return $result;
     }
@@ -1224,35 +1218,29 @@ class CitrusFormmapElement extends CitrusObject
      * validate min
      *
      * @return bool
-     * @throws CitrusException
      */
     protected function _validateMin()
     {
-        $result = true;
-        try
+        // 入力がある場合のみチェックする。
+        // null もしくは 空文字 はスルー
+        if (is_null($this->value) === true || $this->value == '')
         {
-            // 入力がある場合のみチェックする。
-            // null もしくは 空文字 はスルー
-            if (is_null($this->value) === true || $this->value == '')
-            {
-                return $result;
-            }
-            if (is_null($this->min) === false)
-            {
-                // numeric
-                if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
-                {
-                    $result = $this->_validateNumericMin();
-                }
-                else if ($this->var_type === self::VAR_TYPE_STRING)
-                {
-                    $result = $this->_validateLengthMin();
-                }
-            }
+            return true;
         }
-        catch (CitrusException $e)
+
+        // 入力値チェック
+        $result = true;
+        if (is_null($this->min) === false)
         {
-            throw $e;
+            // numeric
+            if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+            {
+                $result = $this->_validateNumericMin();
+            }
+            else if ($this->var_type === self::VAR_TYPE_STRING)
+            {
+                $result = $this->_validateLengthMin();
+            }
         }
         return $result;
     }
