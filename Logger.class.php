@@ -124,9 +124,8 @@ class CitrusLogger
      * trace log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function trace($value, ...$_)
+    public static function trace($value)
     {
         self::_output($value, func_get_args());
     }
@@ -137,9 +136,8 @@ class CitrusLogger
      * debug log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function debug($value, ...$_)
+    public static function debug($value)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_DEBUG)
         {
@@ -153,9 +151,8 @@ class CitrusLogger
      * info log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function info($value, ...$_)
+    public static function info($value)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_INFO)
         {
@@ -169,9 +166,8 @@ class CitrusLogger
      * warn log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function warn($value, ...$_)
+    public static function warn($value)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_WARN)
         {
@@ -185,9 +181,8 @@ class CitrusLogger
      * error log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function error($value, ...$_)
+    public static function error($value)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_ERROR)
         {
@@ -201,9 +196,8 @@ class CitrusLogger
      * fatal log file
      *
      * @param mixed $value
-     * @param array ...$_
      */
-    public static function fatal($value, ...$_)
+    public static function fatal($value)
     {
         if (self::$LOG_LEVEL <= self::LOG_LEVEL_FATAL)
         {
