@@ -23,6 +23,9 @@ class CitrusDatabaseGenerate
     /** @var string */
     const CONDITION = 'condition';
 
+    /** @var string */
+    const ALL = 'all';
+
 
 
     /**
