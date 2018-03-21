@@ -40,6 +40,9 @@ class CitrusConfigure
     public static $DIR_BUSINESS;
 
     /** @var string dir */
+    public static $DIR_BUSINESS_CAPSULE;
+
+    /** @var string dir */
     public static $DIR_BUSINESS_ENTITY;
 
     /** @var string dir */
@@ -139,6 +142,7 @@ class CitrusConfigure
         self::$DIR_APP                  = $path_application_dir;
         // dir business
         self::$DIR_BUSINESS             = self::$DIR_APP . '/Business';
+        self::$DIR_BUSINESS_CAPSULE     = self::$DIR_BUSINESS . '/Capsule';
         self::$DIR_BUSINESS_ENTITY      = self::$DIR_BUSINESS . '/Entity';
         self::$DIR_BUSINESS_FORMMAP     = self::$DIR_BUSINESS . '/Formmap';
         self::$DIR_BUSINESS_SERVICE     = self::$DIR_BUSINESS . '/Service';
