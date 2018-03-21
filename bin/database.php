@@ -45,7 +45,7 @@ $directory = $settings['--directory'];
 // 設定(タイプ)
 $type = $settings['--type'];
 // 設定(テーブル名)
-$tablename = $settings['--table-name'];
+$table_name = $settings['--table-name'];
 
 // application configure
 $application_directory = dirname(__FILE__) . '/../' . $directory;
@@ -67,18 +67,27 @@ switch ($type)
 {
     // Property生成処理
     case CitrusDatabaseGenerate::PROPERTY :
-        $propertyname = $settings['--property-name'];
-        CitrusDatabaseGenerate::property($dsns, $tablename, $propertyname);
+        $property_name = $settings['--property-name'];
+        CitrusDatabaseGenerate::property($dsns, $table_name, $property_name);
         break;
     // Dao生成処理
     case CitrusDatabaseGenerate::DAO :
-        $daoname = $settings['--dao-name'];
-        CitrusDatabaseGenerate::dao($tablename, $daoname);
+        $dao_name = $settings['--dao-name'];
+        CitrusDatabaseGenerate::dao($table_name, $dao_name);
         break;
     // Condition生成処理
     case CitrusDatabaseGenerate::CONDITION :
-        $conditionname = $settings['--condition-name'];
-        CitrusDatabaseGenerate::condition($tablename, $conditionname);
+        $condition_name = $settings['--condition-name'];
+        CitrusDatabaseGenerate::condition($table_name, $condition_name);
+        break;
+    // Property,Dao,Condition生成処理
+    case CitrusDatabaseGenerate::ALL :
+        $property_name = $settings['--property-name'];
+        $dao_name = $settings['--dao-name'];
+        $condition_name = $settings['--condition-name'];
+        CitrusDatabaseGenerate::property($dsns, $table_name, $property_name);
+        CitrusDatabaseGenerate::dao($table_name, $dao_name);
+        CitrusDatabaseGenerate::condition($table_name, $condition_name);
         break;
     default:
 }

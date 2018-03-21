@@ -80,6 +80,9 @@ class CitrusFormmapElement extends CitrusObject
     /** form type text */
     const FORM_TYPE_TEXT = 'text';
 
+    /** form type text */
+    const FORM_TYPE_TEXTAREA = 'textarea';
+
     /** form type search */
     const FORM_TYPE_SEARCH = 'search';
 
@@ -233,7 +236,8 @@ class CitrusFormmapElement extends CitrusObject
             self::FORM_TYPE_SELECT,
             self::FORM_TYPE_BUTTON,
             self::FORM_TYPE_LABEL,
-            self::HTML_TAG_SPAN
+            self::HTML_TAG_SPAN,
+            self::FORM_TYPE_TEXTAREA,
         ]);
 
         // 要素フォーマット
@@ -462,6 +466,41 @@ class CitrusFormmapElement extends CitrusObject
 
 
     /**
+     * value convert type
+     */
+    public function convertType()
+    {
+        // result value
+        $result = $this->value;
+
+        // null return
+        if (is_null($result) === true)
+        {
+            return ;
+        }
+
+        // convert
+        $is_converted = false;
+        switch ($this->var_type)
+        {
+            case self::VAR_TYPE_INT:
+                $is_converted = settype($result, 'int');
+                break;
+            case self::VAR_TYPE_FLOAT:
+            case self::VAR_TYPE_NUMERIC:
+                $is_converted = settype($result, 'float');
+                break;
+        }
+
+        if ($is_converted === true)
+        {
+            $this->value = $result;
+        }
+    }
+
+
+
+    /**
      * value filter
      *
      * @return mixed|null
@@ -505,7 +544,6 @@ class CitrusFormmapElement extends CitrusObject
      * validate value required
      *
      * @return bool
-     * @throws CitrusException
      */
     protected function _validateRequired() : bool
     {

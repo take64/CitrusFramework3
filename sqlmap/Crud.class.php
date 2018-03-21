@@ -194,9 +194,9 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn[]
      * @throws CitrusSqlmapException
      */
-    public function selections(CitrusDatabaseColumn $condition)
+    public function facesSelections(CitrusDatabaseColumn $condition)
     {
-        return $this->queryForList('selection', $condition);
+        return $this->queryForList('facesSelection', $condition);
     }
 
 
@@ -208,9 +208,9 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      * @return CitrusDatabaseColumn
      * @throws CitrusSqlmapException
      */
-    public function selection(CitrusDatabaseColumn $condition)
+    public function facesSelection(CitrusDatabaseColumn $condition)
     {
-        return $this->queryForObject('selection', $condition);
+        return $this->queryForObject('facesSelection', $condition);
     }
 
 
