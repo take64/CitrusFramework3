@@ -33,10 +33,9 @@ class CitrusNVL
     /**
      * NVL coalesce null
      *
-     * @param array ...$_
      * @return mixed|null
      */
-    public static function coalesceNull(...$_)
+    public static function coalesceNull()
     {
         $result = null;
         $replacements = func_get_args();
@@ -68,10 +67,9 @@ class CitrusNVL
     /**
      * NVL coalesce empty
      *
-     * @param array ...$_
      * @return mixed|null
      */
-    public static function coalesceEmpty(...$_)
+    public static function coalesceEmpty()
     {
         $result = null;
         $replacements = func_get_args();

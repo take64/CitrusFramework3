@@ -58,18 +58,13 @@ class CitrusControllerXhr
     /** @var CitrusService service  */
     protected $service = null;
 
-    /** @var array remove column summaries */
-    protected $remove_column_summaries = [
-        'schema', 'modified_at', 'condition',
-        ];
-
     /** @var array remove column summaries is empty */
     protected $remove_column_summaries_is_empty = [
         'count', 'sum', 'avg', 'max', 'min', 'name', 'id',
     ];
 
-    /** @var array remove column view */
-    protected $remove_column_view = [
+    /** @var array remove column */
+    protected $remove_column = [
         'schema', 'modified_at', 'condition',
     ];
 
@@ -210,7 +205,7 @@ class CitrusControllerXhr
                 // modify
                 foreach ($list as &$one)
                 {
-                    $one->remove($this->remove_column_summaries);
+                    $one->remove($this->remove_column);
                     $one->removeIsEmpty($this->remove_column_summaries_is_empty);
                     $one->null2blank();
                 }
@@ -244,7 +239,7 @@ class CitrusControllerXhr
         $detail = $this->callService()->facesDetail($condition);
 
         // modify
-        $detail->remove($this->remove_column_view);
+        $detail->remove($this->remove_column);
         $detail->removeIsEmpty($this->remove_column_view_is_empty);
         $detail->null2blank();
 

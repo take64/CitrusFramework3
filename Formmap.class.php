@@ -204,7 +204,7 @@ class CitrusFormmap
                 }
                 else
                 {
-                    $this->elements[$prefix.$ky] = new CitrusFormmapElement(array('id' => $prefix.$ky, 'value' => array($vl)));
+                    $this->elements[$prefix.$ky] = CitrusFormmapElement::generateIdAndValue($prefix.$ky, [ $vl ]);
                 }
             }
             else
@@ -215,7 +215,7 @@ class CitrusFormmap
                 }
                 else
                 {
-                    $this->elements[$prefix.$ky] = new CitrusFormmapElement(array('id' => $prefix.$ky, 'value' => $vl));
+                    $this->elements[$prefix.$ky] = CitrusFormmapElement::generateIdAndValue($prefix.$ky, $vl);
                 }
             }
         }

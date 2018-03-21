@@ -54,7 +54,7 @@ class CitrusSqlmapParser
      * @param string                    $id
      * @param CitrusDatabaseColumn|null $parameter
      */
-    public function parse(string $path, string $transaction = 'select', string $id, CitrusDatabaseColumn $parameter = null)
+    public function parse(string $path, string $transaction, string $id, CitrusDatabaseColumn $parameter = null)
     {
         $this->_path = $path;
         $this->_transaction = $transaction;
@@ -65,7 +65,7 @@ class CitrusSqlmapParser
         $this->dom = new DOMDocument();
         $this->dom->load(realpath($path));
         $this->xpath = new DOMXPath($this->dom);
-        $nodeList   = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']");
+        $nodeList = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']");
         if ($nodeList->length == 0)
         {
             trigger_error(sprintf('Warning: Undefined SQLMAP transaction "%s" in %s', $id, $path),E_USER_WARNING);
@@ -639,7 +639,7 @@ class CitrusSqlmapParser
      * @param CitrusDatabaseColumn|null $parameter
      * @return CitrusSqlmapParser
      */
-    public static function generateParser(string $path, string $transaction = null, string $id, CitrusDatabaseColumn $parameter = null) : CitrusSqlmapParser
+    public static function generateParser(string $path, string $transaction, string $id, CitrusDatabaseColumn $parameter = null) : CitrusSqlmapParser
     {
         $parser = new static();
         $parser->parse($path, $transaction, $id, $parameter);
