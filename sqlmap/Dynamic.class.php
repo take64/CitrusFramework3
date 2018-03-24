@@ -1,14 +1,7 @@
 <?php
 /**
- * Dynamic.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Sqlmap
  * @license     http://www.citrus.tk/
  */
 
@@ -52,12 +45,20 @@ class CitrusSqlmapDynamic
     {
         if (is_null($attributes) === false)
         {
-            $this->id               = CitrusXml::getNamedItemValue($attributes, 'id');
-            $this->refid            = CitrusXml::getNamedItemValue($attributes, 'refid');
-            $this->prepend          = CitrusXml::getNamedItemValue($attributes, 'prepend');
-            $this->property         = CitrusXml::getNamedItemValue($attributes, 'property');
-            $this->compare_property = CitrusXml::getNamedItemValue($attributes, 'compareProperty');
-            $this->compare_value    = CitrusXml::getNamedItemValue($attributes, 'compareValue');
+            $items = CitrusXml::toList($attributes);
+            foreach ($items as $name => $value)
+            {
+                switch ($name)
+                {
+                    case 'id'               :$this->id              = $value; break;
+                    case 'refid'            :$this->refid           = $value; break;
+                    case 'prepend'          :$this->prepend         = $value; break;
+                    case 'property'         :$this->property        = $value; break;
+                    case 'compareProperty'  :$this->compare_property= $value; break;
+                    case 'compareValue'     :$this->compare_value   = $value; break;
+                    default:
+                }
+            }
         }
     }
 
