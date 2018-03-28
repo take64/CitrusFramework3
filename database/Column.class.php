@@ -1,14 +1,7 @@
 <?php
 /**
- * Column.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Database
  * @license     http://www.citrus.tk/
  */
 
@@ -17,25 +10,16 @@ namespace Citrus\Database;
 
 use Citrus\Citrus;
 use Citrus\CitrusConfigure;
+use Citrus\CitrusLogger;
 use Citrus\CitrusObject;
+use Citrus\Database\Column\CitrusDatabaseColumnDefault;
 use Citrus\Sqlmap\CitrusSqlmapCondition;
 
 class CitrusDatabaseColumn extends CitrusObject
 {
-    /** @var string status */
-    public $status = 0;
+    use CitrusDatabaseColumnDefault;
 
-    /** @var string registed_at */
-    public $registed_at;
 
-    /** @var string modified_at */
-    public $modified_at;
-
-    /** @var string rowid */
-    public $rowid;
-
-    /** @var string rev */
-    public $rev;
 
     /** @var string schema */
     public $schema = null;
@@ -224,5 +208,35 @@ class CitrusDatabaseColumn extends CitrusObject
      */
     public function bindColumn()
     {
+    }
+
+
+
+    /**
+     * obeject vars getter of (not null property) and (ignore slasses property)
+     *
+     * @param string[] $class_names 削除したいプロパティーを持つクラスのクラス名配列
+     * @return array
+     */
+    public function notNullPropertyAndIgnoreClassProperties(array $class_names = [])
+    {
+        // null以外のプロパティー
+        $not_nulll_properties = $this->notNullProperties();
+
+        // 指定クラスのプロパティーを削除する
+        foreach ($class_names as $class_name)
+        {
+            // 指定クラスのプロパティーを削除する
+            $class_property_keys = array_keys(get_class_vars($class_name));
+            foreach ($class_property_keys as $class_property_key)
+            {
+                if (array_key_exists($class_property_key, $not_nulll_properties) === true)
+                {
+                    unset($not_nulll_properties[$class_property_key]);
+                }
+            }
+        }
+
+        return $not_nulll_properties;
     }
 }

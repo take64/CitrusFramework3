@@ -326,4 +326,24 @@ class CitrusObject
             $object = $target;
         }
     }
+
+
+
+    /**
+     * obeject vars getter of not null property
+     */
+    public function notNullProperties()
+    {
+        $properties = $this->properties();
+
+        $results = [];
+        foreach ($properties as $ky => $vl)
+        {
+            if (is_null($vl) === false)
+            {
+                $results[$ky] = $vl;
+            }
+        }
+        return $results;
+    }
 }
