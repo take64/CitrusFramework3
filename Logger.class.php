@@ -9,6 +9,7 @@ namespace Citrus;
 
 
 use Citrus\Logger\CitrusLoggerFile;
+use Citrus\Logger\CitrusLoggerLevel;
 use Citrus\Logger\CitrusLoggerSyslog;
 use Citrus\Logger\CitrusLoggerType;
 
@@ -20,31 +21,13 @@ class CitrusLogger
     /** @var string logger type php syslog */
     const LOG_TYPE_SYSLOG = 'syslog';
 
-    /** @var int log level */
-    const LOG_LEVEL_TRACE   = 0;
-
-    /** @var int log level */
-    const LOG_LEVEL_DEBUG   = 1;
-
-    /** @var int log level */
-    const LOG_LEVEL_INFO    = 2;
-
-    /** @var int log level */
-    const LOG_LEVEL_WARN    = 3;
-
-    /** @var int log level */
-    const LOG_LEVEL_ERROR   = 4;
-
-    /** @var int log level */
-    const LOG_LEVEL_FATAL   = 5;
-
     /** @var string CitrusConfigureキー */
     const CONFIGURE_KEY = 'logger';
 
 
 
-    /** @var int log level */
-    public static $LOG_LEVEL = 0;
+    /** @var string log level */
+    public static $LOG_LEVEL = CitrusLoggerLevel::DEBUG;
 
     /** @var bool log display */
     public static $LOG_DISPLAY = false;
@@ -79,20 +62,10 @@ class CitrusLogger
         $type = $configure['type'];
 
         // log level
-        $level = $configure['level'];
-        if (empty($level) === true)
+        $level = CitrusNVL::ArrayVL($configure, 'level', CitrusLoggerLevel::DEBUG);
+        if (in_array($level, CitrusLoggerLevel::$LEVELS, true) === true)
         {
-            $level = 'debug';
-        }
-        switch ($level)
-        {
-            case 'trace' : self::$LOG_LEVEL = self::LOG_LEVEL_TRACE; break; // trace
-            case 'debug' : self::$LOG_LEVEL = self::LOG_LEVEL_DEBUG; break; // debug
-            case 'info'  : self::$LOG_LEVEL = self::LOG_LEVEL_INFO;  break; // info
-            case 'warn'  : self::$LOG_LEVEL = self::LOG_LEVEL_WARN;  break; // warn
-            case 'error' : self::$LOG_LEVEL = self::LOG_LEVEL_ERROR; break; // error
-            case 'fatal' : self::$LOG_LEVEL = self::LOG_LEVEL_FATAL; break; // fatal
-            default:
+            self::$LOG_LEVEL = $level;
         }
 
         // logger instance
@@ -139,7 +112,7 @@ class CitrusLogger
      */
     public static function debug($value)
     {
-        if (self::$LOG_LEVEL <= self::LOG_LEVEL_DEBUG)
+        if (self::isOutputLevel(CitrusLoggerLevel::DEBUG) === true)
         {
             self::_output($value, func_get_args());
         }
@@ -154,7 +127,7 @@ class CitrusLogger
      */
     public static function info($value)
     {
-        if (self::$LOG_LEVEL <= self::LOG_LEVEL_INFO)
+        if (self::isOutputLevel(CitrusLoggerLevel::INFO) === true)
         {
             self::_output($value, func_get_args());
         }
@@ -169,7 +142,7 @@ class CitrusLogger
      */
     public static function warn($value)
     {
-        if (self::$LOG_LEVEL <= self::LOG_LEVEL_WARN)
+        if (self::isOutputLevel(CitrusLoggerLevel::WARNING) === true)
         {
             self::_output($value, func_get_args());
         }
@@ -184,7 +157,7 @@ class CitrusLogger
      */
     public static function error($value)
     {
-        if (self::$LOG_LEVEL <= self::LOG_LEVEL_ERROR)
+        if (self::isOutputLevel(CitrusLoggerLevel::ERROR) === true)
         {
             self::_output($value, func_get_args());
         }
@@ -199,7 +172,7 @@ class CitrusLogger
      */
     public static function fatal($value)
     {
-        if (self::$LOG_LEVEL <= self::LOG_LEVEL_FATAL)
+        if (self::isOutputLevel(CitrusLoggerLevel::FATAL) === true)
         {
             self::_output($value, func_get_args());
         }
@@ -237,5 +210,21 @@ class CitrusLogger
         {
             self::$INSTANCE->output($value, $params);
         }
+    }
+
+
+
+    /**
+     * コンフィグ設定で指定されたログを出力するレベルか判定する
+     *
+     * @param string $level
+     * @return bool
+     */
+    private static function isOutputLevel(string $level)
+    {
+        $configure_level_index = array_search(self::$LOG_LEVEL, CitrusLoggerLevel::$LEVELS, true);
+        $target_level_index = array_search($level, CitrusLoggerLevel::$LEVELS, true);
+
+        return ($configure_level_index <= $target_level_index);
     }
 }
