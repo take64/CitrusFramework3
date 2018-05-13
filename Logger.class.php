@@ -8,6 +8,7 @@
 namespace Citrus;
 
 
+use Citrus\Logger\CitrusLoggerCloudwatch;
 use Citrus\Logger\CitrusLoggerFile;
 use Citrus\Logger\CitrusLoggerLevel;
 use Citrus\Logger\CitrusLoggerSyslog;
@@ -20,6 +21,9 @@ class CitrusLogger
 
     /** @var string logger type php syslog */
     const LOG_TYPE_SYSLOG = 'syslog';
+
+    /** @var string logger type cloudwatch */
+    const LOG_TYPE_CLOUDWATCH = 'cloudwatch';
 
     /** @var string CitrusConfigureキー */
     const CONFIGURE_KEY = 'logger';
@@ -78,6 +82,10 @@ class CitrusLogger
             // syslog
             case self::LOG_TYPE_SYSLOG :
                 self::$INSTANCE = new CitrusLoggerSyslog($configure);
+                break;
+            // syslog
+            case self::LOG_TYPE_CLOUDWATCH :
+                self::$INSTANCE = new CitrusLoggerCloudwatch($configure);
                 break;
             default:
         }
