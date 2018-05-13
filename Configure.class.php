@@ -196,6 +196,29 @@ class CitrusConfigure
             self::$CONFIGURE_ITEM = self::$CONFIGURE_ITEMS[$domain];
             self::$CONFIGURE_PLAIN_DOMAIN = $configures[$domain];
         }
+        // コマンドラインアクセスの場合
+        else if (true === isset($_SERVER['argv']) && 0 < count($_SERVER['argv']))
+        {
+            $domain = '';
+            $params = [];
+            foreach ($_SERVER['argv'] as $one)
+            {
+                // パラメータじゃない
+                if (false === strpos($one, '='))
+                {
+                    continue;
+                }
+                list($param_key, $param_val) = explode('=', $one);
+                $param_key = str_replace('--', '', $param_key);
+                $params[$param_key] = $param_val;
+            }
+            if (true === isset($params['domain']))
+            {
+                $domain = $params['domain'];
+                self::$CONFIGURE_ITEM = self::$CONFIGURE_ITEMS[$domain];
+                self::$CONFIGURE_PLAIN_DOMAIN = $configures[$domain];
+            }
+        }
         else
         {
             self::$CONFIGURE_ITEM = self::$CONFIGURE_ITEMS[array_keys(self::$CONFIGURE_ITEMS)[0]];
