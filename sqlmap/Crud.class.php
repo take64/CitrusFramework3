@@ -19,6 +19,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
     {
         callSingleton as public sharedDao;
     }
+    use CitrusSqlmapValidation;
 
     /** id summary */
     const ID_SUMMARY = 'summary';
@@ -408,15 +409,9 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      */
     public function modify(CitrusDatabaseColumn $entity): bool
     {
-
         // 全変更の危険を回避
-        if (count(get_object_vars($entity->getCondition())) == 0)
+        if (false === $this->validateEssentialModify($entity))
         {
-            // message
-            if ($this->isMessage() === true)
-            {
-                CitrusMessage::addWarning($this->callTarget().'変更の条件が足りません。');
-            }
             return false;
         }
 
@@ -513,7 +508,7 @@ class CitrusSqlmapCrud extends CitrusSqlmapClient
      *
      * @return string
      */
-    protected function callTarget(): string
+    public function callTarget(): string
     {
         return $this->target;
     }
