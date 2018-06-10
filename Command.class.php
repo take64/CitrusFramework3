@@ -17,7 +17,6 @@ class CitrusCommand extends CitrusObject
     public $domain = '';
 
 
-
     /**
      * constructor.
      */
@@ -42,6 +41,26 @@ class CitrusCommand extends CitrusObject
      * execute
      */
     public function execute()
+    {
+
+    }
+
+
+
+    /**
+     * before
+     */
+    public function before()
+    {
+
+    }
+
+
+
+    /**
+     * after
+     */
+    public function after()
     {
 
     }
