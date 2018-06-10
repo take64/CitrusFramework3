@@ -144,7 +144,9 @@ class CitrusGateway
         try
         {
             $command = CitrusCommand::callCommand();
+            $command->before();
             $command->execute();
+            $command->after();
         }
         catch (CitrusSqlmapException $e)
         {
