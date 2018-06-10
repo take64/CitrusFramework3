@@ -88,7 +88,15 @@ class CitrusDmm
         }
         if (is_null($condition->keyword) === false)
         {
-            $params['keyword'] = mb_convert_encoding($condition->keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
+            $keyword = $condition->keyword;
+            // DMMは「CLI」という単語を受け付けない
+            if (false !== strpos($keyword, 'CLI'))
+            {
+                return [];
+            }
+            $keyword = mb_convert_encoding($keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
+            $params['keyword'] = $keyword;
+
         }
         $params['sort'] = CitrusNVL::ArrayVL($params, 'sort', CitrusDmmCondition::SORT_ITEM_RANK);
 
