@@ -203,21 +203,23 @@ class CitrusMailImap
         {
             $mailBox = new CitrusMailImapBox(imap_check($handle));
             // メールが1件だった場合に'1:1'にするとnoticeが発生する
-            $sequence = '1';
-            if ($mailBox->quantity > 1)
+            $sequence = $condition->uid_from;
+            $quantity = $mailBox->quantity;
+
+            if ($mailBox->quantity > 1 && $sequence < $quantity)
             {
-                $sequence = sprintf('1:%d', $mailBox->quantity);
+                $sequence = sprintf('%d:%d', $sequence, $quantity);
             }
 
             // メールが0件だった場合はメールが存在していないのでスキップ
-            if ($mailBox->quantity === 0)
+            if ($quantity === 0)
             {
                 return [];
             }
         }
 
         // メール取得
-        $fetches = imap_fetch_overview($handle, $sequence, $options);
+        $fetches = imap_fetch_overview($handle, (string)$sequence, $options);
         // オブジェクト化
         $results = [];
         foreach ($fetches as $fetch)

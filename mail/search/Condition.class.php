@@ -24,6 +24,9 @@ class CitrusMailSearchCondition extends CitrusObject
     /** @var int[] msgno の配列  */
     public $msgnos = [];
 
+    /** @var int 検索開始UID */
+    public $uid_from = 1;
+
 
 
     /**
