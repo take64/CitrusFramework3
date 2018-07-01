@@ -524,6 +524,9 @@ class CitrusFormmapElement extends CitrusObject
             case self::VAR_TYPE_NUMERIC:
                 $is_converted = settype($result, 'float');
                 break;
+            case self::VAR_TYPE_BOOL:
+                $is_converted = settype($result, 'bool');
+                break;
             default:
         }
 
