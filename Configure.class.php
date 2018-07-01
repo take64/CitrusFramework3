@@ -215,9 +215,13 @@ class CitrusConfigure
             if (true === isset($params['domain']))
             {
                 $domain = $params['domain'];
-                self::$CONFIGURE_ITEM = self::$CONFIGURE_ITEMS[$domain];
-                self::$CONFIGURE_PLAIN_DOMAIN = $configures[$domain];
             }
+            else
+            {
+                $domain = array_keys(self::$CONFIGURE_ITEMS)[0];
+            }
+            self::$CONFIGURE_ITEM = self::$CONFIGURE_ITEMS[$domain];
+            self::$CONFIGURE_PLAIN_DOMAIN = $configures[$domain];
         }
         else
         {
