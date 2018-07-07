@@ -208,7 +208,7 @@ class CitrusLogger
         }
         if (false === is_null(self::$INSTANCE))
         {
-            self::$INSTANCE->output($value, $params);
+            self::$INSTANCE->output($level, $value, $params);
         }
     }
 
