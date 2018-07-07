@@ -64,29 +64,26 @@ class CitrusLoggerCloudwatch extends CitrusObject implements CitrusLoggerType
     /**
      * output log file
      *
-     * @param mixed $value
-     * @param array $params
+     * @param string $level  ログレベル
+     * @param mixed  $value  ログ内容
+     * @param array  $params パラメーター
      */
-    public function output($value, array $params = [])
+    public function output(string $level, $value, array $params = [])
     {
         if (is_string($value) === true)
         {
-            $vl_dump = vsprintf($value, $params) . PHP_EOL;
-        }
-        else
-        {
-            ob_start();
-            var_dump($value);
-            $vl_dump = ob_get_contents();
-            ob_end_clean();
+            $value = vsprintf($value, $params) . PHP_EOL;
         }
 
-        $this->buffers[] = [
-            'message' => htmlspecialchars_decode(strip_tags($vl_dump)),
-            'timestamp' => ($_SERVER['REQUEST_TIME_FLOAT'] * 1000),
+        $format = [
+            'messages' => $value,
+            'datetime' => new \DateTime(),
         ];
 
-        clearstatcache();
+        $this->buffers[] = [
+            'message' => json_encode($format),
+            'timestamp' => ($_SERVER['REQUEST_TIME_FLOAT'] * 1000),
+        ];
 
         // バッファリングしない場合は、すぐに送る
         if (false === $this->is_buffering)

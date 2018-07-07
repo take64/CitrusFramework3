@@ -1,14 +1,7 @@
 <?php
 /**
- * Type.interface.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Logger
  * @license     http://www.citrus.tk/
  */
 
@@ -20,8 +13,9 @@ interface CitrusLoggerType
     /**
      * output
      *
-     * @param mixed $value
-     * @param array $params
+     * @param string $level  ログレベル
+     * @param mixed  $value  ログ内容
+     * @param array  $params パラメーター
      */
-    public function output($value, array $params = []);
+    public function output(string $level, $value, array $params = []);
 }

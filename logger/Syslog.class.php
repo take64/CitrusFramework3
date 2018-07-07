@@ -1,14 +1,7 @@
 <?php
 /**
- * Syslog.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     Citrus
- * @subpackage  Logger
  * @license     http://www.citrus.tk/
  */
 
@@ -30,25 +23,28 @@ class CitrusLoggerSyslog extends CitrusObject implements CitrusLoggerType
     /**
      * constructor
      *
-     * @param array $default_configure
      * @param array $configure
      */
-    public function __construct($default_configure = [], $configure = [])
+    public function __construct(array $configure = [])
     {
+        $this->bind($configure);
     }
+
+
 
     /**
      * output log syslog
      *
-     * @param mixed  $value
-     * @param string $comment
+     * @param string $level  ログレベル
+     * @param mixed  $value  ログ内容
+     * @param array  $params パラメーター
      */
-    public function output($value, string $comment = '')
+    public function output(string $level, $value, array $params = [])
     {
         $vl_dump = '';
         if (is_string($value))
         {
-            $vl_dump = $value . "\n";
+            $vl_dump = vsprintf($value, $params) . PHP_EOL;
         }
         else
         {
@@ -58,7 +54,7 @@ class CitrusLoggerSyslog extends CitrusObject implements CitrusLoggerType
             ob_end_clean();
         }
 
-        $dat = date('[Y-m-d H:i:s]',$_SERVER['REQUEST_TIME']).$comment.htmlspecialchars_decode(strip_tags($vl_dump));
+        $dat = date('[Y-m-d H:i:s] ', $_SERVER['REQUEST_TIME']).htmlspecialchars_decode(strip_tags($vl_dump));
 
         syslog(LOG_INFO, $dat);
     }
