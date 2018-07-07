@@ -14,13 +14,13 @@ use Citrus\Dmm\CitrusDmmItem;
 
 class CitrusDmm
 {
-    /** @var string API_IDのキー */
+    /** API_IDのキー */
     const API_ID_KEY = 'api_id';
 
-    /** @var string AFFILIATE_IDのキー */
+    /** AFFILIATE_IDのキー */
     const AFFILIATE_ID_KEY = 'affiliate_id';
 
-    /** @var string CitrusConfigureキー */
+    /** CitrusConfigureキー */
     const CONFIGURE_KEY = 'dmm';
 
 
@@ -109,8 +109,6 @@ class CitrusDmm
 
         // URL を作成します
         $url = $baseurl . '?' . $http_query;
-
-        CitrusLogger::debug('DMM request URL = %s', $url);
 
         // url request
         $data = file_get_contents($url);
@@ -240,8 +238,6 @@ class CitrusDmm
 
         // URL を作成します
         $url = $baseurl . '?' . $http_query;
-
-        CitrusLogger::debug('DMM request URL = %s', $url);
 
         // url request
         $data = file_get_contents($url);
