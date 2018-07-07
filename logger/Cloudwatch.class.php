@@ -77,6 +77,7 @@ class CitrusLoggerCloudwatch extends CitrusObject implements CitrusLoggerType
 
         $format = [
             'messages' => $value,
+            'level' => $level,
             'datetime' => new \DateTime(),
         ];
 
