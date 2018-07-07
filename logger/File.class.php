@@ -35,10 +35,11 @@ class CitrusLoggerFile extends CitrusObject implements CitrusLoggerType
     /**
      * output log file
      *
-     * @param mixed $value
-     * @param array $params
+     * @param string $level  ログレベル
+     * @param mixed  $value  ログ内容
+     * @param array  $params パラメーター
      */
-    public function output($value, array $params = [])
+    public function output(string $level, $value, array $params = [])
     {
         $_directory = $this->directory;
         $_filename  = $this->filename;
