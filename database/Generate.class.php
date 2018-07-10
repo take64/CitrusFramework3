@@ -31,11 +31,11 @@ class CitrusDatabaseGenerate
     /**
      * Property
      *
-     * @param CitrusDatabaseDSN[] $dsns      マイグレーション対象DSNリスト
-     * @param string              $tablename テーブル名
-     * @param string              $classname class名
+     * @param CitrusDatabaseDSN[] $dsns       マイグレーション対象DSNリスト
+     * @param string              $table_name テーブル名
+     * @param string              $class_name class名
      */
-    public static function property(array $dsns, string $tablename, string $classname)
+    public static function property(array $dsns, string $table_name, string $class_name)
     {
         // propertyディレクトリパス
         $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_PROPERTY);
@@ -46,14 +46,14 @@ class CitrusDatabaseGenerate
             $db = new PDO($dsn->toStringWithAuth());
 
             // カラム定義の取得
-            $columns = self::callTableColumns($db, $dsn, $tablename);
+            $columns = self::callTableColumns($db, $dsn, $table_name);
 
             // コメント定義の取得
-            $comments = self::callTableColumnComments($db, $dsn, $tablename);
+            $comments = self::callTableColumnComments($db, $dsn, $table_name);
 
 
             // プライマリキーの取得
-            $primary_keys = self::callTablePrimaryKeys($db, $tablename);
+            $primary_keys = self::callTablePrimaryKeys($db, $table_name);
 
             // デフォルトカラム
             $default_columns = array_keys(get_class_vars(CitrusDatabaseColumn::class));
@@ -80,7 +80,7 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
      *
      * @return string[]
      */
-    public function callPrimaryKeys() : array
+    public function callPrimaryKeys(): array
     {
         return [{#primary-keys#}];
     }
@@ -92,7 +92,7 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
      *
      * @return {#namespace#}{#class-name#}Condition
      */
-    public function callCondition() : {#namespace#}{#class-name#}Condition
+    public function callCondition(): {#namespace#}{#class-name#}Condition
     {
         if (is_null(\$this->condition) === true)
         {
@@ -112,7 +112,7 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
 EOT;
             $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
             $file_string = str_replace('{#namespace#}', ucfirst(CitrusConfigure::$CONFIGURE_ITEM->application->id), $file_string);
-            $file_string = str_replace('{#class-name#}', $classname, $file_string);
+            $file_string = str_replace('{#class-name#}', $class_name, $file_string);
             $file_string = str_replace('{#primary-keys#}', implode(', ', $primary_keys), $file_string);
 
             // column property
@@ -145,8 +145,11 @@ EOT;
                         $data_type = 'string';
                         break;
                     case 'integer' :
-                    case 'numeric' :
+                    case 'bigint' :
                         $data_type = 'int';
+                        break;
+                    case 'numeric' :
+                        $data_type = 'double';
                         break;
                     default:
                 }
@@ -166,7 +169,7 @@ PTY;
 
             $file_string = str_replace('{#property#}', implode(PHP_EOL, $properties), $file_string);
 
-            $generate_class_path = sprintf('%s/%sProperty.class.php', $directory_path, $classname);
+            $generate_class_path = sprintf('%s/%sProperty.class.php', $directory_path, $class_name);
             file_put_contents($generate_class_path, $file_string);
             echo 'generate class file => ' . $generate_class_path . PHP_EOL;
         }
@@ -177,10 +180,10 @@ PTY;
     /**
      * Dao
      *
-     * @param string $tablename テーブル名
-     * @param string $classname class名
+     * @param string $table_name テーブル名
+     * @param string $class_name class名
      */
-    public static function dao(string $tablename, string $classname)
+    public static function dao(string $table_name, string $class_name)
     {
         // daoディレクトリパス
         $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_DAO);
@@ -208,15 +211,15 @@ class {#namespace#}{#class-name#}Dao extends CitrusSqlmapCrud
 EOT;
         $sqlmap_id = implode('', array_map(function($key) {
             return ucfirst($key);
-        }, explode('_', $tablename)));
+        }, explode('_', $table_name)));
 
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
         $file_string = str_replace('{#namespace#}', ucfirst(CitrusConfigure::$CONFIGURE_ITEM->application->id), $file_string);
-        $file_string = str_replace('{#class-name#}', $classname, $file_string);
+        $file_string = str_replace('{#class-name#}', $class_name, $file_string);
         $file_string = str_replace('{#sqlmap_id#}', $sqlmap_id, $file_string);
-        $file_string = str_replace('{#tablename#}', $tablename, $file_string);
+        $file_string = str_replace('{#tablename#}', $table_name, $file_string);
 
-        $generate_class_path = sprintf('%s/%sDao.class.php', $directory_path, $classname);
+        $generate_class_path = sprintf('%s/%sDao.class.php', $directory_path, $class_name);
         file_put_contents($generate_class_path, $file_string);
         echo 'generate class file => ' . $generate_class_path . PHP_EOL;
     }
@@ -226,10 +229,10 @@ EOT;
     /**
      * Condition
      *
-     * @param string $tablename     テーブル名
-     * @param string $conditionname class名
+     * @param string $table_name     テーブル名
+     * @param string $condition_name class名
      */
-    public static function condition(string $tablename, string $conditionname)
+    public static function condition(string $table_name, string $condition_name)
     {
         // propertyディレクトリパス
         $directory_path = self::callDirectoryPath(CitrusConfigure::$DIR_INTEGRATION_CONDITION);
@@ -243,10 +246,10 @@ EOT;
  
 namespace {#namespace#}\Integration\Condition;
 
-use {#namespace#}\Integration\Property\{#namespace#}{#table_name#}Property;
+use {#namespace#}\Integration\Property\{#namespace#}{#class-name#}Property;
 use Citrus\Sqlmap\CitrusSqlmapCondition;
 
-class {#namespace#}{#class-name#}Condition extends {#namespace#}{#table_name#}Property
+class {#namespace#}{#class-name#}Condition extends {#namespace#}{#class-name#}Property
 {
     use CitrusSqlmapCondition;
 }
@@ -254,10 +257,10 @@ class {#namespace#}{#class-name#}Condition extends {#namespace#}{#table_name#}Pr
 EOT;
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
         $file_string = str_replace('{#namespace#}', ucfirst(CitrusConfigure::$CONFIGURE_ITEM->application->id), $file_string);
-        $file_string = str_replace('{#table_name#}', $tablename, $file_string);
-        $file_string = str_replace('{#class-name#}', $conditionname, $file_string);
+        $file_string = str_replace('{#table-name#}', $table_name, $file_string);
+        $file_string = str_replace('{#class-name#}', $condition_name, $file_string);
 
-        $generate_class_path = sprintf('%s/%sCondition.class.php', $directory_path, $conditionname);
+        $generate_class_path = sprintf('%s/%sCondition.class.php', $directory_path, $condition_name);
         file_put_contents($generate_class_path, $file_string);
         echo 'generate class file => ' . $generate_class_path . PHP_EOL;
     }
