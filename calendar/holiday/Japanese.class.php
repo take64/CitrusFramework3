@@ -8,10 +8,7 @@
 namespace Citrus\Calendar\Holiday;
 
 
-use Citrus\Citrus;
-use Citrus\CitrusConfigure;
 use Citrus\CitrusObject;
-use Citrus\Sqlmap\CitrusSqlmapCondition;
 
 class CitrusCalendarHolidayJapanese extends CitrusObject
 {
