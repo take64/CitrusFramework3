@@ -389,13 +389,17 @@
         
         this.options = options;
 
-        $('.datepicker').datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
-        $('.datetimepicker').datetimepicker({
-            dateFormat: 'yy-mm-dd',
-            timeFormat: 'HH:mm:ss'
-        });
+        if (typeof $.fn.datepicker !== 'undefined') {
+            $('.datepicker').datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+        }
+        if (typeof $.fn.datetimepicker !== 'undefined') {
+            $('.datetimepicker').datetimepicker({
+                dateFormat: 'yy-mm-dd',
+                timeFormat: 'HH:mm:ss'
+            });
+        }
 
         return this;
     };
