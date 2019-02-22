@@ -220,7 +220,7 @@ class CitrusDmm
                 {
                     continue;
                 }
-                $item->$ssl_column = str_replace('http', 'https', $item->$ssl_column);
+                $item->$ssl_column = str_replace('http://', 'https://', $item->$ssl_column);
             }
         }
 
@@ -336,7 +336,7 @@ class CitrusDmm
                 {
                     continue;
                 }
-                $item->$ssl_column = str_replace('http', 'https', $item->$ssl_column);
+                $item->$ssl_column = str_replace('http://', 'https://', $item->$ssl_column);
             }
         }
 
