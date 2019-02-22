@@ -20,6 +20,9 @@ class CitrusDmm
     /** AFFILIATE_IDのキー */
     const AFFILIATE_ID_KEY = 'affiliate_id';
 
+    /** SSLのキー */
+    const SSL_KEY = 'ssl';
+
     /** CitrusConfigureキー */
     const CONFIGURE_KEY = 'dmm';
 
@@ -30,6 +33,9 @@ class CitrusDmm
 
     /** @var string dmm affiliate id */
     public static $AFFILIATE_ID = null;
+
+    /** @var bool dmm ssl */
+    public static $SSL = false;
 
     /** @var bool */
     private static $IS_INITIALIZED = false;
@@ -53,6 +59,7 @@ class CitrusDmm
         // ids
         self::$API_ID       = $configure[self::API_ID_KEY];
         self::$AFFILIATE_ID = $configure[self::AFFILIATE_ID_KEY];
+        self::$SSL          = CitrusNVL::ArrayVL($configure, self::SSL_KEY, false);
 
         // initialize
         self::$IS_INITIALIZED = true;
@@ -118,7 +125,7 @@ class CitrusDmm
             return null;
         }
 
-        $data = json_decode($data, true, null, JSON_OBJECT_AS_ARRAY);
+        $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
         $items = $data['result']['items'];
 
         $results = [];
@@ -195,6 +202,28 @@ class CitrusDmm
         }
         $item->volume = $volume;
 
+        // SSL対応
+        if (self::$SSL === true)
+        {
+            $ssl_columns = [
+                'URL',
+                'URLsp',
+                'affiliateURL',
+                'affiliateURLsp',
+                'imageURL',
+                'sampleImageURL',
+                'sampleMovieURL',
+            ];
+            foreach ($ssl_columns as $ssl_column)
+            {
+                if (empty($item->$ssl_column) === true)
+                {
+                    continue;
+                }
+                $item->$ssl_column = str_replace('http', 'https', $item->$ssl_column);
+            }
+        }
+
         return $item;
     }
 
@@ -247,7 +276,7 @@ class CitrusDmm
             return null;
         }
 
-        $data = json_decode($data, true, null, JSON_OBJECT_AS_ARRAY);
+        $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
         if (isset($data['result']['actress']) === true)
         {
             $items = $data['result']['actress'];
@@ -292,6 +321,24 @@ class CitrusDmm
         $item->prefectures  = $data['prefectures'];
         $item->imageURL     = CitrusNVL::ArrayVL($data, 'imageURL', null);
         $item->listURL      = CitrusNVL::ArrayVL($data, 'listURL', null);
+
+
+        // SSL対応
+        if (self::$SSL === true)
+        {
+            $ssl_columns = [
+                'imageURL',
+                'listURL',
+            ];
+            foreach ($ssl_columns as $ssl_column)
+            {
+                if (empty($item->$ssl_column) === true)
+                {
+                    continue;
+                }
+                $item->$ssl_column = str_replace('http', 'https', $item->$ssl_column);
+            }
+        }
 
         return $item;
     }
