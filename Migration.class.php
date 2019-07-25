@@ -7,11 +7,10 @@
 
 namespace Citrus;
 
+use Citrus\Database\DSN;
+use Citrus\Migration\Item;
 
-use Citrus\Database\CitrusDatabaseDSN;
-use Citrus\Migration\CitrusMigrationItem;
-
-class CitrusMigration
+class Migration
 {
     /** @var string 生成 */
     const ACTION_GENERATE = 'generate';
@@ -97,7 +96,7 @@ EOT;
      * マイグレーションの実行
      *
      * @param string              $directory アプリディレクトリ名
-     * @param CitrusDatabaseDSN[] $dsns      マイグレーション対象DSNリスト
+     * @param DSN[] $dsns      マイグレーション対象DSNリスト
      * @param string|null         $version   バージョン指定
      */
     public static function up(string $directory, array $dsns, string $version = null)
@@ -136,7 +135,7 @@ EOT;
                 // ファイルであれば読み込み
                 include_once($class_path);
 
-                /** @var CitrusMigrationItem $instance */
+                /** @var Item $instance */
                 $instance = new $class_name($dsn);
 
                 // 実行
@@ -151,7 +150,7 @@ EOT;
      * マイグレーションDOWNの実行
      *
      * @param string              $directory アプリディレクトリ名
-     * @param CitrusDatabaseDSN[] $dsns      マイグレーション対象DSNリスト
+     * @param DSN[] $dsns      マイグレーション対象DSNリスト
      * @param string|null         $version   バージョン指定
      */
     public static function down(string $directory, array $dsns, string $version = null)
@@ -191,7 +190,7 @@ EOT;
                 // ファイルであれば読み込み
                 include_once($class_path);
 
-                /** @var CitrusMigrationItem $instance */
+                /** @var Item $instance */
                 $instance = new $class_name($dsn);
 
                 // 実行
@@ -206,7 +205,7 @@ EOT;
      * マイグレーションREBIRTHの実行
      *
      * @param string              $directory アプリディレクトリ名
-     * @param CitrusDatabaseDSN[] $dsns      マイグレーション対象DSNリスト
+     * @param DSN[] $dsns      マイグレーション対象DSNリスト
      * @param string|null         $version   バージョン指定
      */
     public static function rebirth(string $directory, array $dsns, string $version = null)

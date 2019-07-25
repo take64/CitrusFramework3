@@ -7,12 +7,10 @@
 
 namespace Citrus;
 
+use Citrus\Slack\Attachments;
+use Citrus\Slack\Item;
 
-
-use Citrus\Slack\CitrusSlackAttachments;
-use Citrus\Slack\CitrusSlackItem;
-
-class CitrusSlack
+class Slack
 {
     /** @var array webhook_urls */
     public static $WEBHOOK_URLS = [];
@@ -34,7 +32,7 @@ class CitrusSlack
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge('slack');
+        $configure = Configure::configureMerge('slack');
 
         // ids
         self::$WEBHOOK_URLS = [];
@@ -53,20 +51,20 @@ class CitrusSlack
      * slack send
      *
      * @param string          $key
-     * @param CitrusSlackItem $item
+     * @param Item $item
      */
-    public static function send(string $key, CitrusSlackItem $item)
+    public static function send(string $key, Item $item)
     {
         // initialize
         self::initialize();
 
         $slack_data = [];
-        if ($item instanceof CitrusSlackAttachments)
+        if ($item instanceof Attachments)
         {
             $slack_data['attachments'] = [ $item->properties() ];
         }
 
-        CitrusHttp::post(self::$WEBHOOK_URLS[$key], json_encode($slack_data));
+        Http::post(self::$WEBHOOK_URLS[$key], json_encode($slack_data));
     }
 
 

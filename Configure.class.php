@@ -9,19 +9,19 @@ namespace Citrus;
 
 include_once dirname(__FILE__).'/Autoloader.class.php';
 
-use Citrus\Configure\CitrusConfigureItem;
-use Citrus\Document\CitrusDocumentRouter;
+use Citrus\Configure\Item;
+use Citrus\Document\Router;
 
-class CitrusConfigure
+class Configure
 {
     /** @var string CitrusConfigureのデフォルトキー */
     const CONFIGURE_DEFAULT_KEY = 'default';
 
 
-    /** @var CitrusConfigureItem */
+    /** @var Item */
     public static $CONFIGURE_ITEM = null;
 
-    /** @var CitrusConfigureItem[] */
+    /** @var Item[] */
     public static $CONFIGURE_ITEMS = [];
 
     /** @var array plain configure default */
@@ -85,7 +85,7 @@ class CitrusConfigure
     public static function initialize($path_configure)
     {
         // init autoload
-        CitrusAutoloader::autoloadFramework();
+        Autoloader::autoloadFramework();
 
         // framework initialize
         self::fremework();
@@ -97,7 +97,7 @@ class CitrusConfigure
         self::configure($path_configure);
 
         // init autoload
-        CitrusAutoloader::autoloadApplication();
+        Autoloader::autoloadApplication();
     }
 
 
@@ -187,7 +187,7 @@ class CitrusConfigure
         // 設定情報の生成
         foreach ($configures as $domain => $one)
         {
-            self::$CONFIGURE_ITEMS[$domain] = new CitrusConfigureItem($default_configure, $one);
+            self::$CONFIGURE_ITEMS[$domain] = new Item($default_configure, $one);
         }
         // httpアクセスの場合
         if (isset($_SERVER['HTTP_HOST']) === true)
@@ -231,16 +231,16 @@ class CitrusConfigure
         }
 
         // ルーティング処理初期化
-        CitrusDocumentRouter::initialize($default_configure, $configures[$domain]);
+        Router::initialize($default_configure, $configures[$domain]);
 
         // 認証処理初期化
-        CitrusAuthentication::initialize($default_configure, $configures[$domain]);
+        Authentication::initialize($default_configure, $configures[$domain]);
 
         // メッセージ処理初期化
-        CitrusMessage::initialize($default_configure, $configures[$domain]);
+        Message::initialize($default_configure, $configures[$domain]);
 
         // ロガー処理
-        CitrusLogger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
+        Logger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
     }
 
 
@@ -256,11 +256,11 @@ class CitrusConfigure
     public static function configureMerge(string $configure_key, array $configure_default = null, array $configure_addition = null)
     {
         // デフォルト設定
-        $configure_default  = CitrusNVL::coalesceEmpty($configure_default, CitrusConfigure::$CONFIGURE_PLAIN_DEFAULT);
-        $configure_addition = CitrusNVL::coalesceEmpty($configure_addition, CitrusConfigure::$CONFIGURE_PLAIN_DOMAIN);
+        $configure_default  = NVL::coalesceEmpty($configure_default, Configure::$CONFIGURE_PLAIN_DEFAULT);
+        $configure_addition = NVL::coalesceEmpty($configure_addition, Configure::$CONFIGURE_PLAIN_DOMAIN);
 
         $configure = [];
-        $configure = array_merge($configure, CitrusNVL::ArrayVL($configure_default, $configure_key, []));
-        return array_merge($configure, CitrusNVL::ArrayVL($configure_addition, $configure_key, []));
+        $configure = array_merge($configure, NVL::ArrayVL($configure_default, $configure_key, []));
+        return array_merge($configure, NVL::ArrayVL($configure_addition, $configure_key, []));
     }
 }

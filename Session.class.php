@@ -1,43 +1,36 @@
 <?php
 /**
- * Session.class.php.
- *
- *
- * PHP version 7
- *
  * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
- * @package     .
- * @subpackage  .
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
 
-use Citrus\Document\CitrusDocumentRouter;
-use Citrus\Session\CitrusSessionItem;
+use Citrus\Document\Router;
+use Citrus\Session\Item;
 
-class CitrusSession extends CitrusObject
+class Session extends Struct
 {
-    /** @var CitrusSessionItem $_SESSION values 'data' -> 'element' */
+    /** @var Item $_SESSION values 'data' -> 'element' */
     public static $session;
 
-    /** @var CitrusSessionItem $_GET values */
+    /** @var Item $_GET values */
     public static $getdata;
 
-    /** @var CitrusSessionItem $_POST values */
+    /** @var Item $_POST values */
     public static $postdata;
 
-    /** @var CitrusSessionItem $_FILES values */
+    /** @var Item $_FILES values */
     public static $filedata;
 
-    /** @var CitrusSessionItem $_SERVER values */
+    /** @var Item $_SERVER values */
     public static $server;
 
-    /** @var CitrusSessionItem $_POST + $_GET values */
+    /** @var Item $_POST + $_GET values */
     public static $request;
 
-    /** @var CitrusDocumentRouter routing element */
+    /** @var Router routing element */
     public static $router;
 
     /** @var string session id */
@@ -84,7 +77,7 @@ class CitrusSession extends CitrusObject
         if ($use_ticket === true)
         {
             // get ticket
-            $citrus_ticket_key = CitrusNVL::ArrayVL($_REQUEST, 'ctk', '');
+            $citrus_ticket_key = NVL::ArrayVL($_REQUEST, 'ctk', '');
             if (empty($citrus_ticket_key) === true)
             {
                 $citrus_ticket_key = md5(uniqid(rand()));
@@ -101,13 +94,13 @@ class CitrusSession extends CitrusObject
         session_start();
 
         // save old session data
-        self::$session  = new CitrusSessionItem(isset($_SESSION['data']) ? $_SESSION['data'] : null);
-        self::$getdata  = new CitrusSessionItem($_GET);
-        self::$postdata = new CitrusSessionItem($_POST);
-        self::$filedata = new CitrusSessionItem($_FILES);
-        self::$server   = new CitrusSessionItem($_SERVER);
-        self::$request  = new CitrusSessionItem($_REQUEST);
-        self::$router   = CitrusDocumentRouter::factory($_REQUEST);
+        self::$session  = new Item(isset($_SESSION['data']) ? $_SESSION['data'] : null);
+        self::$getdata  = new Item($_GET);
+        self::$postdata = new Item($_POST);
+        self::$filedata = new Item($_FILES);
+        self::$server   = new Item($_SERVER);
+        self::$request  = new Item($_REQUEST);
+        self::$router   = Router::factory($_REQUEST);
 
         session_regenerate_id(true);
     }

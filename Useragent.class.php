@@ -7,12 +7,11 @@
 
 namespace Citrus;
 
+use Citrus\Useragent\Carrier;
+use Citrus\Useragent\Device;
+use Citrus\Useragent\Element;
 
-use Citrus\Useragent\CitrusUseragentCarrier;
-use Citrus\Useragent\CitrusUseragentDevice;
-use Citrus\Useragent\CitrusUseragentElement;
-
-class CitrusUseragent
+class Useragent
 {
     /** ユーザーエージェントパターン配列のpregパターン */
     const PATTERN_KEY = 0;
@@ -34,9 +33,9 @@ class CitrusUseragent
      * call useragent
      *
      * @param string|null $useragent
-     * @return CitrusUseragentElement
+     * @return Element
      */
-    public static function callUseragent(string $useragent = null) : CitrusUseragentElement
+    public static function callUseragent(string $useragent = null) : Element
     {
         return self::vague($useragent);
     }
@@ -48,9 +47,9 @@ class CitrusUseragent
      * ユーザエージェントについて曖昧な情報を返す
      *
      * @param   string $useragent
-     * @return  CitrusUseragentElement
+     * @return  Element
      */
-    public static function vague(string $useragent = null) : CitrusUseragentElement
+    public static function vague(string $useragent = null) : Element
     {
         // 指定が無い場合はデフォルト値
         if (empty($useragent) === true)
@@ -67,7 +66,7 @@ class CitrusUseragent
         $useragent = trim($useragent);
 
         // element
-        $element = new CitrusUseragentElement();
+        $element = new Element();
         $element->useragent = $useragent;
 
         // パターンチェック
@@ -86,8 +85,8 @@ class CitrusUseragent
         // パターン一致しなかった場合
         if ($is_match === false)
         {
-            $element->device = CitrusUseragentDevice::PC;
-            $element->carrier= CitrusUseragentCarrier::OTHER;
+            $element->device = Device::PC;
+            $element->carrier= Carrier::OTHER;
         }
 
         return $element;
@@ -105,29 +104,29 @@ class CitrusUseragent
         $patterns = [];
 
         // Mac, Win ... PC
-        $patterns[] = ['/(Macintosh|Windows)/',     CitrusUseragentDevice::PC,          CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/(Macintosh|Windows)/',     Device::PC,          Carrier::OTHER];
         // docomo mobile
-        $patterns[] = ['/DoCoMo/',                  CitrusUseragentDevice::MOBILE,      CitrusUseragentCarrier::DOCOMO];
+        $patterns[] = ['/DoCoMo/',                  Device::MOBILE,      Carrier::DOCOMO];
         // au mobile
-        $patterns[] = ['/KDDI.*UP.Browser/',        CitrusUseragentDevice::MOBILE,      CitrusUseragentCarrier::AU];
+        $patterns[] = ['/KDDI.*UP.Browser/',        Device::MOBILE,      Carrier::AU];
         // softbank mobile
-        $patterns[] = ['/SoftBank.*NetFront/',      CitrusUseragentDevice::MOBILE,      CitrusUseragentCarrier::SOFTBANK];
+        $patterns[] = ['/SoftBank.*NetFront/',      Device::MOBILE,      Carrier::SOFTBANK];
         //docomo Xperia
-        $patterns[] = ['/Linux;.*Android.*c100/',   CitrusUseragentDevice::ANDROID,     CitrusUseragentCarrier::DOCOMO];
+        $patterns[] = ['/Linux;.*Android.*c100/',   Device::ANDROID,     Carrier::DOCOMO];
         // softbank iPhone
-        $patterns[] = ['/iPhone;/',                 CitrusUseragentDevice::IPHONE,      CitrusUseragentCarrier::SOFTBANK];
+        $patterns[] = ['/iPhone;/',                 Device::IPHONE,      Carrier::SOFTBANK];
         // apple iPhone simulator
-        $patterns[] = ['/iPhone Simulator;/',       CitrusUseragentDevice::SMARTPHONE,  CitrusUseragentCarrier::SOFTBANK];
+        $patterns[] = ['/iPhone Simulator;/',       Device::SMARTPHONE,  Carrier::SOFTBANK];
         // other iPad
-        $patterns[] = ['/iPad;/',                   CitrusUseragentDevice::IPAD,        CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/iPad;/',                   Device::IPAD,        Carrier::OTHER];
         // other iPod
-        $patterns[] = ['/iPod;/',                   CitrusUseragentDevice::SMARTPHONE,  CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/iPod;/',                   Device::SMARTPHONE,  Carrier::OTHER];
         // android
-        $patterns[] = ['/Linux;.*Android/',         CitrusUseragentDevice::ANDROID,     CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/Linux;.*Android/',         Device::ANDROID,     Carrier::OTHER];
         // android
-        $patterns[] = ['/Android/',                 CitrusUseragentDevice::ANDROID,     CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/Android/',                 Device::ANDROID,     Carrier::OTHER];
         // bot
-        $patterns[] = ['/(Googlebot|Baiduspider)/', CitrusUseragentDevice::PC,          CitrusUseragentCarrier::OTHER];
+        $patterns[] = ['/(Googlebot|Baiduspider)/', Device::PC,          Carrier::OTHER];
 
         return $patterns;
     }

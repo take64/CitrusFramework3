@@ -7,10 +7,9 @@
 
 namespace Citrus;
 
-
 use Closure;
 
-class CitrusNVL
+class NVL
 {
     /**
      * NVL

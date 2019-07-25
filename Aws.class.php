@@ -7,8 +7,7 @@
 
 namespace Citrus;
 
-
-class CitrusAws
+class Aws
 {
     /** CitrusConfigureキー */
     const CONFIGURE_KEY = 'aws';
@@ -32,7 +31,7 @@ class CitrusAws
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY);
+        $configure = Configure::configureMerge(self::CONFIGURE_KEY);
 
         // require
         require_once $configure['path'];

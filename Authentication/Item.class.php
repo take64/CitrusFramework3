@@ -1,0 +1,25 @@
+<?php
+/**
+ * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
+ * @author      take64 <take64@citrus.tk>
+ * @license     http://www.citrus.tk/
+ */
+
+namespace Citrus\Authentication;
+
+use Citrus\Database\Column;
+
+class Item extends Column
+{
+    /** @var string user id */
+    public $user_id;
+
+    /** @var string password */
+    public $password;
+
+    /** @var string token */
+    public $token;
+
+    /** @var string keep at */
+    public $keep_at;
+}

@@ -7,13 +7,12 @@
 
 namespace Citrus;
 
-
-use Citrus\Cache\CitrusCacheEngine;
-use Citrus\Cache\CitrusCacheMemcached;
-use Citrus\Cache\CitrusCacheRedis;
+use Citrus\Cache\Engine;
+use Citrus\Cache\Memcached;
+use Citrus\Cache\Redis;
 use Closure;
 
-class CitrusCache
+class Cache
 {
     /** @var string cache engine redis */
     const ENGINE_REDIS = 'redis';
@@ -26,7 +25,7 @@ class CitrusCache
 
 
 
-    /** @var CitrusCacheEngine */
+    /** @var Engine */
     protected static $INSTANCE = null;
 
     /** @var bool is initialized */
@@ -49,7 +48,7 @@ class CitrusCache
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
+        $configure = Configure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // configure empty
         if (empty($configure) === true)
@@ -61,19 +60,19 @@ class CitrusCache
         $engine = $configure['engine'];
 
         // cache engine instance
-        $prefix = CitrusNVL::ArrayVL($configure, 'prefix', '');
-        $expire = CitrusNVL::ArrayVL($configure, 'expire', 0);
+        $prefix = NVL::ArrayVL($configure, 'prefix', '');
+        $expire = NVL::ArrayVL($configure, 'expire', 0);
         switch ($engine)
         {
             // redis
             case self::ENGINE_REDIS :
-                self::$INSTANCE = new CitrusCacheRedis($prefix, $expire);
+                self::$INSTANCE = new Redis($prefix, $expire);
                 self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;
 
             // redis
             case self::ENGINE_MEMCACHED :
-                self::$INSTANCE = new CitrusCacheMemcached($prefix, $expire);
+                self::$INSTANCE = new Memcached($prefix, $expire);
                 self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;
 
