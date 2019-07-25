@@ -8,7 +8,7 @@
 namespace Citrus;
 
 
-class CitrusCommand extends CitrusObject
+class Command extends Struct
 {
     /** @var string script code */
     public $script = '';
@@ -69,9 +69,9 @@ class CitrusCommand extends CitrusObject
     /**
      * generate command instance
      *
-     * @return CitrusCommand
+     * @return Command
      */
-    public static function callCommand() : CitrusCommand
+    public static function callCommand() : Command
     {
         global $argv;
         unset($argv[0]);
@@ -87,7 +87,7 @@ class CitrusCommand extends CitrusObject
         $domain = $parameters['--domain'];
 
         // アプリケーション
-        $application = CitrusConfigure::$CONFIGURE_ITEMS[$domain]->application;
+        $application = Configure::$CONFIGURE_ITEMS[$domain]->application;
 
         $class_paths = explode('-', $script);
         $class_path = $application->path . '/Command';
@@ -111,7 +111,7 @@ class CitrusCommand extends CitrusObject
 
         include_once($class_path);
 
-        /** @var CitrusCommand $command */
+        /** @var Command $command */
         return new $class_name();
     }
 }

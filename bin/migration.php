@@ -19,9 +19,9 @@ date_default_timezone_set('Asia/Tokyo');
 
 include_once dirname(__FILE__) . '/../Configure.class.php';
 
-use Citrus\CitrusConfigure;
-use Citrus\CitrusMigration;
-use Citrus\CitrusNVL;
+use Citrus\Configure;
+use Citrus\Migration;
+use Citrus\NVL;
 
 // 実行ファイル名削除
 unset($argv[0]);
@@ -46,10 +46,10 @@ if (substr($directory, 0, 1) === '/')
 {
     $application_directory = $directory;
 }
-CitrusConfigure::initialize($application_directory . '/citrus-configure.php');
+Configure::initialize($application_directory . '/citrus-configure.php');
 
 $dsns = [];
-foreach (CitrusConfigure::$CONFIGURE_ITEMS as $one)
+foreach (Configure::$CONFIGURE_ITEMS as $one)
 {
     $key = $one->database->serialize();
     $dsns[$key] = $one->database;
@@ -60,28 +60,28 @@ foreach (CitrusConfigure::$CONFIGURE_ITEMS as $one)
 switch ($action)
 {
     // 生成処理
-    case CitrusMigration::ACTION_GENERATE :
+    case Migration::ACTION_GENERATE :
         $generate_name = $settings['--name'];
-        CitrusMigration::generate($application_directory, $generate_name);
+        Migration::generate($application_directory, $generate_name);
         break;
     // マイグレーションUP実行
-    case CitrusMigration::ACTION_MIGRATION :
-    case CitrusMigration::ACTION_MIGRATION_UP :
-        $version = CitrusNVL::ArrayVL($settings, '--version', null);
-        $version = CitrusNVL::coalesceNull($version, null);
-        CitrusMigration::up($application_directory, $dsns, $version);
+    case Migration::ACTION_MIGRATION :
+    case Migration::ACTION_MIGRATION_UP :
+        $version = NVL::ArrayVL($settings, '--version', null);
+        $version = NVL::coalesceNull($version, null);
+        Migration::up($application_directory, $dsns, $version);
         break;
     // マイグレーションDOWN実行
-    case CitrusMigration::ACTION_MIGRATION_DOWN :
-        $version = CitrusNVL::ArrayVL($settings, '--version', null);
-        $version = CitrusNVL::coalesceNull($version, null);
-        CitrusMigration::down($application_directory, $dsns, $version);
+    case Migration::ACTION_MIGRATION_DOWN :
+        $version = NVL::ArrayVL($settings, '--version', null);
+        $version = NVL::coalesceNull($version, null);
+        Migration::down($application_directory, $dsns, $version);
         break;
     // マイグレーションREBIRTH実行
-    case CitrusMigration::ACTION_MIGRATION_REBIRTH :
-        $version = CitrusNVL::ArrayVL($settings, '--version', null);
-        $version = CitrusNVL::coalesceNull($version, null);
-        CitrusMigration::rebirth($application_directory, $dsns, $version);
+    case Migration::ACTION_MIGRATION_REBIRTH :
+        $version = NVL::ArrayVL($settings, '--version', null);
+        $version = NVL::coalesceNull($version, null);
+        Migration::rebirth($application_directory, $dsns, $version);
         break;
     default:
 }

@@ -7,14 +7,13 @@
 
 namespace Citrus;
 
+use Citrus\Logger\Cloudwatch;
+use Citrus\Logger\File;
+use Citrus\Logger\Level;
+use Citrus\Logger\Syslog;
+use Citrus\Logger\Type;
 
-use Citrus\Logger\CitrusLoggerCloudwatch;
-use Citrus\Logger\CitrusLoggerFile;
-use Citrus\Logger\CitrusLoggerLevel;
-use Citrus\Logger\CitrusLoggerSyslog;
-use Citrus\Logger\CitrusLoggerType;
-
-class CitrusLogger
+class Logger
 {
     /** logger type file */
     const LOG_TYPE_FILE = 'file';
@@ -31,12 +30,12 @@ class CitrusLogger
 
 
     /** @var string log level */
-    public static $LOG_LEVEL = CitrusLoggerLevel::DEBUG;
+    public static $LOG_LEVEL = Level::DEBUG;
 
     /** @var bool log display */
     public static $LOG_DISPLAY = false;
 
-    /** @var CitrusLoggerType */
+    /** @var Type */
     protected static $INSTANCE = null;
 
     /** @var bool is initialized */
@@ -49,9 +48,9 @@ class CitrusLogger
      *
      * @param array $default_configure
      * @param array $configure_domain
-     * @return CitrusLoggerType
+     * @return Type
      */
-    public static function initialize($default_configure = [], $configure_domain = []) : CitrusLoggerType
+    public static function initialize($default_configure = [], $configure_domain = []) : Type
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -60,14 +59,14 @@ class CitrusLogger
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
+        $configure = Configure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // log type select
         $type = $configure['type'];
 
         // log level
-        $level = CitrusNVL::ArrayVL($configure, 'level', CitrusLoggerLevel::DEBUG);
-        if (in_array($level, CitrusLoggerLevel::$LEVELS, true) === true)
+        $level = NVL::ArrayVL($configure, 'level', Level::DEBUG);
+        if (in_array($level, Level::$LEVELS, true) === true)
         {
             self::$LOG_LEVEL = $level;
         }
@@ -77,21 +76,21 @@ class CitrusLogger
         {
             // file
             case self::LOG_TYPE_FILE :
-                self::$INSTANCE = new CitrusLoggerFile($configure);
+                self::$INSTANCE = new File($configure);
                 break;
             // syslog
             case self::LOG_TYPE_SYSLOG :
-                self::$INSTANCE = new CitrusLoggerSyslog($configure);
+                self::$INSTANCE = new Syslog($configure);
                 break;
             // syslog
             case self::LOG_TYPE_CLOUDWATCH :
-                self::$INSTANCE = new CitrusLoggerCloudwatch($configure);
+                self::$INSTANCE = new Cloudwatch($configure);
                 break;
             default:
         }
 
         // display
-        self::$LOG_DISPLAY = CitrusNVL::NVL($configure['display'], false);
+        self::$LOG_DISPLAY = NVL::NVL($configure['display'], false);
 
         // initialized
         self::$IS_INITIALIZED = true;
@@ -108,7 +107,7 @@ class CitrusLogger
      */
     public static function trace($value)
     {
-        self::output(CitrusLoggerLevel::TRACE, $value, func_get_args());
+        self::output(Level::TRACE, $value, func_get_args());
     }
 
 
@@ -120,7 +119,7 @@ class CitrusLogger
      */
     public static function debug($value)
     {
-        self::output(CitrusLoggerLevel::DEBUG, $value, func_get_args());
+        self::output(Level::DEBUG, $value, func_get_args());
     }
 
 
@@ -132,7 +131,7 @@ class CitrusLogger
      */
     public static function info($value)
     {
-        self::output(CitrusLoggerLevel::INFO, $value, func_get_args());
+        self::output(Level::INFO, $value, func_get_args());
     }
 
 
@@ -144,7 +143,7 @@ class CitrusLogger
      */
     public static function warn($value)
     {
-        self::output(CitrusLoggerLevel::WARNING, $value, func_get_args());
+        self::output(Level::WARNING, $value, func_get_args());
     }
 
 
@@ -156,7 +155,7 @@ class CitrusLogger
      */
     public static function error($value)
     {
-        self::output(CitrusLoggerLevel::ERROR, $value, func_get_args());
+        self::output(Level::ERROR, $value, func_get_args());
     }
 
 
@@ -168,7 +167,7 @@ class CitrusLogger
      */
     public static function fatal($value)
     {
-        self::output(CitrusLoggerLevel::FATAL, $value, func_get_args());
+        self::output(Level::FATAL, $value, func_get_args());
     }
 
 
@@ -222,8 +221,8 @@ class CitrusLogger
      */
     private static function isOutputLevel(string $level)
     {
-        $configure_level_index = array_search(self::$LOG_LEVEL, CitrusLoggerLevel::$LEVELS, true);
-        $target_level_index = array_search($level, CitrusLoggerLevel::$LEVELS, true);
+        $configure_level_index = array_search(self::$LOG_LEVEL, Level::$LEVELS, true);
+        $target_level_index = array_search($level, Level::$LEVELS, true);
 
         return ($configure_level_index <= $target_level_index);
     }

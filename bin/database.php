@@ -19,8 +19,8 @@ date_default_timezone_set('Asia/Tokyo');
 
 include_once dirname(__FILE__) . '/../Configure.class.php';
 
-use Citrus\CitrusConfigure;
-use Citrus\Database\CitrusDatabaseGenerate;
+use Citrus\Configure;
+use Citrus\Database\Generate;
 
 // 実行ファイル名削除
 unset($argv[0]);
@@ -46,10 +46,10 @@ if (substr($directory, 0, 1) === '/')
 {
     $application_directory = $directory;
 }
-CitrusConfigure::initialize($application_directory . '/citrus-configure.php');
+Configure::initialize($application_directory . '/citrus-configure.php');
 
 $dsns = [];
-foreach (CitrusConfigure::$CONFIGURE_ITEMS as $one)
+foreach (Configure::$CONFIGURE_ITEMS as $one)
 {
     $key = $one->database->serialize();
     $dsns[$key] = $one->database;
@@ -59,28 +59,28 @@ foreach (CitrusConfigure::$CONFIGURE_ITEMS as $one)
 switch ($type)
 {
     // Property生成処理
-    case CitrusDatabaseGenerate::PROPERTY :
+    case Generate::PROPERTY :
         $property_name = $settings['--property-name'];
-        CitrusDatabaseGenerate::property($dsns, $table_name, $property_name);
+        Generate::property($dsns, $table_name, $property_name);
         break;
     // Dao生成処理
-    case CitrusDatabaseGenerate::DAO :
+    case Generate::DAO :
         $dao_name = $settings['--dao-name'];
-        CitrusDatabaseGenerate::dao($table_name, $dao_name);
+        Generate::dao($table_name, $dao_name);
         break;
     // Condition生成処理
-    case CitrusDatabaseGenerate::CONDITION :
+    case Generate::CONDITION :
         $condition_name = $settings['--condition-name'];
-        CitrusDatabaseGenerate::condition($table_name, $condition_name);
+        Generate::condition($table_name, $condition_name);
         break;
     // Property,Dao,Condition生成処理
-    case CitrusDatabaseGenerate::ALL :
+    case Generate::ALL :
         $property_name = $settings['--property-name'];
         $dao_name = $settings['--dao-name'];
         $condition_name = $settings['--condition-name'];
-        CitrusDatabaseGenerate::property($dsns, $table_name, $property_name);
-        CitrusDatabaseGenerate::dao($table_name, $dao_name);
-        CitrusDatabaseGenerate::condition($table_name, $condition_name);
+        Generate::property($dsns, $table_name, $property_name);
+        Generate::dao($table_name, $dao_name);
+        Generate::condition($table_name, $condition_name);
         break;
     default:
 }

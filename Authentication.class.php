@@ -7,13 +7,12 @@
 
 namespace Citrus;
 
+use Citrus\Authentication\Database;
+use Citrus\Authentication\Item;
+use Citrus\Authentication\Protocol;
+use Citrus\Session\SessionException;
 
-use Citrus\Authentication\CitrusAuthenticationDatabase;
-use Citrus\Authentication\CitrusAuthenticationItem;
-use Citrus\Authentication\CitrusAuthenticationProtocol;
-use Citrus\Session\CitrusSessionException;
-
-class CitrusAuthentication
+class Authentication
 {
     /** @var string 認証タイプ(データベース) */
     const TYPE_DATABASE = 'database';
@@ -35,7 +34,7 @@ class CitrusAuthentication
     /** @var int ログイン維持時間(秒) */
     public static $KEEP_SECOND = (60 * 60 * 24);
 
-    /** @var CitrusAuthenticationProtocol 認証タイプインスタンス */
+    /** @var Protocol 認証タイプインスタンス */
     public static $INSTANCE = null;
 
     /** @var bool 初期化済み */
@@ -58,13 +57,13 @@ class CitrusAuthentication
         }
 
         // 認証設定
-        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
+        $configure = Configure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
 
         // 認証設定はないが初期化する可能性がある
         // 複数設定できるまでifで処理
         if (empty($configure) === false && $configure['type'] === self::TYPE_DATABASE)
         {
-            self::$INSTANCE = new CitrusAuthenticationDatabase();
+            self::$INSTANCE = new Database();
         }
 
         // initialized
@@ -76,10 +75,10 @@ class CitrusAuthentication
     /**
      * 認証処理
      *
-     * @param CitrusAuthenticationItem $item
+     * @param Item $item
      * @return bool ture:認証成功, false:認証失敗
      */
-    public static function authorize(CitrusAuthenticationItem $item) : bool
+    public static function authorize(Item $item) : bool
     {
         if (is_null(self::$INSTANCE) === true)
         {
@@ -112,10 +111,10 @@ class CitrusAuthentication
      * 認証のチェック
      * 認証できていれば期間の延長
      *
-     * @param CitrusAuthenticationItem|null $item
+     * @param Item|null $item
      * @return bool true:チェック成功, false:チェック失敗
      */
-    public static function isAuthenticated(CitrusAuthenticationItem $item = null) : bool
+    public static function isAuthenticated(Item $item = null) : bool
     {
         if (is_null(self::$INSTANCE) === true)
         {
@@ -133,14 +132,14 @@ class CitrusAuthentication
      * @param string|null $key
      * @return string
      * @throws CitrusException
-     * @throws CitrusSessionException
+     * @throws SessionException
      */
     public static function generateToken(string $key = null) : string
     {
         // セッションが無効 もしくは 存在しない場合
-        if (CitrusSession::status() !== PHP_SESSION_ACTIVE)
+        if (Session::status() !== PHP_SESSION_ACTIVE)
         {
-            throw new CitrusSessionException('セッションが無効 もしくは 存在しません。');
+            throw new SessionException('セッションが無効 もしくは 存在しません。');
         }
 
         // アルゴリズムチェック
@@ -150,7 +149,7 @@ class CitrusAuthentication
         }
 
         // tokenキー
-        $key = CitrusNVL::NVL($key, CitrusSession::$sessionId);
+        $key = NVL::NVL($key, Session::$sessionId);
 
         // token生成し返却
         return hash(self::$TOKEN_ALGO, $key);

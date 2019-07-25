@@ -7,19 +7,18 @@
 
 namespace Citrus;
 
-
-use Citrus\Formmap\CitrusFormmapButton;
-use Citrus\Formmap\CitrusFormmapElement;
-use Citrus\Formmap\CitrusFormmapHidden;
-use Citrus\Formmap\CitrusFormmapPassword;
-use Citrus\Formmap\CitrusFormmapSearch;
-use Citrus\Formmap\CitrusFormmapSelect;
-use Citrus\Formmap\CitrusFormmapSubmit;
-use Citrus\Formmap\CitrusFormmapText;
-use Citrus\Formmap\CitrusFormmapTextarea;
+use Citrus\Formmap\Button;
+use Citrus\Formmap\Element;
+use Citrus\Formmap\Hidden;
+use Citrus\Formmap\Password;
+use Citrus\Formmap\Search;
+use Citrus\Formmap\Select;
+use Citrus\Formmap\Submit;
+use Citrus\Formmap\Text;
+use Citrus\Formmap\Textarea;
 use Exception;
 
-class CitrusFormmap
+class Formmap
 {
     /** @var string message tag */
     const MESSAGE_TAG = 'formmap';
@@ -64,7 +63,7 @@ class CitrusFormmap
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge('formmap', $default_configure, $configure_domain);
+        $configure = Configure::configureMerge('formmap', $default_configure, $configure_domain);
 
         // cache
         self::$IS_CACHE = $configure['cache'];
@@ -93,7 +92,7 @@ class CitrusFormmap
         // file exists xmls？
         if (file_exists($path) === false)
         {
-            $path = sprintf('%s/%s', CitrusConfigure::$DIR_BUSINESS_FORMMAP, basename($path));
+            $path = sprintf('%s/%s', Configure::$DIR_BUSINESS_FORMMAP, basename($path));
             if (file_exists($path) === false)
             {
                 return ;
@@ -115,7 +114,7 @@ class CitrusFormmap
             foreach ($formmaps as $form_id => $formmap)
             {
                 $class_name = $formmap['class'];
-                $prefix     = CitrusNVL::ArrayVL($formmap, 'prefix', '');
+                $prefix     = NVL::ArrayVL($formmap, 'prefix', '');
                 $_elements   = $formmap['elements'];
 
                 // parse element
@@ -123,16 +122,16 @@ class CitrusFormmap
                 {
                     $form = null;
                     switch ($element['form_type']) {
-                        case CitrusFormmapElement::FORM_TYPE_ELEMENT    : $form = new CitrusFormmapElement($element);   break;
-                        case CitrusFormmapElement::FORM_TYPE_HIDDEN     : $form = new CitrusFormmapHidden($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_PASSWD     : $form = new CitrusFormmapPassword($element);  break;
-                        case CitrusFormmapElement::FORM_TYPE_SELECT     : $form = new CitrusFormmapSelect($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_SUBMIT     : $form = new CitrusFormmapSubmit($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_BUTTON     : $form = new CitrusFormmapButton($element);    break;
-                        case CitrusFormmapElement::FORM_TYPE_TEXT       : $form = new CitrusFormmapText($element);      break;
-                        case CitrusFormmapElement::FORM_TYPE_TEXTAREA   : $form = new CitrusFormmapTextarea($element);  break;
-                        case CitrusFormmapElement::FORM_TYPE_SEARCH     : $form = new CitrusFormmapSearch($element);    break;
-                        default                                         :                                               break;
+                        case Element::FORM_TYPE_ELEMENT : $form = new Element($element);    break;
+                        case Element::FORM_TYPE_HIDDEN  : $form = new Hidden($element);     break;
+                        case Element::FORM_TYPE_PASSWD  : $form = new Password($element);   break;
+                        case Element::FORM_TYPE_SELECT  : $form = new Select($element);     break;
+                        case Element::FORM_TYPE_SUBMIT  : $form = new Submit($element);     break;
+                        case Element::FORM_TYPE_BUTTON  : $form = new Button($element);     break;
+                        case Element::FORM_TYPE_TEXT    : $form = new Text($element);       break;
+                        case Element::FORM_TYPE_TEXTAREA: $form = new Textarea($element);   break;
+                        case Element::FORM_TYPE_SEARCH  : $form = new Search($element);     break;
+                        default                         :                                   break;
                     }
                     // 外部情報の設定
                     $form->id = $element_id;
@@ -170,8 +169,8 @@ class CitrusFormmap
             return ;
         }
 
-        $request_list = CitrusSession::$request->properties()
-                      + CitrusSession::$filedata->properties();
+        $request_list = Session::$request->properties()
+                      + Session::$filedata->properties();
 
         $json_request_list = json_decode(file_get_contents('php://input'), true);
         if (is_null($json_request_list) === false)
@@ -184,7 +183,7 @@ class CitrusFormmap
             unset($request_list['url']);
         }
 
-        $prefix = CitrusNVL::ArrayVL($request_list, 'prefix', '');
+        $prefix = NVL::ArrayVL($request_list, 'prefix', '');
 
         // $this->mapsには$this->elementsの参照から渡される。
         foreach ($request_list as $ky => $vl)
@@ -204,7 +203,7 @@ class CitrusFormmap
                 }
                 else
                 {
-                    $this->elements[$prefix.$ky] = CitrusFormmapElement::generateIdAndValue($prefix.$ky, [ $vl ]);
+                    $this->elements[$prefix.$ky] = Element::generateIdAndValue($prefix.$ky, [ $vl ]);
                 }
             }
             else
@@ -215,7 +214,7 @@ class CitrusFormmap
                 }
                 else
                 {
-                    $this->elements[$prefix.$ky] = CitrusFormmapElement::generateIdAndValue($prefix.$ky, $vl);
+                    $this->elements[$prefix.$ky] = Element::generateIdAndValue($prefix.$ky, $vl);
                 }
             }
         }
@@ -245,7 +244,7 @@ class CitrusFormmap
             }
             else
             {
-                $this->elements[$prefix.$ky] = new CitrusFormmapElement(['id' => $prefix.$ky, 'value' => $vl]);
+                $this->elements[$prefix.$ky] = new Element(['id' => $prefix.$ky, 'value' => $vl]);
             }
         }
     }
@@ -283,7 +282,7 @@ class CitrusFormmap
                 }
             }
             $result = 0;
-            /** @var CitrusFormmapElement $element */
+            /** @var Element $element */
             foreach ($list as $element)
             {
                 $element->validate_null_safe = $this->validate_null_safe;
@@ -303,7 +302,7 @@ class CitrusFormmap
         }
         catch (Exception $e)
         {
-            throw CitrusException::convert($e);
+            throw Exception::convert($e);
         }
     }
 
@@ -314,16 +313,16 @@ class CitrusFormmap
      *
      * @param string $namespace
      * @param string $form_id
-     * @return CitrusObject
+     * @return Struct
      */
     public function generate(string $namespace, string $form_id)
     {
         $class_name = $this->classes[$namespace][$form_id];
 
-        /** @var CitrusObject $object */
+        /** @var Struct $object */
         $object = new $class_name();
 
-        /** @var CitrusFormmapElement[] $properties */
+        /** @var Element[] $properties */
         $properties = $this->maps[$namespace][$form_id];
         foreach ($properties as $one)
         {

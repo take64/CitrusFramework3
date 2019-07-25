@@ -7,12 +7,11 @@
 
 namespace Citrus;
 
+use Citrus\Dmm\Actress;
+use Citrus\Dmm\Condition;
+use Citrus\Dmm\Item;
 
-use Citrus\Dmm\CitrusDmmActress;
-use Citrus\Dmm\CitrusDmmCondition;
-use Citrus\Dmm\CitrusDmmItem;
-
-class CitrusDmm
+class Dmm
 {
     /** API_IDのキー */
     const API_ID_KEY = 'api_id';
@@ -54,12 +53,12 @@ class CitrusDmm
         }
 
         // configure
-        $configure = CitrusConfigure::configureMerge(self::CONFIGURE_KEY);
+        $configure = Configure::configureMerge(self::CONFIGURE_KEY);
 
         // ids
         self::$API_ID       = $configure[self::API_ID_KEY];
         self::$AFFILIATE_ID = $configure[self::AFFILIATE_ID_KEY];
-        self::$SSL          = CitrusNVL::ArrayVL($configure, self::SSL_KEY, false);
+        self::$SSL          = NVL::ArrayVL($configure, self::SSL_KEY, false);
 
         // initialize
         self::$IS_INITIALIZED = true;
@@ -70,10 +69,10 @@ class CitrusDmm
     /**
      * search dmm items
      *
-     * @param CitrusDmmCondition $condition
-     * @return CitrusDmmItem[]
+     * @param Condition $condition
+     * @return Item[]
      */
-    public static function searchItems(CitrusDmmCondition $condition) : array
+    public static function searchItems(Condition $condition) : array
     {
         // initialize
         self::initialize();
@@ -105,7 +104,7 @@ class CitrusDmm
             $params['keyword'] = $keyword;
 
         }
-        $params['sort'] = CitrusNVL::ArrayVL($params, 'sort', CitrusDmmCondition::SORT_ITEM_RANK);
+        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ITEM_RANK);
 
 
         // パラメータの順序を昇順に並び替え
@@ -143,11 +142,11 @@ class CitrusDmm
      * convert dmm item
      *
      * @param array $data
-     * @return CitrusDmmItem
+     * @return Item
      */
-    private static function convertItem(array $data) : CitrusDmmItem
+    private static function convertItem(array $data) : Item
     {
-        $item = new CitrusDmmItem();
+        $item = new Item();
 
         $item->service_code     = $data['service_code'];
         $item->service_name     = $data['service_name'];
@@ -158,15 +157,15 @@ class CitrusDmm
         $item->product_id       = $data['product_id'];
         $item->title            = $data['title'];
         $item->URL              = $data['URL'];
-        $item->URLsp            = CitrusNVL::ArrayVL($data, 'URLsp', '');
+        $item->URLsp            = NVL::ArrayVL($data, 'URLsp', '');
         $item->affiliateURL     = $data['affiliateURL'];
-        $item->affiliateURLsp   = CitrusNVL::ArrayVL($data, 'affiliateURLsp', '');
+        $item->affiliateURLsp   = NVL::ArrayVL($data, 'affiliateURLsp', '');
         $item->date             = $data['date'];
-        $item->imageURL         = CitrusNVL::ArrayVL($data, 'imageURL', null);
-        $item->sampleImageURL   = CitrusNVL::ArrayVL($data, 'sampleImageURL', null);
-        $item->sampleMovieURL   = CitrusNVL::ArrayVL($data, 'sampleMovieURL', null);
-        $item->iteminfo         = CitrusNVL::ArrayVL($data, 'iteminfo', null);
-        $item->review           = CitrusNVL::ArrayVL($data, 'review', null);
+        $item->imageURL         = NVL::ArrayVL($data, 'imageURL', null);
+        $item->sampleImageURL   = NVL::ArrayVL($data, 'sampleImageURL', null);
+        $item->sampleMovieURL   = NVL::ArrayVL($data, 'sampleMovieURL', null);
+        $item->iteminfo         = NVL::ArrayVL($data, 'iteminfo', null);
+        $item->review           = NVL::ArrayVL($data, 'review', null);
 
         if (isset($data['prices']) === true)
         {
@@ -232,10 +231,10 @@ class CitrusDmm
     /**
      * search dmm actorss
      *
-     * @param CitrusDmmCondition $condition
-     * @return CitrusDmmItem[]
+     * @param Condition $condition
+     * @return Item[]
      */
-    public static function searchActresses(CitrusDmmCondition $condition) : array
+    public static function searchActresses(Condition $condition) : array
     {
         // initialize
         self::initialize();
@@ -257,7 +256,7 @@ class CitrusDmm
         {
             $params['actress_id'] = $condition->actress_id;
         }
-        $params['sort'] = CitrusNVL::ArrayVL($params, 'sort', CitrusDmmCondition::SORT_ACTORERSS_ID_ASC);
+        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ACTORERSS_ID_ASC);
 
         // パラメータの順序を昇順に並び替え
         ksort($params);
@@ -301,17 +300,17 @@ class CitrusDmm
      * convert dmm actress
      *
      * @param array $data
-     * @return CitrusDmmActress
+     * @return Actress
      */
-    private static function convertActress(array $data) : CitrusDmmActress
+    private static function convertActress(array $data) : Actress
     {
-        $item = new CitrusDmmActress();
+        $item = new Actress();
 
         $item->id           = $data['id'];
         $item->name         = $data['name'];
         $item->ruby         = $data['ruby'];
         $item->bust         = $data['bust'];
-        $item->cup          = CitrusNVL::ArrayVL($data, 'cup', null);   // cupは何故か有る場合とない場合が有る
+        $item->cup          = NVL::ArrayVL($data, 'cup', null);   // cupは何故か有る場合とない場合が有る
         $item->waist        = $data['waist'];
         $item->hip          = $data['hip'];
         $item->height       = $data['height'];
@@ -319,8 +318,8 @@ class CitrusDmm
         $item->blood_type   = $data['blood_type'];
         $item->hobby        = $data['hobby'];
         $item->prefectures  = $data['prefectures'];
-        $item->imageURL     = CitrusNVL::ArrayVL($data, 'imageURL', null);
-        $item->listURL      = CitrusNVL::ArrayVL($data, 'listURL', null);
+        $item->imageURL     = NVL::ArrayVL($data, 'imageURL', null);
+        $item->listURL      = NVL::ArrayVL($data, 'listURL', null);
 
 
         // SSL対応

@@ -7,10 +7,9 @@
 
 namespace Citrus;
 
-
 use DOMNamedNodeMap;
 
-class CitrusXml
+class Xml
 {
     /**
      * get named item value

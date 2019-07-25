@@ -7,21 +7,20 @@
 
 namespace Citrus;
 
+use Citrus\Database\Column;
+use Citrus\Database\Result;
+use Citrus\Sqlmap\Client;
+use Citrus\Sqlmap\Crud;
+use Citrus\Sqlmap\SqlmapException;
 
-use Citrus\Database\CitrusDatabaseColumn;
-use Citrus\Database\CitrusDatabaseResult;
-use Citrus\Sqlmap\CitrusSqlmapClient;
-use Citrus\Sqlmap\CitrusSqlmapCrud;
-use Citrus\Sqlmap\CitrusSqlmapException;
-
-class CitrusService
+class Service
 {
-    use CitrusSingleton
+    use Singleton
     {
         callSingleton as public sharedService;
     }
 
-    /** @var CitrusSqlmapCrud citrus object */
+    /** @var Crud citrus object */
     protected $dao = null;
 
 
@@ -29,11 +28,11 @@ class CitrusService
     /**
      * call summary record list
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column[]
+     * @throws SqlmapException
      */
-    public function summaries(CitrusDatabaseColumn $condition)
+    public function summaries(Column $condition)
     {
         return $this->callDao()->summaries($condition);
     }
@@ -43,11 +42,11 @@ class CitrusService
     /**
      * call summary record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function summary(CitrusDatabaseColumn $condition)
+    public function summary(Column $condition)
     {
         return $this->callDao()->summary($condition);
     }
@@ -57,11 +56,11 @@ class CitrusService
     /**
      * call count
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return int
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function count(CitrusDatabaseColumn $condition)
+    public function count(Column $condition)
     {
         return $this->callDao()->count($condition);
     }
@@ -71,11 +70,11 @@ class CitrusService
     /**
      * call last record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function last(CitrusDatabaseColumn $condition)
+    public function last(Column $condition)
     {
         return $this->callDao()->last($condition);
     }
@@ -85,11 +84,11 @@ class CitrusService
     /**
      * call last record
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return bool
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function exist(CitrusDatabaseColumn $condition)
+    public function exist(Column $condition)
     {
         return $this->callDao()->exist($condition);
     }
@@ -99,11 +98,11 @@ class CitrusService
     /**
      * call name record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseResult[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Result[]
+     * @throws SqlmapException
      */
-    public function names(CitrusDatabaseColumn $condition)
+    public function names(Column $condition)
     {
         return $this->callDao()->names($condition);
     }
@@ -113,11 +112,11 @@ class CitrusService
     /**
      * call name list
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return array
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function nameForList(CitrusDatabaseColumn $condition)
+    public function nameForList(Column $condition)
     {
         $result = [];
 
@@ -135,11 +134,11 @@ class CitrusService
     /**
      * call detail record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function name(CitrusDatabaseColumn $condition)
+    public function name(Column $condition)
     {
         return $this->callDao()->name($condition);
     }
@@ -149,11 +148,11 @@ class CitrusService
     /**
      * call detail record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column[]
+     * @throws SqlmapException
      */
-    public function details(CitrusDatabaseColumn $condition)
+    public function details(Column $condition)
     {
         return $this->callDao()->details($condition);
     }
@@ -163,11 +162,11 @@ class CitrusService
     /**
      * call detail record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function detail(CitrusDatabaseColumn $condition)
+    public function detail(Column $condition)
     {
         return $this->callDao()->detail($condition);
     }
@@ -177,11 +176,11 @@ class CitrusService
     /**
      * regist record
      *
-     * @param CitrusDatabaseColumn $entity
+     * @param Column $entity
      * @return bool
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function regist(CitrusDatabaseColumn $entity)
+    public function regist(Column $entity)
     {
         // column complete
         $entity->completeRegistColumn();
@@ -194,11 +193,11 @@ class CitrusService
     /**
      * modify record
      *
-     * @param CitrusDatabaseColumn $entity
+     * @param Column $entity
      * @return bool
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function modify(CitrusDatabaseColumn $entity)
+    public function modify(Column $entity)
     {
         // column complete
         $entity->completeModifyColumn();
@@ -211,11 +210,11 @@ class CitrusService
     /**
      * remove record
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return bool
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function remove(CitrusDatabaseColumn $condition)
+    public function remove(Column $condition)
     {
         return $this->callDao()->remove($condition);
     }
@@ -225,11 +224,11 @@ class CitrusService
     /**
      * call summary record list
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column[]
+     * @throws SqlmapException
      */
-    public function facesSelections(CitrusDatabaseColumn $condition)
+    public function facesSelections(Column $condition)
     {
         return $this->callDao()->facesSelections($condition);
     }
@@ -239,11 +238,11 @@ class CitrusService
     /**
      * call summary record list
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column[]
+     * @throws SqlmapException
      */
-    public function facesSummaries(CitrusDatabaseColumn $condition)
+    public function facesSummaries(Column $condition)
     {
         return $this->callDao()->facesSummaries($condition);
     }
@@ -253,11 +252,11 @@ class CitrusService
     /**
      * call summary record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function facesSummary(CitrusDatabaseColumn $condition)
+    public function facesSummary(Column $condition)
     {
         return $this->callDao()->facesSummary($condition);
     }
@@ -267,11 +266,11 @@ class CitrusService
     /**
      * call detail record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn[]
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column[]
+     * @throws SqlmapException
      */
-    public function facesDetails(CitrusDatabaseColumn $condition)
+    public function facesDetails(Column $condition)
     {
         return $this->callDao()->facesDetails($condition);
     }
@@ -281,11 +280,11 @@ class CitrusService
     /**
      * call detail record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function facesDetail(CitrusDatabaseColumn $condition)
+    public function facesDetail(Column $condition)
     {
         return $this->callDao()->facesDetail($condition);
     }
@@ -295,11 +294,11 @@ class CitrusService
     /**
      * call name record
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return array
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function nameSummaries(CitrusDatabaseColumn $condition)
+    public function nameSummaries(Column $condition)
     {
         return $this->callDao()->nameSummaries($condition);
     }
@@ -309,11 +308,11 @@ class CitrusService
     /**
      * call name record
      *
-     * @param CitrusDatabaseColumn $condition
-     * @return CitrusDatabaseColumn
-     * @throws CitrusSqlmapException
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
      */
-    public function nameSummary(CitrusDatabaseColumn $condition)
+    public function nameSummary(Column $condition)
     {
         return $this->callDao()->nameSummary($condition);
     }
@@ -323,11 +322,11 @@ class CitrusService
     /**
      * call name record count
      *
-     * @param CitrusDatabaseColumn $condition
+     * @param Column $condition
      * @return int
-     * @throws CitrusSqlmapException
+     * @throws SqlmapException
      */
-    public function nameCount(CitrusDatabaseColumn $condition)
+    public function nameCount(Column $condition)
     {
         return $this->callDao()->nameCount($condition);
     }
@@ -338,14 +337,14 @@ class CitrusService
      * call dao
      * なるべく継承しabstractとして扱う、エラー回避としてCitruSqlmapClientを返す
      *
-     * @return CitrusSqlmapCrud
-     * @throws CitrusSqlmapException
+     * @return Crud
+     * @throws SqlmapException
      */
     public function callDao()
     {
         if(is_null($this->dao) === true)
         {
-            $this->dao = new CitrusSqlmapClient();
+            $this->dao = new Client();
         }
         return $this->dao;
     }

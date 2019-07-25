@@ -7,16 +7,16 @@
 
 namespace Citrus;
 
-use Citrus\Message\CitrusMessageItem;
+use Citrus\Message\Item;
 
-class CitrusMessage extends CitrusClass
+class Message extends Accessor
 {
     /** messages key */
     const KEY_MESSAGES = 'messages';
 
 
 
-    /** @var CitrusMessageItem[] messages */
+    /** @var Item[] messages */
     public static $items = [];
 
     /** @var bool is initialized */
@@ -42,7 +42,7 @@ class CitrusMessage extends CitrusClass
         }
 
         // メッセージ設定
-        $configure = CitrusConfigure::configureMerge('message', $default_configure, $configure_domain);
+        $configure = Configure::configureMerge('message', $default_configure, $configure_domain);
 
         self::$enable_session = $configure['enable_session'];
 
@@ -72,7 +72,7 @@ class CitrusMessage extends CitrusClass
     /**
      * call message
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callItems()
     {
@@ -82,7 +82,7 @@ class CitrusMessage extends CitrusClass
         // セッションが正の場合
         if (self::isSession() === true)
         {
-            self::$items = CitrusSession::$session->call(self::KEY_MESSAGES);
+            self::$items = Session::$session->call(self::KEY_MESSAGES);
         }
 
         return self::$items;
@@ -94,7 +94,7 @@ class CitrusMessage extends CitrusClass
      * call message for tag
      *
      * @param string $tag
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callItemsForTag($tag = null)
     {
@@ -128,7 +128,7 @@ class CitrusMessage extends CitrusClass
      * call message for type
      *
      * @param string $type
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callItemsForType($type = null)
     {
@@ -158,11 +158,11 @@ class CitrusMessage extends CitrusClass
     /**
      * call message
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callMessages()
     {
-        return self::callItemsForType(CitrusMessageItem::TYPE_MESSAGE);
+        return self::callItemsForType(Item::TYPE_MESSAGE);
     }
 
 
@@ -170,11 +170,11 @@ class CitrusMessage extends CitrusClass
     /**
      * call error
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callErrors()
     {
-        return self::callItemsForType(CitrusMessageItem::TYPE_ERROR);
+        return self::callItemsForType(Item::TYPE_ERROR);
     }
 
 
@@ -182,11 +182,11 @@ class CitrusMessage extends CitrusClass
     /**
      * call success
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callSuccesses()
     {
-        return self::callItemsForType(CitrusMessageItem::TYPE_SUCCESS);
+        return self::callItemsForType(Item::TYPE_SUCCESS);
     }
 
 
@@ -194,11 +194,11 @@ class CitrusMessage extends CitrusClass
     /**
      * call warning
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function callWarnings()
     {
-        return self::callItemsForType(CitrusMessageItem::TYPE_WARNING);
+        return self::callItemsForType(Item::TYPE_WARNING);
     }
 
 
@@ -207,7 +207,7 @@ class CitrusMessage extends CitrusClass
      * pop message for type
      *
      * @param string $type
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function popItemsForType(string $type = null)
     {
@@ -233,7 +233,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
+            Session::$session->regist(self::KEY_MESSAGES, self::$items);
         }
 
         return $result;
@@ -244,11 +244,11 @@ class CitrusMessage extends CitrusClass
     /**
      * pop message
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function popMessages()
     {
-        return self::popItemsForType(CitrusMessageItem::TYPE_MESSAGE);
+        return self::popItemsForType(Item::TYPE_MESSAGE);
     }
 
 
@@ -256,11 +256,11 @@ class CitrusMessage extends CitrusClass
     /**
      * pop error
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function popErrors()
     {
-        return self::popItemsForType(CitrusMessageItem::TYPE_ERROR);
+        return self::popItemsForType(Item::TYPE_ERROR);
     }
 
 
@@ -268,11 +268,11 @@ class CitrusMessage extends CitrusClass
     /**
      * pop success
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function popSuccesses()
     {
-        return self::popItemsForType(CitrusMessageItem::TYPE_SUCCESS);
+        return self::popItemsForType(Item::TYPE_SUCCESS);
     }
 
 
@@ -280,11 +280,11 @@ class CitrusMessage extends CitrusClass
     /**
      * pop warning
      *
-     * @return CitrusMessageItem[]
+     * @return Item[]
      */
     public static function popWarnings()
     {
-        return self::popItemsForType(CitrusMessageItem::TYPE_WARNING);
+        return self::popItemsForType(Item::TYPE_WARNING);
     }
 
 
@@ -292,7 +292,7 @@ class CitrusMessage extends CitrusClass
     /**
      * regist message element
      *
-     * @param CitrusMessageItem $item
+     * @param Item $item
      */
     public static function addItem($item)
     {
@@ -309,7 +309,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
+            Session::$session->regist(self::KEY_MESSAGES, self::$items);
         }
     }
 
@@ -324,7 +324,7 @@ class CitrusMessage extends CitrusClass
      */
     public static function addMessage(string $description, string $name = null, $tag = null)
     {
-        self::addItem(new CitrusMessageItem($description, CitrusMessageItem::TYPE_MESSAGE, $name, false, $tag));
+        self::addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
     }
 
 
@@ -338,7 +338,7 @@ class CitrusMessage extends CitrusClass
      */
     public static function addError(string $description, string $name = null, $tag = null)
     {
-        self::addItem(new CitrusMessageItem($description, CitrusMessageItem::TYPE_ERROR, $name, false, $tag));
+        self::addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
     }
 
 
@@ -352,7 +352,7 @@ class CitrusMessage extends CitrusClass
      */
     public static function addSuccess(string $description, string $name = null, $tag = null)
     {
-        self::addItem(new CitrusMessageItem($description, CitrusMessageItem::TYPE_SUCCESS, $name, false, $tag));
+        self::addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
     }
 
 
@@ -366,7 +366,7 @@ class CitrusMessage extends CitrusClass
      */
     public static function addWarning(string $description, string $name = null, $tag = null)
     {
-        self::addItem(new CitrusMessageItem($description, CitrusMessageItem::TYPE_WARNING, $name, false, $tag));
+        self::addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
     }
 
 
@@ -385,7 +385,7 @@ class CitrusMessage extends CitrusClass
         // セッションから削除
         if (self::isSession() === true)
         {
-            CitrusSession::$session->remove(self::KEY_MESSAGES);
+            Session::$session->remove(self::KEY_MESSAGES);
         }
     }
 
@@ -429,7 +429,7 @@ class CitrusMessage extends CitrusClass
         // セッション利用の場合はセッションに登録
         if (self::isSession() === true)
         {
-            CitrusSession::$session->regist(self::KEY_MESSAGES, self::$items);
+            Session::$session->regist(self::KEY_MESSAGES, self::$items);
         }
     }
 
