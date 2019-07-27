@@ -49,8 +49,8 @@ class Citrus
         $base_path = dirname(__FILE__);
 
         // static files
-        self::$JAVASCRIPT_FACES     = $base_path . '/javascript/Faces.js';
-        self::$JAVASCRIPT_EXTENDS   = $base_path . '/javascript/Extends.js';
+        self::$JAVASCRIPT_FACES     = $base_path . '/Javascript/Faces.js';
+        self::$JAVASCRIPT_EXTENDS   = $base_path . '/Javascript/Extends.js';
 
         // timestamp
         self::$TIMESTAMP_INT    = $_SERVER['REQUEST_TIME'];
