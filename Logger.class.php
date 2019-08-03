@@ -11,7 +11,7 @@ use Citrus\Logger\Cloudwatch;
 use Citrus\Logger\File;
 use Citrus\Logger\Level;
 use Citrus\Logger\Syslog;
-use Citrus\Logger\Type;
+use Citrus\Logger\LogType;
 
 class Logger
 {
@@ -35,7 +35,7 @@ class Logger
     /** @var bool log display */
     public static $LOG_DISPLAY = false;
 
-    /** @var Type */
+    /** @var LogType */
     protected static $INSTANCE = null;
 
     /** @var bool is initialized */
@@ -48,9 +48,9 @@ class Logger
      *
      * @param array $default_configure
      * @param array $configure_domain
-     * @return Type
+     * @return LogType
      */
-    public static function initialize($default_configure = [], $configure_domain = []) : Type
+    public static function initialize($default_configure = [], $configure_domain = []) : LogType
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)

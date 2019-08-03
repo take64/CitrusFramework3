@@ -7,7 +7,7 @@
 
 namespace Citrus\Logger;
 
-interface Type
+interface LogType
 {
     /**
      * output

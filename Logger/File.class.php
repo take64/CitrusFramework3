@@ -9,13 +9,19 @@ namespace Citrus\Logger;
 
 use Citrus\Struct;
 
-class File extends Struct implements Type
+class File extends Struct implements LogType
 {
     /** @var string */
     public $directory;
 
     /** @var string */
     public $filename;
+
+    /** @var string */
+    public $owner = 'wwwrun';
+
+    /** @var string */
+    public $group = 'www';
 
 
 
@@ -75,8 +81,8 @@ class File extends Struct implements Type
         if ($file_exist === false)
         {
             chmod($logfile, 0666);
-            chown($logfile, 'wwwrun');
-            chgrp($logfile, 'www');
+            chown($logfile, $this->owner);
+            chgrp($logfile, $this->group);
         }
 
         clearstatcache();

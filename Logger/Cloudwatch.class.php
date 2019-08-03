@@ -10,7 +10,7 @@ namespace Citrus\Logger;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Citrus\Struct;
 
-class Cloudwatch extends Struct implements Type
+class Cloudwatch extends Struct implements LogType
 {
     /** @var \Citrus\Aws\Cloudwatch クラウドウォッチ */
     protected $cloudwatch;
