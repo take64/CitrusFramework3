@@ -9,7 +9,7 @@ namespace Citrus\Logger;
 
 use Citrus\Struct;
 
-class Syslog extends Struct implements Type
+class Syslog extends Struct implements LogType
 {
     /** @var string */
     public $directory;
