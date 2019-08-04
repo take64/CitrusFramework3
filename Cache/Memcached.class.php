@@ -117,7 +117,7 @@ class Memcached extends Deamon
         // 一旦キー取得(キーがあるかどうかで判断、取得するとステータスが発生する)
         $this->call($key);
 
-        return Memcached::RES_NOTFOUND !== $this->handler->getResultCode();
+        return \Memcached::RES_NOTFOUND !== $this->handler->getResultCode();
     }
 
 
