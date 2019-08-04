@@ -91,13 +91,14 @@ class Command extends Struct
 
         $class_paths = explode('-', $script);
         $class_path = $application->path . '/Command';
-        $class_name = ucfirst($application->id);
+        $class_name = '';
         $namespace  = '\\' . ucfirst($application->id) . '\\Command';
+
         foreach ($class_paths as $one)
         {
             $part = ucfirst(strtolower($one));
             $class_path .= '/' . $part;
-            $class_name .= $part;
+            $class_name = $part;
 
             // 最後の要素以外
             $last = $class_paths[count($class_paths) - 1];
