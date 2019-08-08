@@ -941,7 +941,11 @@
                     var edit_faces_tag = selector_edit_dialog.find('.faces-edit #edit_' + options.edit.faces.id + '_' + ky);
                     var view_faces_tag = selector_edit_dialog.find('.faces-edit #view_' + options.view.faces.id + '_' + ky);
                     if(edit_faces_tag.length > 0) {
-                        edit_faces_tag.val(vl).html(vl).change();
+                        if (edit_faces_tag.get(0).tagName === 'SELECT') {
+                            edit_faces_tag.val(vl).change();
+                        } else {
+                            edit_faces_tag.val(vl).html(vl).change();
+                        }
                     }
                     else if(view_faces_tag.length > 0) {
                         view_faces_tag.html(vl);
