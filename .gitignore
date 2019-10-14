@@ -1,4 +1,7 @@
 .idea/
 .scannerwork/
-Library/smarty3/
+src/Library/smarty3/
 .idea/dataSources/
+
+composer.lock
+composer.phar

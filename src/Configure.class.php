@@ -7,7 +7,7 @@
 
 namespace Citrus;
 
-include_once dirname(__FILE__).'/Autoloader.class.php';
+include_once dirname(__FILE__) . '/Autoloader.class.php';
 
 use Citrus\Configure\Item;
 use Citrus\Document\Router;

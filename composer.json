@@ -1,0 +1,19 @@
+{
+  "name": "take64/citrus-framework3",
+  "description": "php web framework",
+  "keywords": ["citrus", "php", "framework"],
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/take64/CitrusFramework3",
+  "authors": [
+    {
+      "name": "take64",
+      "email": "take64@citrus.tk"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Citrus\\": "src/"
+    }
+  }
+}
