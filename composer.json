@@ -11,6 +11,9 @@
       "email": "take64@citrus.tk"
     }
   ],
+  "bin": [
+    "bin/cf-migration"
+  ],
   "autoload": {
     "psr-4": {
       "Citrus\\": "src/"
