@@ -1,0 +1,107 @@
+#!/bin/bash
+
+COMMAND=$1
+DIRECTORY=`pwd`
+CITRUS_MIGRATION='./vendor/take64/citrus-framework3/src/bin/migration'
+CITRUS_DATABASE='./vendor/take64/citrus-framework3/src/bin/database.php'
+
+# command migration
+migration() {
+    ACTION=$2
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+    echo '| citrus migration command              |'
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+
+    case ${ACTION} in
+        'decoy')
+            echo '  -> migration decoy'
+            ${CITRUS_MIGRATION} --directory=${DIRECTORY} --action=${ACTION}
+        ;;
+        'generate')
+            echo "  -> migration generate ${3}"
+            ${CITRUS_MIGRATION} --directory=${DIRECTORY} --action=${ACTION} --name=$3
+        ;;
+        'up')
+            echo '  -> migration up'
+            ${CITRUS_MIGRATION} --directory=${DIRECTORY} --action=${ACTION} --version=$3
+        ;;
+        'down')
+            echo '  -> migration down'
+            ${CITRUS_MIGRATION} --directory=${DIRECTORY} --action=${ACTION} --version=$3
+        ;;
+        'rebirth')
+            echo '  -> migration rebirth'
+            ${CITRUS_MIGRATION} --directory=${DIRECTORY} --action=${ACTION} --version=$3
+        ;;
+    esac
+}
+
+# command database
+database() {
+    TYPE=$2
+    TABLE_NAME=$3
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+    echo '| citrus entity command                 |'
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+
+    case ${TYPE} in
+        'property')
+            echo '  -> database property'
+            ${CITRUS_DATABASE} --directory=${DIRECTORY} --type=${TYPE} --table-name=${TABLE_NAME} --property-name=${4}
+        ;;
+        'dao')
+            echo "  -> database dao"
+            ${CITRUS_DATABASE} --directory=${DIRECTORY} --type=${TYPE} --table-name=${TABLE_NAME} --dao-name=${4}
+        ;;
+        'condition')
+            echo '  -> database condition'
+            ${CITRUS_DATABASE} --directory=${DIRECTORY} --type=${TYPE} --table-name=${TABLE_NAME} --condition-name=${4}
+        ;;
+        'all')
+            echo '  -> database all'
+            ${CITRUS_DATABASE} --directory=${DIRECTORY} --type=${TYPE} --table-name=${TABLE_NAME} --property-name=${4} --dao-name=${4} --condition-name=${4}
+        ;;
+    esac
+}
+
+# command help
+sample() {
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+    echo '| citrus command help sample            |'
+    echo '*---- ---- ---- ---- ---- ---- ---- ----*'
+
+    echo 'migration'
+    echo '   1.generate'
+    echo '      => ./citrus migration generate {name}'
+    echo '   2.up'
+    echo '      => ./citrus migration up {version}'
+    echo '   3.down'
+    echo '      => ./citrus migration down {version}'
+    echo '   4.rebirth'
+    echo '      => ./citrus migration rebirth {version}'
+
+    echo 'database'
+    echo '   1.property'
+    echo '      => ./citrus database property {table-name} {class-name}'
+    echo '   2.dao'
+    echo '      => ./citrus database dao {table-name} {dao-name}'
+    echo '   3.condition'
+    echo '      => ./citrus database condition {property-name} {condition-name}'
+    echo '   4.all'
+    echo '      => ./citrus database all {table-name} {property-name}'
+}
+
+# command selector
+case ${COMMAND} in
+    'migration')
+        migration $@
+    ;;
+    'database')
+        database $@
+    ;;
+    'sample')
+        sample
+    ;;
+esac
+
+
