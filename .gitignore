@@ -1,7 +1,10 @@
 .idea/
 .scannerwork/
 src/Library/smarty3/
-.idea/dataSources/
+vendor/
 
 composer.lock
 composer.phar
+
+ .phpunit.result.cache
+ phpunit.tdx
