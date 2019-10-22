@@ -8,16 +8,19 @@
 
 namespace Citrus\Migration;
 
+use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use PDO;
 
 abstract class Item
 {
+    use Console;
+
     /** @var string object name */
     public $object_name = '';
 
     /** @var DSN data source name */
-    public $dsn = null;
+    protected $dsn;
 
 
 
@@ -36,9 +39,9 @@ abstract class Item
 
 
     /**
-     * constructor
+     * constructor.
      *
-     * @param DSN $dsn
+     * @param DSN $dsn DSN情報
      */
     public function __construct(DSN $dsn)
     {
@@ -54,6 +57,13 @@ abstract class Item
      */
     public function execute($query)
     {
+        // 呼びもと
+        $calling_func = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
+
+        $this->format(
+            '%s executing %s!', get_class($this), $calling_func
+        );
+
         $query = str_replace('{SCHEMA}', $this->dsn->schema . '.', $query);
 
         // 実行開始タイム
@@ -71,17 +81,17 @@ abstract class Item
         // 正常実行
         if ($error_info == $compare_not_error)
         {
-            echo get_class($this) . ' executed ' . $execute_microsecond . 'µs' . PHP_EOL;
+            $this->success(
+                sprintf('%s executed. %f μs', get_class($this), $execute_microsecond)
+            );
         }
         // 異常実行
         else if (is_null($error_info) === false)
         {
-            echo get_class($this) . ' has error.' . PHP_EOL;
-            echo sprintf('    %s %s %s' . PHP_EOL,
-                $error_info[0],
-                $error_info[1],
-                $error_info[2]
-                );
+            $this->error(
+                sprintf('%s has error.', get_class($this)) . PHP_EOL .
+                sprintf('    %s %s %s', $error_info[0], $error_info[1], $error_info[2])
+            );
         }
     }
 }
