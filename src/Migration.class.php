@@ -110,9 +110,9 @@ class Migration
  * generated Citrus Migration file at {#timestamp#}
  */
 
-use Citrus\Migration\CitrusMigrationItem;
+use Citrus\Migration\Item;
 
-class {#class_name#} extends CitrusMigrationItem
+class {#class_name#} extends Item
 {
     public \$object_name = '{#object_name#}';
 
