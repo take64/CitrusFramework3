@@ -7,38 +7,43 @@
 
 namespace Citrus;
 
-
+/**
+ * コマンド処理
+ */
 class Command extends Struct
 {
     /** @var string script code */
     public $script = '';
 
-    /** @var string domain */
-    public $domain = '';
+    /** @var array configure */
+    public $configure = [];
+
+    /** @var array command options */
+    protected $options = [];
+
+    /** @var array command parameters */
+    protected $parameters = [];
+
 
 
     /**
-     * constructor.
+     * コマンドライン引数のパース処理
      */
-    public function __construct()
+    public function options()
     {
-        global $argv;
-
-        $parameters = [];
-        foreach ($argv as $arg)
+        // コマンドライン引数がなければ処理スキップ
+        if (0 === count($this->options))
         {
-            list($ky, $vl) = explode('=', $arg);
-            $ky = str_replace('--', '', $ky);
-            $parameters[$ky] = $vl;
+            return;
         }
 
-        $this->bind($parameters);
+        $this->parameters = getopt('', $this->options);
     }
 
 
 
     /**
-     * execute
+     * コマンド実行処理
      */
     public function execute()
     {
@@ -48,7 +53,7 @@ class Command extends Struct
 
 
     /**
-     * before
+     * コマンド実行前処理
      */
     public function before()
     {
@@ -58,7 +63,7 @@ class Command extends Struct
 
 
     /**
-     * after
+     * コマンド実行後処理
      */
     public function after()
     {
@@ -66,53 +71,34 @@ class Command extends Struct
     }
 
 
+
     /**
-     * generate command instance
+     * コマンドラインオプションパラメータ取得
      *
-     * @return Command
+     * @param string      $key     パラメータキー
+     * @param string|null $default デフォルト値
+     * @return string パラメータ値
      */
-    public static function callCommand() : Command
+    public function parameter(string $key, string $default = null): string
     {
-        global $argv;
-        unset($argv[0]);
+        return ($this->parameters[$key] ?? $default);
+    }
 
-        // パラメータ
-        $parameters = [];
-        foreach ($argv as $arg)
-        {
-            list($ky, $vl) = explode('=', $arg);
-            $parameters[$ky] = $vl;
-        }
-        $script = $parameters['--script'];
-        $domain = $parameters['--domain'];
 
-        // アプリケーション
-        $application = Configure::$CONFIGURE_ITEMS[$domain]->application;
 
-        $class_paths = explode('-', $script);
-        $class_path = $application->path . '/Command';
-        $class_name = '';
-        $namespace  = '\\' . ucfirst($application->id) . '\\Command';
-
-        foreach ($class_paths as $one)
-        {
-            $part = ucfirst(strtolower($one));
-            $class_path .= '/' . $part;
-            $class_name = $part;
-
-            // 最後の要素以外
-            $last = $class_paths[count($class_paths) - 1];
-            if ($last != $one)
-            {
-                $namespace  .= '\\' . $part;
-            }
-        }
-        $class_path .= 'Command.class.php';
-        $class_name  = $namespace . '\\' . $class_name . 'Command';
-
-        include_once($class_path);
-
-        /** @var Command $command */
-        return new $class_name();
+    /**
+     * コマンドランナー
+     *
+     * @param array $configure 設定情報
+     * @return void
+     */
+    public static function runner(array $configure): void
+    {
+        $command = new static();
+        $command->configure = $configure;
+        $command->options();
+        $command->before();
+        $command->execute();
+        $command->after();
     }
 }
