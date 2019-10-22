@@ -1,22 +1,23 @@
 <?php
 /**
- * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
+ * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus;
 
+use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use Citrus\Migration\Item;
 
+/**
+ * マイグレーション処理
+ */
 class Migration
 {
     /** @var string 生成 */
     const ACTION_GENERATE = 'generate';
-
-    /** @var string マイグレーションUP */
-    const ACTION_MIGRATION = 'migration.sh';
 
     /** @var string マイグレーションUP */
     const ACTION_MIGRATION_UP = 'up';
@@ -27,21 +28,74 @@ class Migration
     /** @var string マイグレーションREBIRTH */
     const ACTION_MIGRATION_REBIRTH = 'rebirth';
 
+    /** @var array 設定ファイル */
+    protected $configure;
+
+    /** @var DSN DSN情報 */
+    protected $dsn;
+
+    /** @var Console コンソール */
+    protected $console;
+
+
+
+    /**
+     * constructor.
+     *
+     * @param array|null   $citrus_configure Citrus設定ファイル
+     * @param Console|null $console          コンソール
+     * @throws CitrusException
+     */
+    public function __construct(array $citrus_configure = [], Console $console = null)
+    {
+         if (0 < count($citrus_configure))
+         {
+             $this->setupConfigure($citrus_configure);
+         }
+    }
+
+
+
+    /**
+     * 設定ファイルの設定とチェック
+     *
+     * @param array $citrus_configure
+     * @return void
+     * @throws CitrusException
+     */
+    public function setupConfigure(array $citrus_configure): void
+    {
+        // 設定値チェック
+        Configure::requireCheck($citrus_configure, [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+        ]);
+
+        $this->configure = $citrus_configure;
+
+        // DSN情報
+        $this->dsn = new DSN();
+        $this->dsn->bind($this->configure['database']);
+    }
+
 
 
     /**
      * マイグレーションファイル生成
      *
-     * @param string $directory     アプリディレクトリ名
      * @param string $generate_name 生成ファイル名
+     * @return void
      */
-    public static function generate(string $directory, string $generate_name)
+    public function generate(string $generate_name): void
     {
         // 生成時間
         $timestamp = Citrus::$TIMESTAMP_CHAR14;
 
-        // マイグレーションディレクトリパス
-        $migration_directory_path = self::callMigrationDirectoryPath($directory);
+        // マイグレーションファイル出力パスの設定
+        self::setupOutputDirectory();
 
         // 対象テーブル名
         $object_name = $generate_name;
@@ -49,10 +103,11 @@ class Migration
         $object_name = strtolower($object_name);
 
         // マイグレーション内容
-        $migration_file_string = <<<EOT
+        $file = <<<EOT
 <?php
+
 /**
- * generated Citrus Migration file at {#date#}
+ * generated Citrus Migration file at {#timestamp#}
  */
 
 use Citrus\Migration\CitrusMigrationItem;
@@ -79,123 +134,75 @@ SQL
 }
 
 EOT;
-        $migration_file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $migration_file_string);
-        $migration_file_string = str_replace('{#object_name#}', $object_name, $migration_file_string);
+        $file = str_replace('{#timestamp#}', Citrus::$TIMESTAMP_FORMAT, $file);
+        $file = str_replace('{#object_name#}', $object_name, $file);
 
         // ファイル名
-        $generate_class_name = sprintf('Citrus_%s_%s', $timestamp, $generate_name);
-        $migration_file_string = str_replace('{#class_name#}', $generate_class_name,$migration_file_string);
+        $class_name = sprintf('Citrus_%s_%s', $timestamp, $generate_name);
+        $file = str_replace('{#class_name#}', $class_name, $file);
 
         // generate
-        self::saveMigrationFile($migration_directory_path, $generate_class_name, $migration_file_string);
+        self::saveMigrationFile($class_name, $file);
     }
 
 
 
     /**
-     * マイグレーションの実行
+     * マイグレーションの正方向実行
      *
-     * @param string              $directory アプリディレクトリ名
-     * @param DSN[] $dsns      マイグレーション対象DSNリスト
-     * @param string|null         $version   バージョン指定
+     * @param string|null $version バージョン指定(指定がなければ全部)
+     * @return void
      */
-    public static function up(string $directory, array $dsns, string $version = null)
+    public function up(string $version = null): void
     {
-        // マイグレーションディレクトリパス
-        $migration_directory_path = self::callMigrationDirectoryPath($directory);
+        // マイグレーションファイル出力パスの設定
+        self::setupOutputDirectory();
+        // 出力パス
+        $output_dir = $this->configure['output_dir'];
 
         // 対象ファイルの取得
-        $migration_files = scandir($migration_directory_path);
+        $migration_files = scandir($output_dir);
 
-        // DSNの数だけやる
-        foreach ($dsns as $dsn)
+        // 対象の場合は実行
+        /** @var string $one ex. Citrus_XXXXXXXXXXXXXX_CreateTableXXXXXs.class.php */
+        foreach ($migration_files as $one)
         {
-            // 対象の場合は実行
-            /** @var string $one ex. Citrus_XXXXXXXXXXXXXX_CreateTableXXXXXs.class.php */
-            foreach ($migration_files as $one)
-            {
-                // マイグレーションファイルパス
-                $class_path = $migration_directory_path . $one;
+            /** @var Item $instance */
+            $instance = $this->callInstance($output_dir, $one, $version);
 
-                // ファイルでなければスルー
-                if (is_file($class_path) === false)
-                {
-                    continue;
-                }
-
-                // バージョン指定時に、対象バージョン以外だったらスルー
-                if (is_null($version) === false && strpos($one, $version) === false)
-                {
-                    continue;
-                }
-
-                // マイグレーションクラス名
-                $class_name = str_replace('.class.php', '', $one);
-
-                // ファイルであれば読み込み
-                include_once($class_path);
-
-                /** @var Item $instance */
-                $instance = new $class_name($dsn);
-
-                // 実行
-                $instance->up($dsn);
-            }
+            // 実行
+            $instance->up();
         }
     }
 
 
 
     /**
-     * マイグレーションDOWNの実行
+     * マイグレーション逆方向実行
      *
-     * @param string              $directory アプリディレクトリ名
-     * @param DSN[] $dsns      マイグレーション対象DSNリスト
-     * @param string|null         $version   バージョン指定
+     * @param string|null $version バージョン指定(指定がなければ全部)
+     * @return void
      */
-    public static function down(string $directory, array $dsns, string $version = null)
+    public function down(string $version = null): void
     {
-        // マイグレーションディレクトリパス
-        $migration_directory_path = self::callMigrationDirectoryPath($directory);
+        // マイグレーションファイル出力パスの設定
+        self::setupOutputDirectory();
+        // 出力パス
+        $output_dir = $this->configure['output_dir'];
 
         // 対象ファイルの取得
-        $migration_files = scandir($migration_directory_path);
+        $migration_files = scandir($output_dir);
         $migration_files = array_reverse($migration_files);
 
-        // DSNの数だけやる
-        foreach ($dsns as $dsn)
+        // 対象の場合は実行
+        /** @var string $one ex. Citrus_XXXXXXXXXXXXXX_CreateTableXXXXXs.class.php */
+        foreach ($migration_files as $one)
         {
-            // 対象の場合は実行
-            /** @var string $one ex. Citrus_XXXXXXXXXXXXXX_CreateTableXXXXXs.class.php */
-            foreach ($migration_files as $one)
-            {
-                // マイグレーションファイルパス
-                $class_path = $migration_directory_path . $one;
+            /** @var Item $instance */
+            $instance = $this->callInstance($output_dir, $one, $version);
 
-                // ファイルでなければスルー
-                if (is_file($class_path) === false)
-                {
-                    continue;
-                }
-
-                // バージョン指定時に、対象バージョン以外だったらスルー
-                if (is_null($version) === false && strpos($one, $version) === false)
-                {
-                    continue;
-                }
-
-                // マイグレーションクラス名
-                $class_name = str_replace('.class.php', '', $one);
-
-                // ファイルであれば読み込み
-                include_once($class_path);
-
-                /** @var Item $instance */
-                $instance = new $class_name($dsn);
-
-                // 実行
-                $instance->down($dsn);
-            }
+            // 実行
+            $instance->down();
         }
     }
 
@@ -204,40 +211,36 @@ EOT;
     /**
      * マイグレーションREBIRTHの実行
      *
-     * @param string              $directory アプリディレクトリ名
-     * @param DSN[] $dsns      マイグレーション対象DSNリスト
-     * @param string|null         $version   バージョン指定
+     * @param string|null $version バージョン指定(指定がなければ全部)
      */
-    public static function rebirth(string $directory, array $dsns, string $version = null)
+    public function rebirth(string $version = null)
     {
         // DOWN
-        self::down($directory, $dsns, $version);
+        self::down($version);
         // UP
-        self::up($directory, $dsns, $version);
+        self::up($version);
     }
 
 
 
     /**
-     * マイグレーションファイル格納ディレクトリパスの取得
+     * マイグレーションファイル格納ディレクトリパスの設定
      *
-     * @param string $directory
-     * @return string
+     * @return void
      */
-    private static function callMigrationDirectoryPath(string $directory) : string
+    private function setupOutputDirectory(): void
     {
-        $path = sprintf('%s/.migration/', $directory);
+        // 出力ディレクトリ
+        $output_dir = $this->configure['output_dir'];
 
         // ディレクトリがなければ生成
-        if (file_exists($path) === false)
+        if (file_exists($output_dir) === false)
         {
-            mkdir($path);
-            chmod($path, 0666);
-            chown($path, 'wwwrun');
-            chgrp($path, 'www');
+            mkdir($output_dir);
+            chmod($output_dir, $this->configure['mode']);
+            chown($output_dir, $this->configure['owner']);
+            chgrp($output_dir, $this->configure['group']);
         }
-
-        return $path;
     }
 
 
@@ -245,21 +248,55 @@ EOT;
     /**
      * 生成したマイグレーションファイルの保存
      *
-     * @param string $migration_directory_path マイグレーションファイル格納ディレクトリパス
-     * @param string $generate_class_name      生成マイグレーションクラス名
-     * @param string $migration_file_string    生成マイグレーションファイル内容
+     * @param string $class_name    生成マイグレーションクラス名
+     * @param string $file_contents 生成マイグレーションファイル内容
+     * @return void
      */
-    private static function saveMigrationFile(string $migration_directory_path,
-                                              string $generate_class_name,
-                                              string $migration_file_string)
+    private function saveMigrationFile(string $class_name, string $file_contents): void
     {
+        $output_dir = $this->configure['output_dir'];
         file_put_contents(
             sprintf(
-                '%s%s.class.php',
-                $migration_directory_path,
-                $generate_class_name
+                '%s/%s.class.php',
+                $output_dir,
+                $class_name
             ),
-            $migration_file_string
+            $file_contents
         );
+    }
+
+
+
+    /**
+     * マイグレーションクラスのインスタンス取得
+     *
+     * @param string      $output_dir マイグレーションファイル格納マイグレーションファイル
+     * @param string      $filename   ファイル名
+     * @param string|null $version    バージョン指定
+     * @return Item|null
+     */
+    private function callInstance(string $output_dir, string $filename,  string $version = null): ?Item
+    {
+        // マイグレーションファイルパス
+        $class_path = $output_dir . $filename;
+
+        // ファイルでなければスルー
+        if (false === is_file($class_path))
+        {
+            return null;
+        }
+
+        // バージョン指定時に、対象バージョン以外だったらスルー
+        if (false === is_null($version) && false === strpos($filename, $version))
+        {
+            return null;
+        }
+
+        // マイグレーションクラス名
+        $class_name = str_replace('.class.php', '', $filename);
+
+        // ファイルであれば読み込み
+        include_once($class_path);
+        return new $class_name($this->dsn);
     }
 }

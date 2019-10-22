@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright   Copyright 2017, Citrus/besidesplus All Rights Reserved.
+ * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.citrus.tk/
  */
@@ -44,13 +44,20 @@ class DSN extends Struct
         $dsn = '';
         switch ($this->type)
         {
-            case 'pgsql' :
-            case 'postgres' :
-            case 'postgresql' :
+            case 'pgsql':
+            case 'postgres':
+            case 'postgresql':
+                // postgresql
                 $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s',
                     $this->hostname,
                     $this->port,
                     $this->database
+                    );
+                break;
+            case 'sqlite':
+                // sqlite
+                $dsn = sprintf('sqlite:%s',
+                $this->hostname
                     );
                 break;
             default:
@@ -70,15 +77,22 @@ class DSN extends Struct
         $dsn = '';
         switch ($this->type)
         {
-            case 'pgsql' :
-            case 'postgres' :
-            case 'postgresql' :
+            case 'pgsql':
+            case 'postgres':
+            case 'postgresql':
+            // postgresql
                 $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;user=%s;password=%s',
                     $this->hostname,
                     $this->port,
                     $this->database,
                     $this->username,
                     $this->password
+                );
+                break;
+            case 'sqlite':
+                // sqlite
+                $dsn = sprintf('sqlite:%s',
+                    $this->hostname
                 );
                 break;
             default:
