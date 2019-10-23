@@ -169,6 +169,10 @@ EOT;
         {
             /** @var Item $instance */
             $instance = $this->callInstance($output_dir, $one, $version);
+            if (true === is_null($instance))
+            {
+                continue;
+            }
 
             // 実行
             $instance->up();
@@ -200,6 +204,10 @@ EOT;
         {
             /** @var Item $instance */
             $instance = $this->callInstance($output_dir, $one, $version);
+            if (true === is_null($instance))
+            {
+                continue;
+            }
 
             // 実行
             $instance->down();
