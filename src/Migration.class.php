@@ -105,7 +105,6 @@ class Migration
         // マイグレーション内容
         $file = <<<EOT
 <?php
-
 /**
  * generated Citrus Migration file at {#timestamp#}
  */
