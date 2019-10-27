@@ -99,7 +99,10 @@ SQL;
         $execute_microsecond = (microtime(true) - $microsecond);
 
         // バージョン情報の登録
-        $this->registVersion($version);
+        if (true === $result)
+        {
+            $this->registVersion($version);
+        }
 
         // ログ：実行結果
         $method = (true === $result ? 'success' : 'failure');
@@ -142,7 +145,10 @@ SQL;
         $execute_microsecond = (microtime(true) - $microsecond);
 
         // バージョン情報の削除
-        $this->removeVersion($version);
+        if (true === $result)
+        {
+            $this->removeVersion($version);
+        }
 
         // ログ：実行結果
         $method = (true === $result ? 'success' : 'failure');
@@ -188,7 +194,7 @@ SQL;
         // スキーマ置換
         $query = $this->replaceSchema($query);
         // クエリ実行
-        $result = $this->handler->query($query);
+        $result = $this->handler->exec($query);
 
         return (false === $result ? false : true);
     }
