@@ -75,6 +75,9 @@ class Migration
             'group',
             'output_dir',
         ]);
+        Configure::directoryStringCheck($citrus_configure, [
+            'output_dir',
+        ]);
 
         $this->configure = $citrus_configure;
 
