@@ -54,9 +54,9 @@ class VersionManager extends Struct
         $query = <<<SQL
 CREATE TABLE IF NOT EXISTS {SCHEMA}cf_migrations (
     version_code CHARACTER VARYING(32) NOT NULL,
-    migrated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    migrated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (version_code)
 );
-ALTER TABLE {SCHEMA}cf_migrations ADD CONSTRAINT pk_cf_migrations PRIMARY KEY (version);
 SQL;
         $query = $this->replaceSchema($query);
         $this->handler->query($query);
@@ -80,33 +80,30 @@ SQL;
         // ログ：バージョン操作開始
         $this->format('%s up. executing.', $class_name);
 
-        // トランザクションで実行
-        $this->transaction(function() use ($version, $class_name, $item) {
-            // バージョンアップできるか
-            if (false === $this->isUp($version))
-            {
-                // ログ：バージョン操作対象外
-                $this->format('%s up. is already.', $class_name);
-                return;
-            }
+        // バージョンアップできるか
+        if (false === $this->isUp($version))
+        {
+            // ログ：バージョン操作対象外
+            $this->format('%s up. is already.', $class_name);
+            return;
+        }
 
-            // 実行開始タイム
-            $microsecond = microtime(true);
+        // 実行開始タイム
+        $microsecond = microtime(true);
 
-            // 正方向クエリ
-            $query = $item->up();
-            $result = $this->executeQuery($query);
+        // 正方向クエリ
+        $query = $item->up();
+        $result = $this->executeQuery($query);
 
-            // 実行終了タイム
-            $execute_microsecond = (microtime(true) - $microsecond);
+        // 実行終了タイム
+        $execute_microsecond = (microtime(true) - $microsecond);
 
-            // バージョン情報の登録
-            $this->registVersion($version);
+        // バージョン情報の登録
+        $this->registVersion($version);
 
-            // ログ：実行結果
-            $method = (true === $result ? 'success' : 'failure');
-            $this->$method(sprintf('%s up. %s. %f μs.', $class_name, $method, $execute_microsecond));
-        });
+        // ログ：実行結果
+        $method = (true === $result ? 'success' : 'failure');
+        $this->$method(sprintf('%s up. %s. %f μs.', $class_name, $method, $execute_microsecond));
     }
 
 
@@ -126,33 +123,30 @@ SQL;
         // ログ：バージョン操作開始
         $this->format('%s down. executing.', $class_name);
 
-        // トランザクションで実行
-        $this->transaction(function() use ($version, $class_name, $item) {
-            // バージョンダウンできるか
-            if (false === $this->isDown($version))
-            {
-                // ログ：バージョン操作対象外
-                $this->format('%s down. is already.', $class_name);
-                return;
-            }
+        // バージョンダウンできるか
+        if (false === $this->isDown($version))
+        {
+            // ログ：バージョン操作対象外
+            $this->format('%s down. is already.', $class_name);
+            return;
+        }
 
-            // 実行開始タイム
-            $microsecond = microtime(true);
+        // 実行開始タイム
+        $microsecond = microtime(true);
 
-            // クエリ実行
-            $query = $item->down();
-            $result = $this->executeQuery($query);
+        // クエリ実行
+        $query = $item->down();
+        $result = $this->executeQuery($query);
 
-            // 実行終了タイム
-            $execute_microsecond = (microtime(true) - $microsecond);
+        // 実行終了タイム
+        $execute_microsecond = (microtime(true) - $microsecond);
 
-            // バージョン情報の削除
-            $this->removeVersion($version);
+        // バージョン情報の削除
+        $this->removeVersion($version);
 
-            // ログ：実行結果
-            $method = (true === $result ? 'success' : 'failure');
-            $this->$method(sprintf('%s down. %s. %f μs.', $class_name, $method, $execute_microsecond));
-        });
+        // ログ：実行結果
+        $method = (true === $result ? 'success' : 'failure');
+        $this->$method(sprintf('%s down. %s. %f μs.', $class_name, $method, $execute_microsecond));
     }
 
 
@@ -260,31 +254,6 @@ SQL;
 
 
     /**
-     * 簡易なトランザクション管理
-     *
-     * @param \Closure $transaction
-     */
-    private function transaction(\Closure $transaction)
-    {
-        // トランザクション開始
-        $this->handler->beginTransaction();
-        try
-        {
-            // 処理の実行
-            $transaction();
-            // 成功時コミット
-            $this->handler->commit();
-        }
-        catch (\PDOException $e)
-        {
-            // 失敗時ロールバック
-            $this->handler->rollBack();
-        }
-    }
-
-
-
-    /**
      * スキーマ指定の置換
      *
      * @param string $query 置換対象文字列
@@ -292,6 +261,6 @@ SQL;
      */
     public function replaceSchema(string $query): string
     {
-        return str_replace('{SCHEMA}', $this->dsn->schema, $query);
+        return str_replace('{SCHEMA}', $this->dsn->schema . '.', $query);
     }
 }
