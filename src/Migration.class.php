@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -119,18 +122,16 @@ class {#class_name#} extends Item
 
     public function up()
     {
-        \$this->execute(<<<SQL
+        return <<<SQL
 
-SQL
-        );
+SQL;
     }
 
     public function down()
     {
-        \$this->execute(<<<SQL
+        return <<<SQL
 
-SQL
-        );
+SQL;
     }
 }
 
@@ -153,6 +154,7 @@ EOT;
      *
      * @param string|null $version バージョン指定(指定がなければ全部)
      * @return void
+     * @throws \Exception
      */
     public function up(string $version = null): void
     {
@@ -217,6 +219,7 @@ EOT;
      * マイグレーションREBIRTHの実行
      *
      * @param string|null $version バージョン指定(指定がなければ全部)
+     * @throws \Exception
      */
     public function rebirth(string $version = null)
     {
