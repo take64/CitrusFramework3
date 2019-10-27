@@ -7,9 +7,9 @@
 
 namespace Citrus;
 
-use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use Citrus\Migration\Item;
+use Citrus\Migration\VersionManager;
 
 /**
  * マイグレーション処理
@@ -34,19 +34,18 @@ class Migration
     /** @var DSN DSN情報 */
     protected $dsn;
 
-    /** @var Console コンソール */
-    protected $console;
+    /** @var VersionManager バージョンマネージャー */
+    protected $versionManager;
 
 
 
     /**
      * constructor.
      *
-     * @param array|null   $citrus_configure Citrus設定ファイル
-     * @param Console|null $console          コンソール
+     * @param array|null $citrus_configure Citrus設定ファイル
      * @throws CitrusException
      */
-    public function __construct(array $citrus_configure = [], Console $console = null)
+    public function __construct(array $citrus_configure = [])
     {
          if (0 < count($citrus_configure))
          {
@@ -79,6 +78,12 @@ class Migration
         // DSN情報
         $this->dsn = new DSN();
         $this->dsn->bind($this->configure['database']);
+
+        // マイグレーションファイル出力パスの設定
+        self::setupOutputDirectory();
+
+        // バージョンマネージャー
+        $this->versionManager = new VersionManager($this->dsn);
     }
 
 
@@ -93,9 +98,6 @@ class Migration
     {
         // 生成時間
         $timestamp = Citrus::$TIMESTAMP_CHAR14;
-
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
 
         // 対象テーブル名
         $object_name = $generate_name;
@@ -154,8 +156,6 @@ EOT;
      */
     public function up(string $version = null): void
     {
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
         // 出力パス
         $output_dir = $this->configure['output_dir'];
 
@@ -173,8 +173,8 @@ EOT;
                 continue;
             }
 
-            // 実行
-            $instance->up();
+            // バージョンアップ
+            $this->versionManager->up($instance);
         }
     }
 
@@ -188,8 +188,6 @@ EOT;
      */
     public function down(string $version = null): void
     {
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
         // 出力パス
         $output_dir = $this->configure['output_dir'];
 
@@ -208,8 +206,8 @@ EOT;
                 continue;
             }
 
-            // 実行
-            $instance->down();
+            // バージョンダウン
+            $this->versionManager->down($instance);
         }
     }
 
@@ -223,9 +221,9 @@ EOT;
     public function rebirth(string $version = null)
     {
         // DOWN
-        self::down($version);
+        $this->down($version);
         // UP
-        self::up($version);
+        $this->up($version);
     }
 
 

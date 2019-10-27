@@ -132,26 +132,48 @@ class MigrationTest extends TestCase
         $dsn = Closure::bind(function () use ($migration) {
             return $migration->dsn;
         }, $this, Migration::class)->__invoke();
-        // 検算用DBファイルの作成
-        mkdir($this->output_dir);
-        touch($this->sqlite_file);
         // 検算用PDO
         $pdo = new PDO($dsn->toString());
+        // バージョンマネージャー
+        $versionManager = new Migration\VersionManager($dsn);
+
         // 検算用クエリ
         $query = 'SELECT user_id, name FROM users;';
 
         // マイグレーションの正方向実行
         $migrationItem = new Citrus_20190101000000_CreateTableUsers($dsn);
-        $migrationItem->up();
+        $versionManager->up($migrationItem);
 
         // テーブル作成が成功していればSELECT文が発行できる
+        $pdo->query($query);
         $this->assertNotFalse($pdo->query($query));
 
         // マイグレーションの逆方向実行
-        $migrationItem->down();
+        $versionManager->down($migrationItem);
 
         // テーブル削除が成功していればSELECT文が発行できない
         $this->assertFalse($pdo->query($query));
+    }
+
+
+
+    /**
+     * @test
+     * @throws CitrusException
+     */
+    public function バージョン情報が取れる()
+    {
+        // インスタンスの生成
+        $migration = new Migration($this->configure);
+        /** @var DSN $dsn */
+        $dsn = Closure::bind(function () use ($migration) {
+            return $migration->dsn;
+        }, $this, Migration::class)->__invoke();
+
+        // マイグレーションアイテムの生成
+        $item = new Citrus_20190101000000_CreateTableUsers($dsn);
+        // 検算
+        $this->assertSame('20190101000000', $item->version());
     }
 }
 
@@ -162,29 +184,31 @@ class Citrus_20190101000000_CreateTableUsers extends Item
 {
 
     /**
-     * migration.sh up
+     * migration up
+     *
+     * @return string
      */
-    public function up()
+    public function up(): string
     {
-        $this->execute(<<<SQL
+        return <<<SQL
 CREATE TABLE users (
     `user_id` int NOT NULL,
     `name` TEXT
 );
-SQL
-        );
+SQL;
     }
 
 
 
     /**
-     * migration.sh down
+     * migration down
+     *
+     * @return string
      */
-    public function down()
+    public function down(): string
     {
-        $this->execute(<<<SQL
+        return <<<SQL
 DROP TABLE users;
-SQL
-        );
+SQL;
     }
 }
