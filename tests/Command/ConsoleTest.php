@@ -24,7 +24,7 @@ class ConsoleTest extends TestCase
         $command->writeln('TEST');
         $command->format('TES%s', 'T');
         $command->success('TEST');
-        $command->error('TEST');
+        $command->failure('TEST');
     }
 }
 

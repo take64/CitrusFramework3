@@ -79,7 +79,7 @@ class Command extends Struct
      * @param string|null $default デフォルト値
      * @return string パラメータ値
      */
-    public function parameter(string $key, string $default = null): string
+    public function parameter(string $key, string $default = null): ?string
     {
         return ($this->parameters[$key] ?? $default);
     }

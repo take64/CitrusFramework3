@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,9 +10,9 @@
 
 namespace Citrus;
 
-use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use Citrus\Migration\Item;
+use Citrus\Migration\VersionManager;
 
 /**
  * マイグレーション処理
@@ -34,19 +37,18 @@ class Migration
     /** @var DSN DSN情報 */
     protected $dsn;
 
-    /** @var Console コンソール */
-    protected $console;
+    /** @var VersionManager バージョンマネージャー */
+    protected $versionManager;
 
 
 
     /**
      * constructor.
      *
-     * @param array|null   $citrus_configure Citrus設定ファイル
-     * @param Console|null $console          コンソール
+     * @param array|null $citrus_configure Citrus設定ファイル
      * @throws CitrusException
      */
-    public function __construct(array $citrus_configure = [], Console $console = null)
+    public function __construct(array $citrus_configure = [])
     {
          if (0 < count($citrus_configure))
          {
@@ -73,12 +75,21 @@ class Migration
             'group',
             'output_dir',
         ]);
+        Configure::directoryStringCheck($citrus_configure, [
+            'output_dir',
+        ]);
 
         $this->configure = $citrus_configure;
 
         // DSN情報
         $this->dsn = new DSN();
         $this->dsn->bind($this->configure['database']);
+
+        // マイグレーションファイル出力パスの設定
+        self::setupOutputDirectory();
+
+        // バージョンマネージャー
+        $this->versionManager = new VersionManager($this->dsn);
     }
 
 
@@ -94,9 +105,6 @@ class Migration
         // 生成時間
         $timestamp = Citrus::$TIMESTAMP_CHAR14;
 
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
-
         // 対象テーブル名
         $object_name = $generate_name;
         $object_name = str_replace(['CreateTable', 'DropTable', 'AlterTable', 'CreateView', 'DropView' ], '', $object_name);
@@ -105,31 +113,28 @@ class Migration
         // マイグレーション内容
         $file = <<<EOT
 <?php
-
 /**
  * generated Citrus Migration file at {#timestamp#}
  */
 
-use Citrus\Migration\CitrusMigrationItem;
+use Citrus\Migration\Item;
 
-class {#class_name#} extends CitrusMigrationItem
+class {#class_name#} extends Item
 {
     public \$object_name = '{#object_name#}';
 
     public function up()
     {
-        \$this->execute(<<<SQL
+        return <<<SQL
 
-SQL
-        );
+SQL;
     }
 
     public function down()
     {
-        \$this->execute(<<<SQL
+        return <<<SQL
 
-SQL
-        );
+SQL;
     }
 }
 
@@ -152,11 +157,10 @@ EOT;
      *
      * @param string|null $version バージョン指定(指定がなければ全部)
      * @return void
+     * @throws \Exception
      */
     public function up(string $version = null): void
     {
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
         // 出力パス
         $output_dir = $this->configure['output_dir'];
 
@@ -169,9 +173,13 @@ EOT;
         {
             /** @var Item $instance */
             $instance = $this->callInstance($output_dir, $one, $version);
+            if (true === is_null($instance))
+            {
+                continue;
+            }
 
-            // 実行
-            $instance->up();
+            // バージョンアップ
+            $this->versionManager->up($instance);
         }
     }
 
@@ -185,8 +193,6 @@ EOT;
      */
     public function down(string $version = null): void
     {
-        // マイグレーションファイル出力パスの設定
-        self::setupOutputDirectory();
         // 出力パス
         $output_dir = $this->configure['output_dir'];
 
@@ -200,9 +206,13 @@ EOT;
         {
             /** @var Item $instance */
             $instance = $this->callInstance($output_dir, $one, $version);
+            if (true === is_null($instance))
+            {
+                continue;
+            }
 
-            // 実行
-            $instance->down();
+            // バージョンダウン
+            $this->versionManager->down($instance);
         }
     }
 
@@ -212,13 +222,14 @@ EOT;
      * マイグレーションREBIRTHの実行
      *
      * @param string|null $version バージョン指定(指定がなければ全部)
+     * @throws \Exception
      */
     public function rebirth(string $version = null)
     {
         // DOWN
-        self::down($version);
+        $this->down($version);
         // UP
-        self::up($version);
+        $this->up($version);
     }
 
 

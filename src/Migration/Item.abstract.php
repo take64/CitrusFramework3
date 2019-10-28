@@ -8,14 +8,11 @@
 
 namespace Citrus\Migration;
 
-use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use PDO;
 
 abstract class Item
 {
-    use Console;
-
     /** @var string object name */
     public $object_name = '';
 
@@ -54,6 +51,7 @@ abstract class Item
      * query execute
      *
      * @param string $query query string
+     * @deprecated
      */
     public function execute($query)
     {
@@ -93,5 +91,19 @@ abstract class Item
                 sprintf('    %s %s %s', $error_info[0], $error_info[1], $error_info[2])
             );
         }
+    }
+
+
+
+    /**
+     * バージョンの取得
+     *
+     * @return string バージョン取得
+     */
+    public function version(): string
+    {
+        // '_' で分割した２番目の要素がバージョン
+        $class_names = explode('_', static::class);
+        return $class_names[1];
     }
 }

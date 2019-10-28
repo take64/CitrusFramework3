@@ -38,8 +38,9 @@ require $autoload_path;
 $configure_paths = $paths;
 $configure_paths[] = 'citrus-configure.php';
 $configure_path = implode('/', $configure_paths);
-$configure = include($configure);
+$configure = Citrus\Configure::call(include($configure_path), 'migration');
 
 // run!
+Citrus\Citrus::initialize();
 Citrus\Migration\MigrationCommand::runner($configure);
 

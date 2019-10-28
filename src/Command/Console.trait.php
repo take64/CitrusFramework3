@@ -77,6 +77,7 @@ trait Console
      * 成功時出力
      *
      * @param string
+     * @return void
      */
     public function success(string $message): void
     {
@@ -92,11 +93,12 @@ trait Console
 
 
     /**
-     * エラー時出力
+     * 失敗時出力
      *
      * @param string
+     * @return void
      */
-    public function error(string $message): void
+    public function failure(string $message): void
     {
         // 装飾
         $decorate = new Decorate();
