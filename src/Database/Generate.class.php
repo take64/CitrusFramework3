@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,59 +10,205 @@
 
 namespace Citrus\Database;
 
-
 use Citrus\Citrus;
+use Citrus\CitrusException;
+use Citrus\Command\Console;
 use Citrus\Configure;
-use PDO;
+use Citrus\Database\Catalog\CatalogManager;
 
+/**
+ * データベースオブジェクト生成処理
+ */
 class Generate
 {
-    /** @var string */
-    const PROPERTY = 'property';
+    use Console;
 
-    /** @var string */
-    const DAO = 'dao';
+    /** @var string Propertyクラス */
+    const TYPE_PROPERTY = 'property';
 
-    /** @var string */
-    const CONDITION = 'condition';
+    /** @var string Daoクラス */
+    const TYPE_DAO = 'dao';
 
-    /** @var string */
-    const ALL = 'all';
+    /** @var string Conditionクラス */
+    const TYPE_CONDITION = 'condition';
+
+    /** @var string 全て */
+    const TYPE_ALL = 'all';
+
+    /** @var array 設定ファイル */
+    protected $configure;
+
+    /** @var CatalogManager カタログマネージャ */
+    protected $catalogManager;
 
 
 
     /**
-     * Property
+     * constructor.
      *
-     * @param DSN[] $dsns       マイグレーション対象DSNリスト
-     * @param string              $table_name テーブル名
-     * @param string              $class_name class名
+     * @param array|null $citrus_configure Citrus設定ファイル
+     * @throws CitrusException
      */
-    public static function property(array $dsns, string $table_name, string $class_name)
+    public function __construct(array $citrus_configure = [])
     {
-        // propertyディレクトリパス
-        $directory_path = self::callDirectoryPath(Configure::$DIR_INTEGRATION_PROPERTY);
-
-        // DSNの数だけ行う
-        foreach ($dsns as $dsn)
+        if (0 < count($citrus_configure))
         {
-            $db = new PDO($dsn->toStringWithAuth());
-
-            // カラム定義の取得
-            $columns = self::callTableColumns($db, $dsn, $table_name);
-
-            // コメント定義の取得
-            $comments = self::callTableColumnComments($db, $dsn, $table_name);
+            $this->setupConfigure($citrus_configure);
+        }
+    }
 
 
-            // プライマリキーの取得
-            $primary_keys = self::callTablePrimaryKeys($db, $table_name);
 
-            // デフォルトカラム
-            $default_columns = array_keys(get_class_vars(Column::class));
+    /**
+     * 設定ファイルの設定とチェック
+     *
+     * @param array $citrus_configure
+     * @return void
+     * @throws CitrusException
+     */
+    public function setupConfigure(array $citrus_configure): void
+    {
+        // 設定値チェック
+        Configure::requireCheck($citrus_configure, [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+            'namespace',
+        ]);
+        $this->configure = $citrus_configure;
 
-            // propertyファイル内容
-            $file_string = <<<EOT
+        // 出力ファイル出力パスの設定
+        self::setupOutputDirectory();
+
+        // DSN情報
+        $dsn = new DSN();
+        $dsn->bind($this->configure['database']);
+
+        // カタログマネージャ
+        $this->catalogManager = new CatalogManager($dsn);
+    }
+
+
+
+    /**
+     * Conditionクラスの生成
+     *
+     * @param string $table_name   テーブル名
+     * @param string $class_prefix クラス接頭辞
+     */
+    public function condition(string $table_name, string $class_prefix)
+    {
+        // 生成クラス名
+        $class_name = $class_prefix;
+        // 出力ディレクトリ
+        $output_dir = $this->configure['output_dir'];
+
+        // propertyファイル内容
+        $file_string = <<<EOT
+<?php
+/**
+ * generated Citrus Condition file at {#date#}
+ */
+ 
+namespace {#namespace#}\Integration\Condition;
+
+use {#namespace#}\Integration\Property\{#namespace#}{#class_name#}Property;
+use Citrus\Sqlmap\CitrusSqlmapCondition;
+
+class {#namespace#}{#class_name#}Condition extends {#namespace#}{#class_name#}Property
+{
+    use CitrusSqlmapCondition;
+}
+
+EOT;
+        $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#table_name#}', $table_name, $file_string);
+        $file_string = str_replace('{#class_name#}', $class_name, $file_string);
+
+        $generate_class_path = sprintf('%s/Condition/%sCondition.class.php', $output_dir, $class_name);
+        file_put_contents($generate_class_path, $file_string);
+        $this->success(sprintf('generate class file => %s', $generate_class_path));
+    }
+
+
+
+    /**
+     * Daoクラスの生成
+     *
+     * @param string $table_name   テーブル名
+     * @param string $class_prefix クラス接頭辞
+     */
+    public function dao(string $table_name, string $class_prefix)
+    {
+        // 生成クラス名
+        $class_name = $class_prefix;
+        // 出力ディレクトリ
+        $output_dir = $this->configure['output_dir'];
+
+        // ファイル内容
+        $file_string = <<<EOT
+<?php
+/**
+ * generated Citrus Dao file at {#date#}
+ */
+ 
+namespace {#namespace#}\Integration\Dao;
+
+use Citrus\Sqlmap\Crud;
+
+class {#namespace#}{#class_name#}Dao extends Crud
+{
+    /** @var string sqlmap_id */
+    protected \$sqlmap_id = '{#sqlmap_id#}';
+    
+    /** @var string target */
+    protected \$target = '{#table_name#}';
+}
+
+EOT;
+        $sqlmap_id = implode('', array_map(function($key) {
+            return ucfirst($key);
+        }, explode('_', $table_name)));
+
+        $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#class_name#}', $class_name, $file_string);
+        $file_string = str_replace('{#sqlmap_id#}', $sqlmap_id, $file_string);
+        $file_string = str_replace('{#table_name#}', $table_name, $file_string);
+
+        $generate_class_path = sprintf('%s/Dao/%sDao.class.php', $output_dir, $class_name);
+        file_put_contents($generate_class_path, $file_string);
+        $this->success(sprintf('generate class file => %s', $generate_class_path));
+    }
+
+
+
+    /**
+     * Propertyクラスの生成
+     *
+     * @param string $table_name   テーブル名
+     * @param string $class_prefix クラス接頭辞
+     */
+    public function property(string $table_name, string $class_prefix): void
+    {
+        // 生成クラス名
+        $class_name = $class_prefix;
+        // 出力ディレクトリ
+        $output_dir = $this->configure['output_dir'];
+        // カラム定義の取得
+        $columns = $this->catalogManager->tableColumns($table_name);
+        // コメント定義の取得
+        $comments = $this->catalogManager->columnComments($table_name);
+        // プライマリキーの取得
+        $primary_keys = $this->catalogManager->primaryKeys($table_name);
+        // デフォルトカラム
+        $default_columns = array_keys(get_class_vars(Column::class));
+
+        // propertyファイル内容
+        $file_string = <<<EOT
 <?php
 /**
  * generated Citrus Property file at {#date#}
@@ -67,10 +216,10 @@ class Generate
  
 namespace {#namespace#}\Integration\Property;
 
-use Citrus\Database\CitrusDatabaseColumn;
-use {#namespace#}\Integration\Condition\{#namespace#}{#class-name#}Condition;
+use Citrus\Database\Column;
+use {#namespace#}\Integration\Condition\{#namespace#}{#class_name#}Condition;
 
-class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
+class {#namespace#}{#class_name#}Property extends Column
 {
 {#property#}
 
@@ -82,7 +231,7 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
      */
     public function callPrimaryKeys(): array
     {
-        return [{#primary-keys#}];
+        return [{#primary_keys#}];
     }
 
 
@@ -90,13 +239,13 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
     /**
      * call condition
      *
-     * @return {#namespace#}{#class-name#}Condition
+     * @return {#namespace#}{#class_name#}Condition
      */
-    public function callCondition(): {#namespace#}{#class-name#}Condition
+    public function callCondition(): {#namespace#}{#class_name#}Condition
     {
         if (is_null(\$this->condition) === true)
         {
-            \$this->condition = new {#namespace#}{#class-name#}Condition();
+            \$this->condition = new {#namespace#}{#class_name#}Condition();
             \$this->condition->nullify();
         }
         \$primary_keys = \$this->callPrimaryKeys();
@@ -110,295 +259,132 @@ class {#namespace#}{#class-name#}Property extends CitrusDatabaseColumn
 }
 
 EOT;
-            $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-            $file_string = str_replace('{#namespace#}', ucfirst(Configure::$CONFIGURE_ITEM->application->id), $file_string);
-            $file_string = str_replace('{#class-name#}', $class_name, $file_string);
-            $file_string = str_replace('{#primary-keys#}', implode(', ', $primary_keys), $file_string);
+        $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#class_name#}', $class_name, $file_string);
+        $file_string = str_replace('{#primary_keys#}', implode(', ', $primary_keys), $file_string);
 
-            // column property
-            $properties = [];
-            foreach ($columns as $column)
+        // column property
+        $properties = [];
+        foreach ($columns as $column_name => $columnDef)
+        {
+            // データ取得
+            $data_type = self::convertToPHPType($columnDef->data_type);
+            $column_name = $columnDef->column_name;
+            $comment = '';
+            if (true === array_key_exists($column_name, $comments))
             {
-                // データ取得
-                $data_type = $column['data_type'];
-                $column_name = $column['column_name'];
-                $comment = '';
-                if (isset($comments[$column_name]) === true)
-                {
-                    $comment = $comments[$column_name]['description'];
-                }
-                $property_name = '$' . $column['column_name'];
+                $comment = $comments[$column_name]->comment;
+            }
+            $property_name = '$' . $columnDef->column_name;
 
-                // デフォルトカラムはスルー
-                if (in_array($column_name, $default_columns) === true)
-                {
-                    continue;
-                }
-
-                // クラス名置換
-                switch ($data_type)
-                {
-                    case 'character varying' :
-                    case 'text' :
-                    case 'date' :
-                    case 'timestamp without time zone' :
-                        $data_type = 'string';
-                        break;
-                    case 'integer' :
-                    case 'bigint' :
-                        $data_type = 'int';
-                        break;
-                    case 'numeric' :
-                        $data_type = 'double';
-                        break;
-                    default:
-                }
-
-                // ベース文字列
-                $property = <<<PTY
-    /** @var {#class-name#} {#comment#} */
-    public {#property_name#};
-
-PTY;
-                // 置換
-                $property = str_replace('{#class-name#}',   $data_type,     $property);
-                $property = str_replace('{#comment#}',      $comment,       $property);
-                $property = str_replace('{#property_name#}',$property_name, $property);
-                $properties[] = $property;
+            // デフォルトカラムはスルー
+            if (true === in_array($column_name, $default_columns))
+            {
+                continue;
             }
 
-            $file_string = str_replace('{#property#}', implode(PHP_EOL, $properties), $file_string);
-
-            $generate_class_path = sprintf('%s/%sProperty.class.php', $directory_path, $class_name);
-            file_put_contents($generate_class_path, $file_string);
-            echo 'generate class file => ' . $generate_class_path . PHP_EOL;
-        }
-    }
-
-
-
-    /**
-     * Dao
-     *
-     * @param string $table_name テーブル名
-     * @param string $class_name class名
-     */
-    public static function dao(string $table_name, string $class_name)
-    {
-        // daoディレクトリパス
-        $directory_path = self::callDirectoryPath(Configure::$DIR_INTEGRATION_DAO);
-
-        // ファイル内容
-        $file_string = <<<EOT
-<?php
-/**
- * generated Citrus Dao file at {#date#}
- */
- 
-namespace {#namespace#}\Integration\Dao;
-
-use Citrus\Sqlmap\CitrusSqlmapCrud;
-
-class {#namespace#}{#class-name#}Dao extends CitrusSqlmapCrud
-{
-    /** @var string sqlmap_id */
-    protected \$sqlmap_id = '{#sqlmap_id#}';
-    
-    /** @var string target */
-    protected \$target = '{#tablename#}';
-}
+            // ベース文字列
+            $property = <<<EOT
+    /** @var {#class_name#} {#comment#} */
+    public {#property_name#};
 
 EOT;
-        $sqlmap_id = implode('', array_map(function($key) {
-            return ucfirst($key);
-        }, explode('_', $table_name)));
+            // 置換
+            $property = str_replace('{#class_name#}',   $data_type,     $property);
+            $property = str_replace('{#comment#}',      $comment,       $property);
+            $property = str_replace('{#property_name#}',$property_name, $property);
+            $properties[] = $property;
+        }
 
-        $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-        $file_string = str_replace('{#namespace#}', ucfirst(Configure::$CONFIGURE_ITEM->application->id), $file_string);
-        $file_string = str_replace('{#class-name#}', $class_name, $file_string);
-        $file_string = str_replace('{#sqlmap_id#}', $sqlmap_id, $file_string);
-        $file_string = str_replace('{#tablename#}', $table_name, $file_string);
+        $file_string = str_replace('{#property#}', implode(PHP_EOL, $properties), $file_string);
 
-        $generate_class_path = sprintf('%s/%sDao.class.php', $directory_path, $class_name);
+        $generate_class_path = sprintf('%s/Property/%sProperty.class.php', $output_dir, $class_name);
         file_put_contents($generate_class_path, $file_string);
-        echo 'generate class file => ' . $generate_class_path . PHP_EOL;
+        $this->success(sprintf('generate class file => %s', $generate_class_path));
     }
 
 
 
     /**
-     * Condition
+     * クラスの一括生成
      *
-     * @param string $table_name     テーブル名
-     * @param string $condition_name class名
+     * @param string $table_name   テーブル名
+     * @param string $class_prefix クラス接頭辞
      */
-    public static function condition(string $table_name, string $condition_name)
+    public function all(string $table_name, string $class_prefix)
     {
-        // propertyディレクトリパス
-        $directory_path = self::callDirectoryPath(Configure::$DIR_INTEGRATION_CONDITION);
-
-        // propertyファイル内容
-        $file_string = <<<EOT
-<?php
-/**
- * generated Citrus Condition file at {#date#}
- */
- 
-namespace {#namespace#}\Integration\Condition;
-
-use {#namespace#}\Integration\Property\{#namespace#}{#class-name#}Property;
-use Citrus\Sqlmap\CitrusSqlmapCondition;
-
-class {#namespace#}{#class-name#}Condition extends {#namespace#}{#class-name#}Property
-{
-    use CitrusSqlmapCondition;
-}
-
-EOT;
-        $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-        $file_string = str_replace('{#namespace#}', ucfirst(Configure::$CONFIGURE_ITEM->application->id), $file_string);
-        $file_string = str_replace('{#table-name#}', $table_name, $file_string);
-        $file_string = str_replace('{#class-name#}', $condition_name, $file_string);
-
-        $generate_class_path = sprintf('%s/%sCondition.class.php', $directory_path, $condition_name);
-        file_put_contents($generate_class_path, $file_string);
-        echo 'generate class file => ' . $generate_class_path . PHP_EOL;
+        $this->condition($table_name, $class_prefix);
+        $this->dao($table_name, $class_prefix);
+        $this->property($table_name, $class_prefix);
     }
 
 
 
     /**
-     * ファイル格納ディレクトリパスの取得
+     * テーブルカラムの型からPHPの型に変換
      *
-     * @param string $path
-     * @return string
+     * @param string $data_type カラムデータタイプ
+     * @return string PHPの型
      */
-    private static function callDirectoryPath(string $path) : string
+    private static function convertToPHPType(string $data_type): string
     {
-        // ディレクトリがなければ生成
-        if (file_exists($path) === false)
+        switch ($data_type)
         {
-            mkdir($path, 0666, true);
-            chown($path, 'wwwrun');
-            chgrp($path, 'www');
+            case 'character varying':
+            case 'text':
+            case 'date':
+            case 'timestamp without time zone':
+                // 文字列
+                $data_type = 'string';
+                break;
+            case 'integer':
+            case 'bigint':
+                // 整数
+                $data_type = 'int';
+                break;
+            case 'numeric':
+                // 浮動小数点
+                $data_type = 'double';
+                break;
+            default:
         }
-
-        return $path;
+        return $data_type;
     }
 
 
 
-    /**
-     * テーブルのカラム定義の取得
-     *
-     * @param PDO               $db        PDOハンドル
-     * @param DSN $dsn       DSN設定
-     * @param string            $tablename テーブル名
-     * @return array
-     */
-    private static function callTableColumns(PDO $db, DSN $dsn, string $tablename)
-    {
-        $stmt = $db->prepare(<<<SQL
-SELECT 
-      column_name
-    , column_default
-    , data_type
-FROM information_schema.columns 
-WHERE table_catalog = :database
-  AND table_schema = :schema 
-  AND table_name = :table 
-ORDER BY ordinal_position
-SQL
-);
-        $stmt->execute([
-            ':database' => $dsn->database,
-            ':schema'   => $dsn->schema,
-            ':table'    => $tablename,
-        ]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
 
     /**
-     * テーブルのカラム定義の取得
+     * 出力ファイル格納ディレクトリパスの設定
      *
-     * @param PDO               $db        PDOハンドル
-     * @param DSN $dsn       DSN設定
-     * @param string            $tablename テーブル名
-     * @return array
+     * @return void
      */
-    private static function callTableColumnComments(PDO $db, DSN $dsn, string $tablename)
+    private function setupOutputDirectory(): void
     {
-        $stmt = $db->prepare(<<<SQL
-SELECT
-      pg_stat_all_tables.relname
-    , pg_attribute.attname
-    , pg_description.description
-FROM pg_stat_all_tables
-INNER JOIN pg_description
-        ON pg_description.objoid = pg_stat_all_tables.relid
-       AND pg_description.objsubid <> 0
-INNER JOIN pg_attribute
-        ON pg_attribute.attrelid = pg_description.objoid
-       AND pg_attribute.attnum = pg_description.objsubid
-WHERE pg_stat_all_tables.schemaname = :schema
-  AND pg_stat_all_tables.relname = :table
-ORDER BY pg_description.objsubid
-SQL
-);
-        $stmt->execute([
-            ':schema'   => $dsn->schema,
-            ':table'    => $tablename,
-        ]);
-        $comment_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        // コメントデータ
-        $comments = [];
-        foreach ($comment_results as $one)
+        // 出力ディレクトリ
+        $parent_dir = $this->configure['output_dir'];
+
+        // 各ディレクトリ
+        $dirs = [
+            '/Condition',
+            '/Dao',
+            '/Property',
+        ];
+
+        foreach ($dirs as $dir)
         {
-            $comments[$one['attname']] = $one;
+            // 各出力ディレクトリ
+            $output_dir = ($parent_dir . $dir);
+
+            // ディレクトリがなければ生成
+            if (false === file_exists($output_dir))
+            {
+                mkdir($output_dir);
+                chmod($output_dir, $this->configure['mode']);
+                chown($output_dir, $this->configure['owner']);
+                chgrp($output_dir, $this->configure['group']);
+            }
         }
-
-        return $comments;
-    }
-
-
-
-    /**
-     * テーブルのプライマリキー定義の取得
-     *
-     * @param PDO               $db        PDOハンドル
-     * @param string            $tablename テーブル名
-     * @return array
-     */
-    private static function callTablePrimaryKeys(PDO $db, string $tablename)
-    {
-        $stmt = $db->prepare(<<<SQL
-SELECT
-      information_schema.constraint_column_usage.column_name
-FROM information_schema.table_constraints
-INNER JOIN information_schema.constraint_column_usage
-        ON information_schema.constraint_column_usage.constraint_name = information_schema.table_constraints.constraint_name
-       AND information_schema.constraint_column_usage.table_name = information_schema.table_constraints.table_name
-       AND information_schema.constraint_column_usage.table_schema = information_schema.table_constraints.table_schema
-       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
-       AND information_schema.constraint_column_usage.table_catalog = information_schema.table_constraints.table_catalog
-WHERE information_schema.table_constraints.constraint_type = 'PRIMARY KEY'
-  AND information_schema.table_constraints.table_name = :table
-SQL
-);
-        $stmt->execute([
-            ':table'    => $tablename,
-        ]);
-        $primarykey_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        // プライマリキーデータ
-        $primary_keys = [];
-        foreach ($primarykey_results as $one)
-        {
-            $column_name = $one['column_name'];
-            $primary_keys[$column_name] = sprintf('\'%s\'', $column_name);
-        }
-
-        return $primary_keys;
     }
 }

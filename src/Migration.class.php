@@ -75,21 +75,17 @@ class Migration
             'group',
             'output_dir',
         ]);
-        Configure::directoryStringCheck($citrus_configure, [
-            'output_dir',
-        ]);
-
         $this->configure = $citrus_configure;
 
-        // DSN情報
-        $this->dsn = new DSN();
-        $this->dsn->bind($this->configure['database']);
-
-        // マイグレーションファイル出力パスの設定
+        // 出力ファイル出力パスの設定
         self::setupOutputDirectory();
 
+        // DSN情報
+        $dsn = new DSN();
+        $dsn->bind($this->configure['database']);
+
         // バージョンマネージャー
-        $this->versionManager = new VersionManager($this->dsn);
+        $this->versionManager = new VersionManager($dsn);
     }
 
 
@@ -157,7 +153,7 @@ EOT;
      *
      * @param string|null $version バージョン指定(指定がなければ全部)
      * @return void
-     * @throws \Exception
+     * @throws CitrusException
      */
     public function up(string $version = null): void
     {
@@ -235,7 +231,7 @@ EOT;
 
 
     /**
-     * マイグレーションファイル格納ディレクトリパスの設定
+     * 出力ファイル格納ディレクトリパスの設定
      *
      * @return void
      */
@@ -245,7 +241,7 @@ EOT;
         $output_dir = $this->configure['output_dir'];
 
         // ディレクトリがなければ生成
-        if (file_exists($output_dir) === false)
+        if (false === file_exists($output_dir))
         {
             mkdir($output_dir);
             chmod($output_dir, $this->configure['mode']);
@@ -308,6 +304,6 @@ EOT;
 
         // ファイルであれば読み込み
         include_once($class_path);
-        return new $class_name($this->dsn);
+        return new $class_name();
     }
 }

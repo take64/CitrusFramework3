@@ -16,7 +16,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Citrus\\": "src/"
+      "Citrus\\": "src/",
+      "Test\\": "tests/"
     }
   },
   "require-dev": {

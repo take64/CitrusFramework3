@@ -299,24 +299,4 @@ class Configure
             }
         }
     }
-
-
-
-    /**
-     * ディレクトリチェック
-     *
-     * @param array    $configure    設定ファイル
-     * @param string[] $require_keys 必須キー配列
-     * @throws CitrusException
-     */
-    public static function directoryStringCheck(array $configure, array $require_keys)
-    {
-        foreach ($require_keys as $key)
-        {
-            if ('/' !== substr($configure[$key], -1, 1))
-            {
-                throw new CitrusException(sprintf('%s の末尾が / で終了していません', $key));
-            }
-        }
-    }
 }
