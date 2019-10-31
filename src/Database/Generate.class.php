@@ -114,12 +114,12 @@ class Generate
  
 namespace {#namespace#}\Integration\Condition;
 
-use {#namespace#}\Integration\Property\{#namespace#}{#class_name#}Property;
-use Citrus\Sqlmap\CitrusSqlmapCondition;
+use {#namespace#}\Integration\Property\{#class_name#}Property;
+use Citrus\Sqlmap\Condition;
 
-class {#namespace#}{#class_name#}Condition extends {#namespace#}{#class_name#}Property
+class {#class_name#}Condition extends {#class_name#}Property
 {
-    use CitrusSqlmapCondition;
+    use Condition;
 }
 
 EOT;
@@ -159,7 +159,7 @@ namespace {#namespace#}\Integration\Dao;
 
 use Citrus\Sqlmap\Crud;
 
-class {#namespace#}{#class_name#}Dao extends Crud
+class {#class_name#}Dao extends Crud
 {
     /** @var string sqlmap_id */
     protected \$sqlmap_id = '{#sqlmap_id#}';
@@ -217,9 +217,9 @@ EOT;
 namespace {#namespace#}\Integration\Property;
 
 use Citrus\Database\Column;
-use {#namespace#}\Integration\Condition\{#namespace#}{#class_name#}Condition;
+use {#namespace#}\Integration\Condition\{#class_name#}Condition;
 
-class {#namespace#}{#class_name#}Property extends Column
+class {#class_name#}Property extends Column
 {
 {#property#}
 
@@ -239,13 +239,13 @@ class {#namespace#}{#class_name#}Property extends Column
     /**
      * call condition
      *
-     * @return {#namespace#}{#class_name#}Condition
+     * @return {#class_name#}Condition
      */
-    public function callCondition(): {#namespace#}{#class_name#}Condition
+    public function callCondition(): {#class_name#}Condition
     {
         if (is_null(\$this->condition) === true)
         {
-            \$this->condition = new {#namespace#}{#class_name#}Condition();
+            \$this->condition = new {#class_name#}Condition();
             \$this->condition->nullify();
         }
         \$primary_keys = \$this->callPrimaryKeys();
@@ -262,7 +262,7 @@ EOT;
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
         $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
         $file_string = str_replace('{#class_name#}', $class_name, $file_string);
-        $file_string = str_replace('{#primary_keys#}', implode(', ', $primary_keys), $file_string);
+        $file_string = str_replace('{#primary_keys#}', sprintf('\'%s\'', implode('\', \'', $primary_keys)), $file_string);
 
         // column property
         $properties = [];
