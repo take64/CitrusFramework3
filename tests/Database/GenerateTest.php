@@ -81,10 +81,7 @@ class DatabasenTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        $migration = new Migration($this->configure);
-        \Closure::bind(function () use ($migration) {
-            $migration->setupOutputDirectory();
-        }, $this, Migration::class)->__invoke();
+        (new Migration($this->configure));
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));

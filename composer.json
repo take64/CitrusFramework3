@@ -12,7 +12,8 @@
     }
   ],
   "bin": [
-    "src/bin/cf-migration"
+    "src/bin/cf-migration",
+    "src/bin/cf-integration"
   ],
   "autoload": {
     "psr-4": {
