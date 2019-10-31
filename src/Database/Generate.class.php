@@ -108,6 +108,9 @@ class Generate
         // propertyファイル内容
         $file_string = <<<EOT
 <?php
+
+declare(strict_types=1);
+
 /**
  * generated Citrus Condition file at {#date#}
  */
@@ -151,6 +154,9 @@ EOT;
         // ファイル内容
         $file_string = <<<EOT
 <?php
+
+declare(strict_types=1);
+
 /**
  * generated Citrus Dao file at {#date#}
  */
@@ -210,6 +216,9 @@ EOT;
         // propertyファイル内容
         $file_string = <<<EOT
 <?php
+
+declare(strict_types=1);
+
 /**
  * generated Citrus Property file at {#date#}
  */
