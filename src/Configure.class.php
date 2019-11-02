@@ -82,9 +82,6 @@ class Configure
      */
     public static function initialize($path_configure)
     {
-        // init autoload
-        Autoloader::autoloadFramework();
-
         // framework initialize
         self::fremework();
 
@@ -93,9 +90,6 @@ class Configure
 
         // configure initialize
         self::configure($path_configure);
-
-        // init autoload
-        Autoloader::autoloadApplication();
     }
 
 
