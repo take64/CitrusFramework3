@@ -131,10 +131,10 @@ class Configure
         }
 
         // 親参照指定を取り除く
-        $path_application_dir = Directory::suitablePath($path_application_dir);
+        $path_application_dir = Directory::suitablePath($path_application_dir . '/src');
 
         // directory
-        self::$DIR_APP                  = $path_application_dir . '/src';
+        self::$DIR_APP                  = $path_application_dir;
         // dir business
         self::$DIR_BUSINESS             = self::$DIR_APP . '/Business';
         self::$DIR_BUSINESS_CAPSULE     = self::$DIR_BUSINESS . '/Capsule';
