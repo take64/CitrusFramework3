@@ -26,6 +26,7 @@
     "ext-posix": "*"
   },
   "require": {
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "smarty/smarty": "^3.1"
   }
 }
