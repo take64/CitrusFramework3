@@ -130,6 +130,9 @@ class Configure
             return ;
         }
 
+        // 親参照指定を取り除く
+        $path_application_dir = Directory::suitablePath($path_application_dir);
+
         // directory
         self::$DIR_APP                  = $path_application_dir . '/src';
         // dir business
