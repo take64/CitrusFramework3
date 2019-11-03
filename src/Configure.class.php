@@ -131,7 +131,7 @@ class Configure
         }
 
         // directory
-        self::$DIR_APP                  = $path_application_dir;
+        self::$DIR_APP                  = $path_application_dir . '/src';
         // dir business
         self::$DIR_BUSINESS             = self::$DIR_APP . '/Business';
         self::$DIR_BUSINESS_CAPSULE     = self::$DIR_BUSINESS . '/Capsule';
