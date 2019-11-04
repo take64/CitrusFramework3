@@ -99,7 +99,7 @@ class Pagecode extends Struct
         $path = Configure::$CONFIGURE_ITEM->application->path . $javascript;
         if (true === file_exists($path))
         {
-            $this->add('javascripts', $path);
+            $this->add('javascripts', $javascript);
             return;
         }
         // パスがライブラリの可能性
@@ -156,7 +156,7 @@ class Pagecode extends Struct
         $path = Configure::$CONFIGURE_ITEM->application->path . $stylesheet;
         if (true === file_exists($path))
         {
-            $this->add('stylesheets', $path);
+            $this->add('stylesheets', $stylesheet);
             return;
         }
         // パスがライブラリの可能性
