@@ -5,7 +5,7 @@
  * @license     http://www.besidesplus.net/
  */
 
-$dir_base = dirname(__FILE__);
+$dir_base = dirname(__FILE__) . '/Sample';
 
 $database = [
     'type'      => 'postgresql',
@@ -97,12 +97,12 @@ return [
             'domain'    => 'hoge.example.com',
         ],
         'logger' => [
-            'directory' => '/var/www/html/develop/log/',
+            'directory' => $dir_base . '/log',
             'filename'  => 'hoge.example.com.system_log',
             'level'     => 'debug',
             'display'   => false,
-            'owner'     => 'apache',
-            'group'     => 'apache',
+            'owner'     => posix_getpwuid(posix_geteuid())['name'],
+            'group'     => posix_getgrgid(posix_getegid())['name'],
         ],
         'routing' => [
             'default'   => 'home/login',

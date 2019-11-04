@@ -6,5 +6,7 @@ vendor/
 composer.lock
 composer.phar
 
- .phpunit.result.cache
- phpunit.tdx
+.phpunit.result.cache
+phpunit.tdx
+
+tests/Sample/Compile

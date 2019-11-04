@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -16,19 +19,23 @@ use Citrus\Document\Pagecode;
 use Citrus\Document\Router;
 use Citrus\Http\Header;
 use Citrus\Library\Smarty3;
+use Citrus\Struct;
 use Exception;
 use Smarty_Internal_Template;
 
-class Page
+/**
+ * ページ処理
+ */
+class Page extends Struct
 {
     /** @var Pagecode */
-    private $pagecode;
+    protected $pagecode;
 
     /** @var Smarty3 */
-    private $smarty = null;
+    protected $smarty = null;
 
     /** @var Formmap */
-    private $formmap = null;
+    protected $formmap = null;
 
     /**
      * controller run
@@ -127,8 +134,9 @@ class Page
         foreach ($resourceList as $ky => $vl)
         {
             $resourceAppendedList[] = $vl;
-            $this->callPagecode()->addStylesheet(implode('/', $resourceAppendedList) . '.css');
-            $this->callPagecode()->addJavascript(implode('/', $resourceAppendedList) . '.js');
+            $path = '/' . implode('/', $resourceAppendedList);
+            $this->callPagecode()->addStylesheet($path . '.css');
+            $this->callPagecode()->addJavascript($path . '.js');
         }
 
         // プラグイン
