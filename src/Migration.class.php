@@ -285,7 +285,7 @@ EOT;
     private function callInstance(string $output_dir, string $filename,  string $version = null): ?Item
     {
         // マイグレーションファイルパス
-        $class_path = $output_dir . $filename;
+        $class_path = sprintf('%s/%s', $output_dir, $filename);
 
         // ファイルでなければスルー
         if (false === is_file($class_path))
