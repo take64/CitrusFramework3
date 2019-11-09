@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -77,7 +80,7 @@ class Command extends Struct
      *
      * @param string      $key     パラメータキー
      * @param string|null $default デフォルト値
-     * @return string パラメータ値
+     * @return string|null パラメータ値
      */
     public function parameter(string $key, string $default = null): ?string
     {

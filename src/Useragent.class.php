@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -11,6 +14,9 @@ use Citrus\Useragent\Carrier;
 use Citrus\Useragent\Device;
 use Citrus\Useragent\Element;
 
+/**
+ * ユーザーエージェント処理
+ */
 class Useragent
 {
     /** ユーザーエージェントパターン配列のpregパターン */
@@ -35,7 +41,7 @@ class Useragent
      * @param string|null $useragent
      * @return Element
      */
-    public static function callUseragent(string $useragent = null) : Element
+    public static function callUseragent(string $useragent = null): Element
     {
         return self::vague($useragent);
     }
@@ -46,10 +52,10 @@ class Useragent
      * useragent vague
      * ユーザエージェントについて曖昧な情報を返す
      *
-     * @param   string $useragent
-     * @return  Element
+     * @param string|null $useragent
+     * @return Element
      */
-    public static function vague(string $useragent = null) : Element
+    public static function vague(string $useragent = null): Element
     {
         // 指定が無い場合はデフォルト値
         if (empty($useragent) === true)

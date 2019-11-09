@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,31 +10,34 @@
 
 namespace Citrus;
 
+/**
+ * オブジェクトアクセサ
+ */
 class Accessor
 {
     /**
-     * class vars getter
+     * オブジェクトプロパティ
      *
      * @return array
      */
     public function properties() : array
     {
-        return get_class_vars($this);
+        return get_object_vars($this);
     }
 
 
 
     /**
-     * general getter method
+     * 汎用ゲッター
      *
-     * @param string $key
-     * @return mixed
+     * @param string $key キー
+     * @return mixed|null
      */
     public function get(string $key)
     {
-        if (isset(self::$key) === true)
+        if (true === isset($this->$key))
         {
-            return self::$key;
+            return $this->$key;
         }
         return null;
     }
@@ -39,126 +45,122 @@ class Accessor
 
 
     /**
-     * general setter method
+     * 汎用セッター
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param string $key   キー
+     * @param mixed  $value 値
+     * @return void
      */
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
-        self::$key = $value;
+        $this->$key = $value;
     }
 
 
 
     /**
-     * general adder method
+     * 汎用アダー
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param string $key   キー
+     * @param mixed  $value 値
+     * @return void
      */
-    public function add(string $key, $value)
+    public function add(string $key, $value): void
     {
-        $add = &self::$key;
+        // 追加プロパティ
+        $target = &$this->$key;
+        if (true === is_null($target))
+        {
+            // 配列化
+            $target = [];
+            // 再起した方で追加処理する
+            $this->add($key, $value);
+            return;
+        }
 
-        if ($add == null)
-        {
-            if (is_array($value) === true)
-            {
-                $add = $value;
-            }
-            else
-            {
-                $add = [$value];
-            }
-        }
-        else if (is_array($add) === true)
-        {
-            if (is_array($value))
-            {
-                $add = $add + $value;
-            }
-            else
-            {
-                array_push($add, $value);
-            }
-        }
-        else if (is_array($add) === false)
-        {
-            $add = [$add, $value];
-        }
+        // 追加値が非配列であれば配列化
+        $value = (true === is_array($value) ? $value : [$value]);
+
+        // 足し算で追加
+        $target = ($target + $value);
     }
 
 
 
     /**
-     * general remover method
+     * 汎用リムーバー
      *
-     * @param array|string $key
+     * @param array|string $key 削除キー(配列なら複数削除)
+     * @return void
      */
-    public function remove($key)
+    public function remove($key): void
     {
-        if (is_array($key) === true)
+        // 配列なら再起
+        if (true === is_array($key))
         {
-            foreach ($key as $ky => $vl)
+            foreach ($key as $vl)
             {
-                self::$ky = null;
+                $this->remove($vl);
             }
         }
-        else
-        {
-            self::$key = null;
-        }
+
+        // null化して削除
+        $this->$key = null;
     }
 
 
 
     /**
-     * general bind method
+     * 配列の内容を配置する
      *
-     * @param array|null $array
+     * @param array|null $array 配置したい配列
+     * @return void
      */
-    public static function bind(array $array = null)
+    public function bind(array $array = null): void
     {
-        self::bindArray($array);
+        $this->bindArray($array);
     }
 
 
 
     /**
-     * general bind array method
+     * 配列の内容を配置する
      *
-     * @param array|null $array
+     * @param array|null $array 配置したい配列
+     * @return void
      */
-    public static function bindArray(array $array = null)
+    public function bindArray(array $array = null): void
     {
-        if (is_null($array) === true)
+        // nullはスルー
+        if (true === is_null($array))
         {
             return ;
         }
+
+        // 配置
         foreach ($array as $ky => $vl)
         {
-            self::$ky = $vl;
+            $this->$ky = $vl;
         }
     }
 
 
 
     /**
-     * general bind object method
+     * オブジェクトの内容を配置する
      *
-     * @param mixed|null $object
+     * @param mixed|null $object 配置したいオブジェクト
+     * @return void
      */
-    public function bindObject($object = null)
+    public function bindObject($object = null): void
     {
-        if (is_null($object) === true)
+        // nullはスルー
+        if (true === is_null($object))
         {
             return ;
         }
-        $array = get_object_vars($object);
-        foreach ($array as $ky => $vl)
-        {
-            self::$ky = $vl;
-        }
+
+        // 配列化して追加
+        $this->bindArray(get_object_vars($object));
     }
 }

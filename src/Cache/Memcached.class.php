@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -12,14 +15,13 @@ use Citrus\CitrusException;
 use Closure;
 use MemcachedException;
 
+/**
+ * Memcached接続
+ */
 class Memcached extends Deamon
 {
     /**
-     * connection
-     *
-     * @param string $host
-     * @param int $port
-     * @return mixed
+     * {@inheritDoc}
      */
     public function connect(string $host, int $port = 11211)
     {
@@ -30,7 +32,7 @@ class Memcached extends Deamon
 
 
     /**
-     * disconection
+     * {@inheritDoc}
      */
     public function disconnect()
     {

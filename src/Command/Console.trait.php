@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2019, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,6 +12,9 @@ namespace Citrus\Command;
 
 use Citrus\Command\Console\Decorate;
 
+/**
+ * コンソール処理
+ */
 trait Console
 {
     /**
@@ -76,7 +82,7 @@ trait Console
     /**
      * 成功時出力
      *
-     * @param string
+     * @param string $message メッセージ
      * @return void
      */
     public function success(string $message): void
@@ -95,7 +101,7 @@ trait Console
     /**
      * 失敗時出力
      *
-     * @param string
+     * @param string $message メッセージ
      * @return void
      */
     public function failure(string $message): void

@@ -118,7 +118,7 @@ class Page extends Struct
 
         // リソース配列用パス
         $resourceDocumentList = explode('_', str_replace('-', '_', $router->document));
-        $resourceList[] = $router->device;
+        $resourceList = [$router->device];
         foreach ($resourceDocumentList as $ky => $vl)
         {
             $resourceList[] = $vl;
@@ -172,7 +172,7 @@ class Page extends Struct
         $router = $router ?: Session::$router;
 
         $templateDocumentArray = explode('_', str_replace('-', '_', $router->document));
-        $templateArray[] = $router->device;
+        $templateArray = [$router->device];
         foreach ($templateDocumentArray as $templateDocument)
         {
             $templateArray[] = $templateDocument;
