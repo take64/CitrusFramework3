@@ -12,11 +12,13 @@
     }
   ],
   "bin": [
-    "src/bin/cf-migration"
+    "src/bin/cf-migration",
+    "src/bin/cf-integration"
   ],
   "autoload": {
     "psr-4": {
-      "Citrus\\": "src/"
+      "Citrus\\": "src/",
+      "Test\\": "tests/"
     }
   },
   "require-dev": {
@@ -24,6 +26,7 @@
     "ext-posix": "*"
   },
   "require": {
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "smarty/smarty": "^3.1"
   }
 }

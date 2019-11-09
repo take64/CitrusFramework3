@@ -82,9 +82,6 @@ class Configure
      */
     public static function initialize($path_configure)
     {
-        // init autoload
-        Autoloader::autoloadFramework();
-
         // framework initialize
         self::fremework();
 
@@ -93,9 +90,6 @@ class Configure
 
         // configure initialize
         self::configure($path_configure);
-
-        // init autoload
-        Autoloader::autoloadApplication();
     }
 
 
@@ -135,6 +129,9 @@ class Configure
         {
             return ;
         }
+
+        // 親参照指定を取り除く
+        $path_application_dir = Directory::suitablePath($path_application_dir . '/src');
 
         // directory
         self::$DIR_APP                  = $path_application_dir;
@@ -296,26 +293,6 @@ class Configure
             if (false === array_key_exists($key, $configure))
             {
                 throw new CitrusException(sprintf('設定ファイルに %s の設定が存在しません', $key));
-            }
-        }
-    }
-
-
-
-    /**
-     * ディレクトリチェック
-     *
-     * @param array    $configure    設定ファイル
-     * @param string[] $require_keys 必須キー配列
-     * @throws CitrusException
-     */
-    public static function directoryStringCheck(array $configure, array $require_keys)
-    {
-        foreach ($require_keys as $key)
-        {
-            if ('/' !== substr($configure[$key], -1, 1))
-            {
-                throw new CitrusException(sprintf('%s の末尾が / で終了していません', $key));
             }
         }
     }

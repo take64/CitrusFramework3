@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -11,6 +14,9 @@ use Citrus\Citrus;
 use Citrus\Configure;
 use Citrus\Struct;
 
+/**
+ * ページコード処理
+ */
 class Pagecode extends Struct
 {
     /** @var string html title */
@@ -68,52 +74,54 @@ class Pagecode extends Struct
      * add javascript
      *
      * @param string|string[] $javascript
+     * @return void
      */
-    public function addJavascript($javascript)
+    public function addJavascript($javascript): void
     {
-        if (is_array($javascript) === true)
+        // 配列の場合は再起する
+        if (true === is_array($javascript))
         {
             foreach ($javascript as $path)
             {
                 $this->addJavascript($path);
             }
+            return;
         }
-        else
+
+        // パスが絶対パスの場合
+        if (true === file_exists($javascript))
         {
-            // パスが絶対パスの場合
-            if (file_exists($javascript) === true)
-            {
-                $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $javascript);
-                $this->add('javascripts', $path);
-                return ;
-            }
-            // パスがベースディレクトリ以下指定の場合
-            $path = Configure::$CONFIGURE_ITEM->application->path . $javascript;
-            if (file_exists($path) === true) {
-                $this->add('javascripts', $javascript);
-                return;
-            }
-            // パスがライブラリの可能性
-            $path = Configure::$CONFIGURE_ITEM->paths->callJavascriptLibrary($javascript);
-            if (file_exists($path) === true)
-            {
-                $this->addJavascript($path);
-                return;
-            }
-            // パスが独自追加の場合
-            $path = Configure::$CONFIGURE_ITEM->paths->callJavascript($javascript);
-            if (file_exists($path) === true)
-            {
-                $this->addJavascript($path);
-                return;
-            }
-            // ページ用リソースの場合
-            $path = Configure::$CONFIGURE_ITEM->paths->callJavascript('/Page/' . $javascript);
-            if (file_exists($path) === true)
-            {
-                $this->addJavascript($path);
-                return;
-            }
+            $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $javascript);
+            $this->add('javascripts', $path);
+            return ;
+        }
+        // パスがベースディレクトリ以下指定の場合
+        $path = Configure::$CONFIGURE_ITEM->application->path . $javascript;
+        if (true === file_exists($path))
+        {
+            $this->add('javascripts', $javascript);
+            return;
+        }
+        // パスがライブラリの可能性
+        $path = Configure::$CONFIGURE_ITEM->paths->callJavascriptLibrary($javascript);
+        if (true === file_exists($path))
+        {
+            $this->addJavascript($path);
+            return;
+        }
+        // パスが独自追加の場合
+        $path = Configure::$CONFIGURE_ITEM->paths->callJavascript($javascript);
+        if (true === file_exists($path))
+        {
+            $this->addJavascript($path);
+            return;
+        }
+        // ページ用リソースの場合
+        $path = Configure::$CONFIGURE_ITEM->paths->callJavascript('/Page' . $javascript);
+        if (true === file_exists($path))
+        {
+            $this->addJavascript($path);
+            return;
         }
     }
 
@@ -123,44 +131,54 @@ class Pagecode extends Struct
      * add stylesheet
      *
      * @param string|string[] $stylesheet
+     * @return void
      */
-    public function addStylesheet($stylesheet)
+    public function addStylesheet($stylesheet): void
     {
-        if (is_array($stylesheet) === true) {
-            foreach ($stylesheet as $one) {
-                $this->addStylesheet($one);
-            }
-        } else {
-            // パスが絶対パスの場合
-            if (file_exists($stylesheet) === true) {
-                $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $stylesheet);
-                $this->add('stylesheets', $path);
-                return;
-            }
-            // パスがベースディレクトリ以下指定の場合
-            $path = Configure::$CONFIGURE_ITEM->application->path . $stylesheet;
-            if (file_exists($path) === true) {
-                $this->add('stylesheets', $stylesheet);
-                return;
-            }
-            // パスがライブラリの可能性
-            $path = Configure::$CONFIGURE_ITEM->paths->callStylesheetLibrary($stylesheet);
-            if (file_exists($path) === true) {
+        // 配列の場合は再起する
+        if (true === is_array($stylesheet))
+        {
+            foreach ($stylesheet as $path)
+            {
                 $this->addStylesheet($path);
-                return;
             }
-            // パスが独自追加の場合
-            $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet($stylesheet);
-            if (file_exists($path) === true) {
-                $this->addStylesheet($path);
-                return;
-            }
-            // ページ用リソースの場合
-            $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet('/Page/' . $stylesheet);
-            if (file_exists($path) === true) {
-                $this->addStylesheet($path);
-                return;
-            }
+            return;
+        }
+
+        // パスが絶対パスの場合
+        if (true === file_exists($stylesheet))
+        {
+            $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $stylesheet);
+            $this->add('stylesheets', $path);
+            return;
+        }
+        // パスがベースディレクトリ以下指定の場合
+        $path = Configure::$CONFIGURE_ITEM->application->path . $stylesheet;
+        if (true === file_exists($path))
+        {
+            $this->add('stylesheets', $stylesheet);
+            return;
+        }
+        // パスがライブラリの可能性
+        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheetLibrary($stylesheet);
+        if (true === file_exists($path))
+        {
+            $this->addStylesheet($path);
+            return;
+        }
+        // パスが独自追加の場合
+        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet($stylesheet);
+        if (true === file_exists($path))
+        {
+            $this->addStylesheet($path);
+            return;
+        }
+        // ページ用リソースの場合
+        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet('/Page' . $stylesheet);
+        if (true === file_exists($path))
+        {
+            $this->addStylesheet($path);
+            return;
         }
     }
 

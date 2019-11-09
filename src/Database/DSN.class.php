@@ -11,6 +11,18 @@ use Citrus\Struct;
 
 class DSN extends Struct
 {
+    /** @var string[] PostgreSQL */
+    public const TYPES_POSTGRESQL = [
+        'pgsql',
+        'postgres',
+        'postgresql',
+    ];
+
+    /** @var string[] SQLite */
+    public const TYPES_SQLITE = [
+        'sqlite',
+    ];
+
     /** @var string */
     public $type;
 
@@ -42,26 +54,24 @@ class DSN extends Struct
     public function toString()
     {
         $dsn = '';
-        switch ($this->type)
+
+        // PostgreSQL
+        if (true === $this->isPostgreSQL())
         {
-            case 'pgsql':
-            case 'postgres':
-            case 'postgresql':
-                // postgresql
-                $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s',
-                    $this->hostname,
-                    $this->port,
-                    $this->database
-                    );
-                break;
-            case 'sqlite':
-                // sqlite
-                $dsn = sprintf('sqlite:%s',
-                $this->hostname
-                    );
-                break;
-            default:
+            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s',
+                $this->hostname,
+                $this->port,
+                $this->database
+            );
         }
+        // SQLite
+        else if (true === $this->isSQLite())
+        {
+            $dsn = sprintf('sqlite:%s',
+                $this->hostname
+            );
+        }
+
         return $dsn;
     }
 
@@ -75,28 +85,50 @@ class DSN extends Struct
     public function toStringWithAuth()
     {
         $dsn = '';
-        switch ($this->type)
+
+        // PostgreSQL
+        if (true === $this->isPostgreSQL())
         {
-            case 'pgsql':
-            case 'postgres':
-            case 'postgresql':
-            // postgresql
-                $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;user=%s;password=%s',
-                    $this->hostname,
-                    $this->port,
-                    $this->database,
-                    $this->username,
-                    $this->password
-                );
-                break;
-            case 'sqlite':
-                // sqlite
-                $dsn = sprintf('sqlite:%s',
-                    $this->hostname
-                );
-                break;
-            default:
+            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;user=%s;password=%s',
+                $this->hostname,
+                $this->port,
+                $this->database,
+                $this->username,
+                $this->password
+            );
         }
+        // SQLite
+        else if (true === $this->isSQLite())
+        {
+            $dsn = sprintf('sqlite:%s',
+                $this->hostname
+            );
+        }
+
         return $dsn;
+    }
+
+
+
+    /**
+     * データベースタイプがPostgreSQLかどうか
+     *
+     * @return bool
+     */
+    public function isPostgreSQL()
+    {
+        return in_array($this->type, self::TYPES_POSTGRESQL, true);
+    }
+
+
+
+    /**
+     * データベースタイプがSQLiteかどうか
+     *
+     * @return bool
+     */
+    public function isSQLite()
+    {
+        return in_array($this->type, self::TYPES_SQLITE, true);
     }
 }

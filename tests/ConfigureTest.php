@@ -1,9 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 /**
- * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
+ * @copyright   Copyright 2019, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.citrus.tk/
  */
+
+namespace Test;
 
 use Citrus\CitrusException;
 use Citrus\Configure;
@@ -77,30 +82,6 @@ class ConfigureTest extends TestCase
         catch (CitrusException $e)
         {
             $this->assertSame('設定ファイルに owner の設定が存在しません', $e->getMessage());
-        }
-    }
-
-
-
-    /**
-     * @test
-     */
-    public function 設定キーのディレクトリチェック_文字列的に違う場合は例外()
-    {
-        // 設定
-        $configure = [
-            'output_dir' => '/Users/hogehoge/Workspace/.migration',
-        ];
-
-        try
-        {
-            Configure::directoryStringCheck($configure, [
-                'output_dir',
-            ]);
-        }
-        catch (CitrusException $e)
-        {
-            $this->assertSame('output_dir の末尾が / で終了していません', $e->getMessage());
         }
     }
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Citrus\Migration;
 
+use Citrus\CitrusException;
 use Citrus\Command\Console;
 use Citrus\Database\DSN;
 use Citrus\Struct;
@@ -68,7 +69,7 @@ SQL;
      * マイグレーションの正方向実行
      *
      * @param Item $item
-     * @throws \Exception
+     * @throws CitrusException
      */
     public function up(Item $item)
     {
@@ -226,16 +227,26 @@ SQL;
      *
      * @param string $version
      * @return bool
-     * @throws \Exception
+     * @throws CitrusException
      */
     private function registVersion(string $version): bool
     {
+        $now = null;
+        try
+        {
+            $now = (new \DateTime())->format('Y-m-d H:i:s T');
+        }
+        catch (\Exception $e)
+        {
+            throw CitrusException::convert($e);
+        }
+
         $query = 'INSERT INTO {SCHEMA}cf_migrations (version_code, migrated_at) VALUES (:version_code, :migrated_at);';
         $query = $this->replaceSchema($query);
         $statement = $this->handler->prepare($query);
         return $statement->execute([
             ':version_code' => $version,
-            ':migrated_at' => (new \DateTime())->format('Y-m-d H:i:s T'),
+            ':migrated_at' => $now,
         ]);
     }
 
@@ -267,6 +278,13 @@ SQL;
      */
     public function replaceSchema(string $query): string
     {
-        return str_replace('{SCHEMA}', $this->dsn->schema . '.', $query);
+        // スキーマに文字列があれば、ドットでつなぐ
+        $schema = $this->dsn->schema;
+        if (false === is_null($schema) && 0 < strlen($schema))
+        {
+            $schema .= '.';
+        }
+
+        return str_replace('{SCHEMA}', $schema, $query);
     }
 }

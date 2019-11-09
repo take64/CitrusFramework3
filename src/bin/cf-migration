@@ -7,11 +7,12 @@
  */
 /**
  * sample :
- *
-./bin/migration --directory=../medica6.project.tk --action=decoy
-./bin/migration --directory=../medica6.project.tk --action=generate --name=CreateTableActors
-./bin/migration --directory=../medica6.project.tk --action=up
-./bin/migration --directory=../medica6.project.tk --action=up --version=20170717031426
+ * ./vendor/bin/cf-migration --action=generate --name=CreateTableUsers
+ * ./vendor/bin/cf-migration --action=up
+ * ./vendor/bin/cf-migration --action=up --version=20191010235959
+ * ./vendor/bin/cf-migration --action=down
+ * ./vendor/bin/cf-migration --action=down --version=20191010235959
+ * ./vendor/bin/cf-migration --action=rebirth --version=20191010235959
  */
 
 // search directory

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,13 +10,13 @@
 
 namespace Citrus;
 
-use Citrus\Autoloader\AutoloaderException;
 use Citrus\Controller\Page;
 use Citrus\Document\Router;
 use Citrus\Http\Header;
-use Citrus\Sqlmap\SqlmapException;
-use Exception;
 
+/**
+ * ゲートウェイ処理
+ */
 class Gateway
 {
     /** @var string controller */
@@ -92,7 +95,6 @@ class Gateway
 
             // I have control
             $controller_namespace_class_name = $controller_namespace . '\\' . $controller_class_name;
-            spl_autoload_call($controller_namespace_class_name);
             /** @var Page $controller */
             $controller = new $controller_namespace_class_name();
             $controller->run();
@@ -100,7 +102,7 @@ class Gateway
             // save controller
             Session::commit();
         }
-        catch (AutoloaderException $e)
+        catch (\Exception $e)
         {
             // 404でリダイレクトの様に振る舞う
             Header::status404();
@@ -108,18 +110,6 @@ class Gateway
                 Configure::$CONFIGURE_ITEM->routing->error404
             );
             self::controller();
-        }
-        catch (AutoloaderException $e)
-        {
-            // 404でリダイレクトの様に振る舞う
-            Session::$router = Router::parseURL(
-                Configure::$CONFIGURE_ITEM->routing->error404
-            );
-            self::controller();
-        }
-        catch (AutoloaderException $e)
-        {
-            Logger::debug($e);
         }
     }
 
@@ -130,20 +120,20 @@ class Gateway
      */
     protected static function command()
     {
-        try
-        {
-            $command = Command::callCommand();
-            $command->before();
-            $command->execute();
-            $command->after();
-        }
-        catch (SqlmapException $e)
-        {
-            Logger::debug($e);
-        }
-        catch (AutoloaderException $e)
-        {
-            Logger::debug($e);
-        }
+//        try
+//        {
+//            $command = Command::callCommand();
+//            $command->before();
+//            $command->execute();
+//            $command->after();
+//        }
+//        catch (SqlmapException $e)
+//        {
+//            Logger::debug($e);
+//        }
+//        catch (AutoloaderException $e)
+//        {
+//            Logger::debug($e);
+//        }
     }
 }

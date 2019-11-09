@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -10,6 +13,9 @@ namespace Citrus;
 use Citrus\Document\Router;
 use Citrus\Session\Item;
 
+/**
+ * セッション処理
+ */
 class Session extends Struct
 {
     /** @var Item $_SESSION values 'data' -> 'element' */
@@ -113,6 +119,7 @@ class Session extends Struct
     public static function clear()
     {
         self::$session  = null;
+        session_unset();
     }
 
 
@@ -123,6 +130,7 @@ class Session extends Struct
     public static function commit()
     {
         $_SESSION['data'] = self::$session;
+        session_commit();
     }
 
 

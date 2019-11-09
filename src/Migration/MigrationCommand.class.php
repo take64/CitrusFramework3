@@ -26,7 +26,8 @@ class MigrationCommand extends Command
 
 
     /**
-     * コマンド実行
+     * {@inheritDoc}
+     *
      * @throws CitrusException
      */
     public function execute()

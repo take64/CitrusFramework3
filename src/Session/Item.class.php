@@ -140,7 +140,6 @@ class Item extends Struct
      */
     public function bindObject($object = null, $strict = false)
     {
-        var_dump($object);
         if (is_null($object) === true)
         {
             return ;

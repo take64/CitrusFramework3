@@ -1,22 +1,29 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2019, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.citrus.tk/
  */
 
+namespace Test;
+
 use Citrus\Citrus;
 use Citrus\CitrusException;
 use Citrus\Database\DSN;
 use Citrus\Migration;
-use Citrus\Migration\Item;
 use PHPUnit\Framework\TestCase;
+use Test\Sample\Citrus_20190101000000_CreateTableUsers;
 
 /**
  * マイグレーション処理のテスト
  */
 class MigrationTest extends TestCase
 {
+    use TestFile;
+
     /** @var string 出力ディレクトリ */
     private $output_dir;
 
@@ -62,22 +69,7 @@ class MigrationTest extends TestCase
         parent::tearDown();
 
         // ディレクトリがあったら削除
-        if (true === is_dir($this->output_dir))
-        {
-            // 内部ファイルも消す
-            $files = scandir($this->output_dir);
-            foreach ($files as $file)
-            {
-                $file_path = sprintf('%s/%s', $this->output_dir, $file);
-                if (true === is_file($file_path))
-                {
-                    unlink($file_path);
-                }
-            }
-
-            // ディレクトリを消す
-            rmdir($this->output_dir);
-        }
+        $this->forceRemove($this->output_dir);
     }
 
 
@@ -89,10 +81,7 @@ class MigrationTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        $migration = new Migration($this->configure);
-        Closure::bind(function () use ($migration) {
-            $migration->setupOutputDirectory();
-        }, $this, Migration::class)->__invoke();
+        (new Migration($this->configure));
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));
@@ -129,11 +118,10 @@ class MigrationTest extends TestCase
         // インスタンスの生成
         $migration = new Migration($this->configure);
         /** @var DSN $dsn */
-        $dsn = Closure::bind(function () use ($migration) {
-            return $migration->dsn;
-        }, $this, Migration::class)->__invoke();
+        $dsn = new DSN();
+        $dsn->bind($this->configure['database']);
         // 検算用PDO
-        $pdo = new PDO($dsn->toString());
+        $pdo = new \PDO($dsn->toString());
         // バージョンマネージャー
         $versionManager = new Migration\VersionManager($dsn);
 
@@ -141,7 +129,7 @@ class MigrationTest extends TestCase
         $query = 'SELECT user_id, name FROM users;';
 
         // マイグレーションの正方向実行
-        $migrationItem = new Citrus_20190101000000_CreateTableUsers($dsn);
+        $migrationItem = new Citrus_20190101000000_CreateTableUsers();
         $versionManager->up($migrationItem);
 
         // テーブル作成が成功していればSELECT文が発行できる
@@ -166,49 +154,12 @@ class MigrationTest extends TestCase
         // インスタンスの生成
         $migration = new Migration($this->configure);
         /** @var DSN $dsn */
-        $dsn = Closure::bind(function () use ($migration) {
-            return $migration->dsn;
-        }, $this, Migration::class)->__invoke();
+        $dsn = new DSN();
+        $dsn->bind($this->configure['database']);
 
         // マイグレーションアイテムの生成
-        $item = new Citrus_20190101000000_CreateTableUsers($dsn);
+        $item = new Citrus_20190101000000_CreateTableUsers();
         // 検算
         $this->assertSame('20190101000000', $item->version());
-    }
-}
-
-/**
- * テスト用マイグレーションクラス
- */
-class Citrus_20190101000000_CreateTableUsers extends Item
-{
-
-    /**
-     * migration up
-     *
-     * @return string
-     */
-    public function up(): string
-    {
-        return <<<SQL
-CREATE TABLE users (
-    `user_id` int NOT NULL,
-    `name` TEXT
-);
-SQL;
-    }
-
-
-
-    /**
-     * migration down
-     *
-     * @return string
-     */
-    public function down(): string
-    {
-        return <<<SQL
-DROP TABLE users;
-SQL;
     }
 }

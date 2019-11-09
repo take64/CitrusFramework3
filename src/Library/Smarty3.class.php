@@ -9,7 +9,6 @@ namespace Citrus\Library;
 
 use Citrus\Configure;
 
-include_once dirname(__FILE__) . '/smarty3/Smarty.class.php';
 
 class Smarty3 extends \Smarty
 {
