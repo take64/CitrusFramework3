@@ -52,7 +52,7 @@ class ColumnDef extends Struct
      * @param string|null $comment     コメント
      * @return self
      */
-    public static function forComment(string $column_name, string $comment): self
+    public static function forComment(string $column_name, string $comment = null): self
     {
         $column = new self();
         $column->column_name = $column_name;

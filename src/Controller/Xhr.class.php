@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,21 +10,24 @@
 
 namespace Citrus\Controller;
 
-use Citrus\Configure;
 use Citrus\CitrusException;
+use Citrus\Configure;
+use Citrus\Database\Column;
+use Citrus\Document\Pager;
 use Citrus\Formmap;
 use Citrus\Logger;
 use Citrus\Message;
+use Citrus\Message\Item;
 use Citrus\Service;
 use Citrus\Session;
-use Citrus\Database\Column;
-use Citrus\Document\Pager;
-use Citrus\Message\Item;
 use Citrus\Sqlmap\Condition;
 use Citrus\Sqlmap\SqlmapException;
 use Citrus\Xhr\Element;
 use Citrus\Xhr\Result;
 
+/**
+ * Xhr通信
+ */
 class Xhr
 {
     /** @var Formmap citrus formmap object */
@@ -100,8 +106,8 @@ class Xhr
             Message::addError($e->getMessage());
             $result = new Element();
             $message = '実行時エラーが検出されました。';
-            $result->exceptions = new CitrusException($message);
-            $result->messages = [ new Item($message, Item::TYPE_ERROR) ];
+            $result->exceptions = [new CitrusException($message)];
+            $result->messages = [new Item($message, Item::TYPE_ERROR)];
             $result->results = new Result();
             Logger::error($result);
             $response = $result;
