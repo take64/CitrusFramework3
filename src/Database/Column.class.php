@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,10 +12,13 @@ namespace Citrus\Database;
 
 use Citrus\Citrus;
 use Citrus\Configure;
-use Citrus\Struct;
 use Citrus\Database\Column\Base;
 use Citrus\Sqlmap\Condition;
+use Citrus\Struct;
 
+/**
+ * データベースカラム情報
+ */
 class Column extends Struct
 {
     use Base;
@@ -47,7 +53,7 @@ class Column extends Struct
         unset($properties['condition']);
         foreach ($properties as $ky => $vl)
         {
-            if (is_bool($vl) === true)
+            if (true === is_bool($vl))
             {
                 unset($properties[$ky]);
             }
@@ -89,7 +95,7 @@ class Column extends Struct
     /**
      * to condition
      *
-     * @return Column
+     * @return Condition
      */
     public function toCondition()
     {
@@ -113,7 +119,7 @@ class Column extends Struct
     /**
      * get condition
      *
-     * @return Column
+     * @return Condition
      */
     public function getCondition()
     {

@@ -35,7 +35,6 @@ trait Condition
      */
     public function __construct()
     {
-        parent::__construct();
         $properties = get_object_vars($this);
         foreach ($properties as $ky => $vl)
         {
