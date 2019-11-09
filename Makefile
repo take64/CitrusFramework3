@@ -1,6 +1,6 @@
 
 DATE=`date +%Y-%m-%d`
-DATETIME=`date +%Y-%m-%d_%H-%M-%S`
+DATETIME = `date +%Y-%m-%d_%H-%M-%S`
 
 .PHONY: test_all
 test_all:
@@ -20,3 +20,4 @@ composer_public:
 phan:
 	@mkdir -p ./phan/${DATE}
 	@phan-analyze --no-progress-bar --output ./phan/${DATE}/${DATETIME}.txt
+

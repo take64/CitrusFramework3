@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,6 +12,9 @@ namespace Citrus;
 
 use DOMNamedNodeMap;
 
+/**
+ * XML処理
+ */
 class Xml
 {
     /**
@@ -16,17 +22,13 @@ class Xml
      * $attribute 要素の $key 指定値を取得する。
      *
      * @param DOMNamedNodeMap $attributes
-     * @param string $key
+     * @param string          $key
      * @return string|null
      */
-    public static function getNamedItemValue(DOMNamedNodeMap $attributes, string $key)
+    public static function getNamedItemValue(DOMNamedNodeMap $attributes, string $key): ?string
     {
         $item = $attributes->getNamedItem($key);
-        $value = null;
-        if (isset($item) === true)
-        {
-            $value = $item->value;
-        }
+        $value = (false === is_null($item) ? $item->nodeValue : null);
         return $value;
     }
 
@@ -39,7 +41,7 @@ class Xml
      * @param DOMNamedNodeMap $attributes
      * @return array
      */
-    public static function toList(DOMNamedNodeMap $attributes)
+    public static function toList(DOMNamedNodeMap $attributes): array
     {
         $items = [];
         foreach ($attributes as $name => $attribute)
