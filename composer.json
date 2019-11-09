@@ -27,6 +27,8 @@
   },
   "require": {
     "ext-pdo": "*",
-    "smarty/smarty": "^3.1"
+    "smarty/smarty": "^3.1",
+    "ext-memcached": "*",
+    "ext-redis": "*"
   }
 }

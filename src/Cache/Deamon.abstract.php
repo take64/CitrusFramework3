@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,18 +10,14 @@
 
 namespace Citrus\Cache;
 
-use Memcached;
-use Redis;
-
 /**
- * Class CitrusCacheDeamon
  * サーバーデーモンタイプのキャッシュ
  *
  * @package Citrus\Cache
  */
 abstract class Deamon implements Engine
 {
-    /** @var Redis|Memcached handler */
+    /** @var \Redis|\Memcached handler */
     public $handler;
 
     /** @var string host */
@@ -60,11 +59,10 @@ abstract class Deamon implements Engine
 
 
     /**
-     * connection
+     * 接続
      *
-     * @param string $host
-     * @param int $port
-     * @return mixed
+     * @param string $host ホスト
+     * @param int    $port ポート
      */
     public abstract function connect(string $host, int $port);
 
