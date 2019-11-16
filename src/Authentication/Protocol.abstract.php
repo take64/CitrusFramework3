@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,6 +10,9 @@
 
 namespace Citrus\Authentication;
 
+/**
+ * 認証プロトコル
+ */
 abstract class Protocol
 {
     /**
@@ -15,7 +21,7 @@ abstract class Protocol
      * @param Item $item
      * @return bool ture:認証成功, false:認証失敗
      */
-    public abstract function authorize(Item $item) : bool;
+    abstract public function authorize(Item $item): bool;
 
 
     /**
@@ -23,7 +29,7 @@ abstract class Protocol
      *
      * @return bool ture:認証成功, false:認証失敗
      */
-    public abstract function deauthorize() : bool;
+    abstract public function deauthorize(): bool;
 
 
 
@@ -34,5 +40,5 @@ abstract class Protocol
      * @param Item|null $item
      * @return bool true:チェック成功, false:チェック失敗
      */
-    public abstract function isAuthenticated(Item $item = null) : bool;
+    abstract public function isAuthenticated(Item $item = null): bool;
 }

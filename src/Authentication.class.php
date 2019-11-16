@@ -47,8 +47,9 @@ class Authentication
      *
      * @param array $default_configure
      * @param array $configure_domain
+     * @return void
      */
-    public static function initialize(array $default_configure = [], array $configure_domain = [])
+    public static function initialize(array $default_configure = [], array $configure_domain = []): void
     {
         // is initialized
         if (self::$IS_INITIALIZED === true)
@@ -78,7 +79,7 @@ class Authentication
      * @param Item $item
      * @return bool ture:認証成功, false:認証失敗
      */
-    public static function authorize(Item $item) : bool
+    public static function authorize(Item $item): bool
     {
         if (is_null(self::$INSTANCE) === true)
         {
@@ -114,7 +115,7 @@ class Authentication
      * @param Item|null $item
      * @return bool true:チェック成功, false:チェック失敗
      */
-    public static function isAuthenticated(Item $item = null) : bool
+    public static function isAuthenticated(Item $item = null): bool
     {
         if (is_null(self::$INSTANCE) === true)
         {
@@ -134,7 +135,7 @@ class Authentication
      * @throws CitrusException
      * @throws SessionException
      */
-    public static function generateToken(string $key = null) : string
+    public static function generateToken(string $key = null): string
     {
         // セッションが無効 もしくは 存在しない場合
         if (Session::status() !== PHP_SESSION_ACTIVE)
@@ -162,7 +163,7 @@ class Authentication
      *
      * @return string
      */
-    public static function generateKeepAt() : string
+    public static function generateKeepAt(): string
     {
         return date('Y-m-d H:i:s', Citrus::$TIMESTAMP_INT + self::$KEEP_SECOND);
     }

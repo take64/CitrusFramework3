@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -13,6 +16,9 @@ use Citrus\Sqlmap\Condition;
 use Citrus\Sqlmap\Executor;
 use Citrus\Sqlmap\Statement;
 
+/**
+ * クエリビルダ
+ */
 class Builder
 {
     /** query type selct */
@@ -218,7 +224,7 @@ class Builder
             }
 
             $bind_ky = sprintf(':condition_%s', $ky);
-            $wheres[$ky] = sprintf('%s = %s', $ky, $bind_ky);;
+            $wheres[$ky] = sprintf('%s = %s', $ky, $bind_ky);
             $_parameters[$bind_ky] = $vl;
         }
 
@@ -299,19 +305,19 @@ class Builder
         switch ($this->query_type)
         {
             // select
-            case self::QUERY_TYPE_SELECT :
+            case self::QUERY_TYPE_SELECT:
                 $result = Executor::select($this->statement, $_parameters);
                 break;
             // insert
-            case self::QUERY_TYPE_INSERT :
+            case self::QUERY_TYPE_INSERT:
                 $result = Executor::insert($this->statement, $_parameters);
                 break;
             // update
-            case self::QUERY_TYPE_UPDATE :
+            case self::QUERY_TYPE_UPDATE:
                 $result = Executor::update($this->statement, $_parameters);
                 break;
             // delete
-            case self::QUERY_TYPE_DELETE :
+            case self::QUERY_TYPE_DELETE:
                 $result = Executor::delete($this->statement, $_parameters);
                 break;
             default:

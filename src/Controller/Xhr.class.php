@@ -348,9 +348,13 @@ class Xhr
             // modify
             foreach ($list as &$one)
             {
-                $one->remove(array('status', 'schema',
-                                   'resisted_at', 'modified_at',
-                                   'condition'));
+                $one->remove([
+                    'status',
+                    'schema',
+                    'resisted_at',
+                    'modified_at',
+                    'condition',
+                    ]);
                 $one->null2blank();
             }
         }

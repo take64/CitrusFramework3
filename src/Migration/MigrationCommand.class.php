@@ -30,7 +30,7 @@ class MigrationCommand extends Command
      *
      * @throws CitrusException
      */
-    public function execute()
+    public function execute(): void
     {
         parent::execute();
 

@@ -48,8 +48,10 @@ class VersionManager extends Struct
 
     /**
      * マイグレーションのセットアップ
+     *
+     * @return void
      */
-    public function setupMigration()
+    public function setupMigration(): void
     {
         // マイグレーション管理テーブルの生成
         $query = <<<SQL
@@ -69,9 +71,10 @@ SQL;
      * マイグレーションの正方向実行
      *
      * @param Item $item
+     * @return void
      * @throws CitrusException
      */
-    public function up(Item $item)
+    public function up(Item $item): void
     {
         // バージョン
         $version = $item->version();
@@ -116,8 +119,9 @@ SQL;
      * マイグレーションの逆方向実行
      *
      * @param Item $item
+     * @return void
      */
-    public function down(Item $item)
+    public function down(Item $item): void
     {
         // バージョン
         $version = $item->version();

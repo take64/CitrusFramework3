@@ -20,14 +20,14 @@ abstract class Item
     /**
      * migration.sh up
      */
-    public abstract function up();
+    abstract public function up();
 
 
 
     /**
      * migration.sh down
      */
-    public abstract function down();
+    abstract public function down();
 
 
 

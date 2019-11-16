@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,6 +12,9 @@ namespace Citrus;
 
 use Citrus\Message\Item;
 
+/**
+ * メッセージ処理
+ */
 class Message extends Accessor
 {
     /** messages key */
@@ -419,7 +425,7 @@ class Message extends Accessor
         // タグにマッチするメッセージの削除
         foreach ($items as $ky => $item)
         {
-            if ($item->tag == $tag)
+            if ($item->tag === $tag)
             {
                 unset($items[$ky]);
             }

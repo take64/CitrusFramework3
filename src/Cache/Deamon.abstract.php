@@ -64,14 +64,14 @@ abstract class Deamon implements Engine
      * @param string $host ホスト
      * @param int    $port ポート
      */
-    public abstract function connect(string $host, int $port);
+    abstract public function connect(string $host, int $port);
 
 
 
     /**
      * disconection
      */
-    public abstract function disconnect();
+    abstract public function disconnect();
 
 
 

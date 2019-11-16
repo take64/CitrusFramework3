@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -10,6 +13,9 @@ namespace Citrus\Sqlmap;
 use Citrus\Xml;
 use DOMNamedNodeMap;
 
+/**
+ * Sqlmapステートメント
+ */
 class Statement
 {
     /** @var string element id */
@@ -55,15 +61,15 @@ class Statement
      * statement parameter getter
      * statement パラメータ格納方法取得
      *
-     * @return null|string
+     * @return string|null
      */
     public function getParameter()
     {
-        if (is_null($this->parameter_class) === false)
+        if (false === is_null($this->parameter_class))
         {
             return $this->parameter_class;
         }
-        else if (is_null($this->parameter_map) === false)
+        if (false === is_null($this->parameter_map))
         {
             return $this->parameter_map;
         }
@@ -76,15 +82,15 @@ class Statement
      * statement result getter
      * statement 結果格納方法取得
      *
-     * @return null|string
+     * @return string|null
      */
     public function getResult()
     {
-        if (is_null($this->result_class) === false)
+        if (false === is_null($this->result_class))
         {
             return $this->result_class;
         }
-        else if (is_null($this->result_map) === false)
+        if (false === is_null($this->result_map))
         {
             return $this->result_map;
         }
