@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,95 +10,67 @@
 
 namespace Citrus;
 
+use Citrus\Configure\Configurable;
+use Citrus\Configure\ConfigureException;
 use Citrus\Logger\Cloudwatch;
 use Citrus\Logger\File;
 use Citrus\Logger\Level;
 use Citrus\Logger\Syslog;
 use Citrus\Logger\LogType;
 
-class Logger
+/**
+ * ログ処理
+ */
+class Logger extends Configurable
 {
-    /** logger type file */
+    use Singleton;
+
+    /** @var string logger type file */
     const LOG_TYPE_FILE = 'file';
 
-    /** logger type php syslog */
+    /** @var string logger type php syslog */
     const LOG_TYPE_SYSLOG = 'syslog';
 
-    /** logger type cloudwatch */
+    /** @var string logger type cloudwatch */
     const LOG_TYPE_CLOUDWATCH = 'cloudwatch';
 
-    /** CitrusConfigureキー */
-    const CONFIGURE_KEY = 'logger';
-
-
-
-    /** @var string log level */
-    public static $LOG_LEVEL = Level::DEBUG;
-
-    /** @var bool log display */
-    public static $LOG_DISPLAY = false;
-
-    /** @var LogType */
-    protected static $INSTANCE = null;
-
-    /** @var bool is initialized */
-    public static $IS_INITIALIZED = false;
+    /** @var LogType ログタイプ別のインスタンス */
+    public $logType;
 
 
 
     /**
-     * initialize logger
+     * 初期化
      *
-     * @param array $default_configure
-     * @param array $configure_domain
-     * @return LogType
+     * @param array $configures 設定配列
+     * @return void
+     * @throws ConfigureException|\Exception
      */
-    public static function initialize($default_configure = [], $configure_domain = []) : LogType
+    public static function initialize(array $configures = []): void
     {
-        // is initialized
-        if (self::$IS_INITIALIZED === true)
-        {
-            return self::$INSTANCE;
-        }
+        /** @var Logger $logger インスタンス */
+        $logger = self::getInstance();
+        // 設定読み込み
+        $logger->loadConfigures($configures);
 
-        // configure
-        $configure = Configure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
-
-        // log type select
-        $type = $configure['type'];
-
-        // log level
-        $level = NVL::ArrayVL($configure, 'level', Level::DEBUG);
-        if (in_array($level, Level::$LEVELS, true) === true)
-        {
-            self::$LOG_LEVEL = $level;
-        }
-
-        // logger instance
-        switch ($type)
+        // タイプによって生成インスタンスを分ける
+        switch ($logger->configures['type'])
         {
             // file
-            case self::LOG_TYPE_FILE :
-                self::$INSTANCE = new File($configure);
+            case self::LOG_TYPE_FILE:
+                $logger->logType = new File($logger->configures);
                 break;
             // syslog
-            case self::LOG_TYPE_SYSLOG :
-                self::$INSTANCE = new Syslog($configure);
+            case self::LOG_TYPE_SYSLOG:
+                $logger->logType = new Syslog($logger->configures);
                 break;
-            // syslog
-            case self::LOG_TYPE_CLOUDWATCH :
-                self::$INSTANCE = new Cloudwatch($configure);
+            // AWS CloudWatch
+            case self::LOG_TYPE_CLOUDWATCH:
+                $logger->logType = new Cloudwatch($logger->configures);
                 break;
             default:
+                throw new \Exception('Loggerの生成に失敗しました');
         }
-
-        // display
-        self::$LOG_DISPLAY = NVL::NVL($configure['display'], false);
-
-        // initialized
-        self::$IS_INITIALIZED = true;
-
-        return self::$INSTANCE;
     }
 
 
@@ -107,7 +82,7 @@ class Logger
      */
     public static function trace($value)
     {
-        self::output(Level::TRACE, $value, func_get_args());
+        self::getInstance()->output(Level::TRACE, $value, func_get_args());
     }
 
 
@@ -119,7 +94,7 @@ class Logger
      */
     public static function debug($value)
     {
-        self::output(Level::DEBUG, $value, func_get_args());
+        self::getInstance()->output(Level::DEBUG, $value, func_get_args());
     }
 
 
@@ -131,7 +106,7 @@ class Logger
      */
     public static function info($value)
     {
-        self::output(Level::INFO, $value, func_get_args());
+        self::getInstance()->output(Level::INFO, $value, func_get_args());
     }
 
 
@@ -143,7 +118,7 @@ class Logger
      */
     public static function warn($value)
     {
-        self::output(Level::WARNING, $value, func_get_args());
+        self::getInstance()->output(Level::WARNING, $value, func_get_args());
     }
 
 
@@ -155,7 +130,7 @@ class Logger
      */
     public static function error($value)
     {
-        self::output(Level::ERROR, $value, func_get_args());
+        self::getInstance()->output(Level::ERROR, $value, func_get_args());
     }
 
 
@@ -167,7 +142,7 @@ class Logger
      */
     public static function fatal($value)
     {
-        self::output(Level::FATAL, $value, func_get_args());
+        self::getInstance()->output(Level::FATAL, $value, func_get_args());
     }
 
 
@@ -178,20 +153,21 @@ class Logger
      * @param string $level  ログレベル
      * @param mixed  $value  ログの内容
      * @param array  $params パラメータ
+     * @return void
      */
-    public static function output(string $level, $value, array $params)
+    public function output(string $level, $value, array $params): void
     {
         // ログレベルによる出力許容チェック
-        if (false === self::isOutputLevel($level))
+        if (false === self::isOutputableLevel($level))
         {
-            return ;
+            return;
         }
 
         // params
         array_shift($params);
 
         // display
-        if (true === self::$LOG_DISPLAY)
+        if (true === $this->configures['display'])
         {
             $display_value = $value;
             if (true === is_string($value))
@@ -205,10 +181,7 @@ class Logger
             ]);
 
         }
-        if (false === is_null(self::$INSTANCE))
-        {
-            self::$INSTANCE->output($level, $value, $params);
-        }
+        $this->logType->output($level, $value, $params);
     }
 
 
@@ -216,14 +189,83 @@ class Logger
     /**
      * コンフィグ設定で指定されたログを出力するレベルか判定する
      *
-     * @param string $level
+     * @param string $level ログレベル
      * @return bool
      */
-    private static function isOutputLevel(string $level)
+    public function isOutputableLevel(string $level): bool
     {
-        $configure_level_index = array_search(self::$LOG_LEVEL, Level::$LEVELS, true);
+        // 出力設定のログレベル
+        $configure_level_index = array_search($this->configures['level'], Level::$LEVELS, true);
+        // 出力しようとしているログレベル
         $target_level_index = array_search($level, Level::$LEVELS, true);
-
+        // 出力設定のログレベル <= 出力しようとしているログレベル
         return ($configure_level_index <= $target_level_index);
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'logger';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        // ロガータイプ
+        $type = ($this->configures['type'] ?? null);
+
+        // 共通
+        $defaults = [
+            'level'   => Level::INFO,
+            'display' => false,
+        ];
+
+        // ファイルの場合
+        if (self::LOG_TYPE_FILE === $type)
+        {
+            $defaults += [
+                'owner' => posix_getpwuid(posix_geteuid())['name'],
+                'group' => posix_getgrgid(posix_getegid())['name'],
+            ];
+        }
+
+        return $defaults;
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        // ロガータイプ
+        $type = ($this->configures['type'] ?? null);
+
+        // 共通
+        $requires = [
+            'type',
+        ];
+
+        // ファイルの場合
+        if (self::LOG_TYPE_FILE === $type)
+        {
+            $requires += [
+                'directory',
+                'filename',
+                'owner',
+                'group',
+            ];
+        }
+
+        return $requires;
     }
 }

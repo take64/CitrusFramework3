@@ -10,20 +10,24 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+/**
+ * シングルトン
+ */
 trait Singleton
 {
+    private static $singleton;
+
     /**
      * call singleton instance
      *
      * @return self
      */
-    private static function callSingleton()
+    public static function getInstance(): self
     {
-        static $singleton;
-        if (is_null($singleton) === true)
+        if (true === is_null(static::$singleton))
         {
-            $singleton = new static();
+            static::$singleton = new static();
         }
-        return $singleton;
+        return static::$singleton;
     }
 }

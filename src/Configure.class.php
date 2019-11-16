@@ -237,7 +237,7 @@ class Configure
         Message::initialize($default_configure, $configures[$domain]);
 
         // ロガー処理
-        Logger::initialize($default_configure, self::$CONFIGURE_PLAIN_DOMAIN);
+        Logger::initialize(include($path_configure));
     }
 
 

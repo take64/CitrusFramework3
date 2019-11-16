@@ -13,7 +13,7 @@ namespace Citrus\Logger;
 use Citrus\Struct;
 
 /**
- * ファイルタイプのロガー
+ * ファイル出力ロガー
  */
 class File extends Struct implements LogType
 {
