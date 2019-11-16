@@ -90,7 +90,7 @@ return [
             'namespace' => 'CitronIssue',
         ],
     ],
-    'hoge.example.com' => [
+    'example.com' => [
         'application' => [
             'name'      => 'CitrusFramework Console.',
             'copyright' => 'Copyright 2019 CitrusFramework System, All Rights Reserved.',
@@ -98,7 +98,7 @@ return [
         ],
         'logger' => [
             'directory' => $dir_base . '/log',
-            'filename'  => 'hoge.example.com.system_log',
+            'filename'  => '/hoge.example.com.system_log',
             'level'     => 'debug',
             'display'   => false,
             'owner'     => posix_getpwuid(posix_geteuid())['name'],
