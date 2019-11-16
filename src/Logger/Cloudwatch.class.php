@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -10,6 +13,10 @@ namespace Citrus\Logger;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Citrus\Struct;
 
+
+/**
+ * CloudWatch出力ロガー
+ */
 class Cloudwatch extends Struct implements LogType
 {
     /** @var \Citrus\Aws\Cloudwatch クラウドウォッチ */
