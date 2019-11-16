@@ -26,7 +26,7 @@ class GenerateCommand extends Command
     /**
      * {@inheritDoc}
      */
-    public function execute()
+    public function execute(): void
     {
         parent::execute();
 

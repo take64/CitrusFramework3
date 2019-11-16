@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2018, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,6 +10,9 @@
 
 namespace Citrus;
 
+/**
+ * AWS処理用クラス
+ */
 class Aws
 {
     /** CitrusConfigureキー */
@@ -21,8 +27,10 @@ class Aws
 
     /**
      * initialize
+     *
+     * @return void
      */
-    public static function initialize()
+    public static function initialize(): void
     {
         // is initialize
         if (self::$IS_INITIALIZED === true)

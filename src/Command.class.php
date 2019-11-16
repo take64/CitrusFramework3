@@ -31,8 +31,10 @@ class Command extends Struct
 
     /**
      * コマンドライン引数のパース処理
+     *
+     * @return void
      */
-    public function options()
+    public function options(): void
     {
         // コマンドライン引数がなければ処理スキップ
         if (0 === count($this->options))
@@ -47,8 +49,10 @@ class Command extends Struct
 
     /**
      * コマンド実行処理
+     *
+     * @return void
      */
-    public function execute()
+    public function execute(): void
     {
 
     }
@@ -57,8 +61,10 @@ class Command extends Struct
 
     /**
      * コマンド実行前処理
+     *
+     * @return void
      */
-    public function before()
+    public function before(): void
     {
 
     }
@@ -67,8 +73,10 @@ class Command extends Struct
 
     /**
      * コマンド実行後処理
+     *
+     * @return void
      */
-    public function after()
+    public function after(): void
     {
 
     }
@@ -82,7 +90,7 @@ class Command extends Struct
      * @param string|null $default デフォルト値
      * @return string|null パラメータ値
      */
-    public function parameter(string $key, string $default = null): ?string
+    public function parameter(string $key, ?string $default = null): ?string
     {
         return ($this->parameters[$key] ?? $default);
     }

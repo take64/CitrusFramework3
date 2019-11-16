@@ -21,3 +21,7 @@ phan:
 	@mkdir -p ./phan/${DATE}
 	@phan-analyze --no-progress-bar --output ./phan/${DATE}/${DATETIME}.txt
 
+.PHONY: insights
+insights:
+	@./vendor/bin/phpinsights analyse ./src
+

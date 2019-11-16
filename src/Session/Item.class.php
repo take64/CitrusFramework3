@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,6 +12,9 @@ namespace Citrus\Session;
 
 use Citrus\Struct;
 
+/**
+ * セッションアイテム
+ */
 class Item extends Struct
 {
     /**
@@ -19,7 +25,7 @@ class Item extends Struct
     public function __construct($session = null)
     {
         // is null
-        if (is_null($session) === true)
+        if (true === is_null($session))
         {
             return ;
         }
@@ -28,7 +34,7 @@ class Item extends Struct
         {
             $this->bind($session->properties());
         }
-        else if (is_array($session) === true)
+        else if (true === is_array($session))
         {
             foreach ($session as $ky => $vl)
             {
@@ -43,8 +49,9 @@ class Item extends Struct
      * session value parse method
      *
      * @param Item $element
+     * @return void
      */
-    public function parseItem(Item $element)
+    public function parseItem(Item $element): void
     {
         $this->bindObject($element);
     }
@@ -56,8 +63,9 @@ class Item extends Struct
      *
      * @param string $key
      * @param Struct $value
+     * @return void
      */
-    public function regist(string $key, $value)
+    public function regist(string $key, $value): void
     {
         $this->$key = serialize($value);
     }
@@ -72,7 +80,7 @@ class Item extends Struct
      */
     public function call(string $key)
     {
-        if (isset($this->$key) === true)
+        if (true === isset($this->$key))
         {
             return unserialize($this->$key);
         }
@@ -103,9 +111,10 @@ class Item extends Struct
      * general bind method
      *
      * @param array|null $array
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bind(array $array = null, bool $strict = false)
+    public function bind(?array $array = null, ?bool $strict = false): void
     {
         $this->bindArray($array, $strict);
     }
@@ -116,11 +125,12 @@ class Item extends Struct
      * general bind array method
      *
      * @param array|null $array
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bindArray(array $array = null, bool $strict = false)
+    public function bindArray(?array $array = null, ?bool $strict = false): void
     {
-        if (is_null($array) === true)
+        if (true === is_null($array))
         {
             return ;
         }
@@ -136,11 +146,12 @@ class Item extends Struct
      * general bind object method
      *
      * @param mixed|null $object
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bindObject($object = null, $strict = false)
+    public function bindObject($object = null, ?bool $strict = false): void
     {
-        if (is_null($object) === true)
+        if (true === is_null($object))
         {
             return ;
         }

@@ -100,7 +100,7 @@ class Session extends Struct
         session_start();
 
         // save old session data
-        self::$session  = new Item(isset($_SESSION['data']) ? $_SESSION['data'] : null);
+        self::$session  = new Item($_SESSION['data'] ?? null);
         self::$getdata  = new Item($_GET);
         self::$postdata = new Item($_POST);
         self::$filedata = new Item($_FILES);

@@ -35,7 +35,6 @@ COMMENT ON COLUMN users.token IS 'アクセストークン';
 
 ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY (user_id);
 CREATE INDEX IF NOT EXISTS idx_users_user_id_token ON users (user_id, token);
- *
  */
 class Database extends Protocol
 {
@@ -81,7 +80,7 @@ class Database extends Protocol
         $condition = new Item();
         $condition->rowid = $result[0]->rowid;
         $condition->rev = $result[0]->rev;
-        $result = (new Builder())->update($table_name, $item, $condition)->execute();
+        (new Builder())->update($table_name, $item, $condition)->execute();
         Session::$session->regist(Authentication::SESSION_KEY, $item);
         Session::commit();
 
@@ -126,7 +125,7 @@ class Database extends Protocol
             return false;
         }
         // ユーザーIDとトークン、認証期間があるか
-        if (empty($item->user_id) === true || empty($item->token) === true || empty($item->keep_at) === true)
+        if (true === is_null($item->user_id) or true === is_null($item->token) or true === is_null($item->keep_at))
         {
             Logger::debug('ログアウト:ユーザIDが無い(user_id=%s)、もしくはトークンが無い(token=%s)、もしくはタイムアウト(keep_at=%s)',
                 $item->user_id,

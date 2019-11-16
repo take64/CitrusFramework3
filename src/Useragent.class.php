@@ -58,18 +58,10 @@ class Useragent
     public static function vague(string $useragent = null): Element
     {
         // 指定が無い場合はデフォルト値
-        if (empty($useragent) === true)
+        if (true === is_null($useragent))
         {
-            if (isset($_SERVER['HTTP_USER_AGENT']) === true)
-            {
-                $useragent = $_SERVER['HTTP_USER_AGENT'];
-            }
-            else
-            {
-                $useragent = null;
-            }
+            $useragent = trim($_SERVER['HTTP_USER_AGENT'] ?? '');
         }
-        $useragent = trim($useragent);
 
         // element
         $element = new Element();

@@ -7,6 +7,7 @@
 
 namespace Citrus;
 
+use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Item;
 use Citrus\Document\Router;
 
@@ -158,8 +159,9 @@ class Configure
      * configure initialize
      *
      * @param string $path_configure
+     * @return void
      */
-    public static function configure(string $path_configure)
+    public static function configure(string $path_configure): void
     {
         // is initialized
         if (self::$IS_INITIALIZED_CONFIGURE === true)
@@ -248,7 +250,7 @@ class Configure
      * @param array|null $configure_addition 設定(追加設定)
      * @return array
      */
-    public static function configureMerge(string $configure_key, array $configure_default = null, array $configure_addition = null)
+    public static function configureMerge(string $configure_key, array $configure_default = null, array $configure_addition = null): array
     {
         // デフォルト設定
         $configure_default  = NVL::coalesceEmpty($configure_default, Configure::$CONFIGURE_PLAIN_DEFAULT);
@@ -284,15 +286,16 @@ class Configure
      *
      * @param array    $configure    設定ファイル
      * @param string[] $require_keys 必須キー配列
+     * @return void
      * @throws CitrusException
      */
-    public static function requireCheck(array $configure, array $require_keys)
+    public static function requireCheck(array $configure, array $require_keys): void
     {
         foreach ($require_keys as $key)
         {
             if (false === array_key_exists($key, $configure))
             {
-                throw new CitrusException(sprintf('設定ファイルに %s の設定が存在しません', $key));
+                throw new ConfigureException(sprintf('設定ファイルに %s の設定が存在しません', $key));
             }
         }
     }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -14,6 +17,9 @@ use DOMElement;
 use DOMXPath;
 use DOMNodeList;
 
+/**
+ * Sqlmapパーサー
+ */
 class Parser
 {
     /** @var DOMDocument dom document */
@@ -335,14 +341,7 @@ class Parser
         return $dynamic;
     }
 
-    /**
-     *
-     * @access  public
-     * @since   0.0.1.1 2012.02.06
-     * @version 0.0.1.1 2012.02.06
-     * @param   DOMElement  $element
-     * @return  Dynamic
-     */
+
 
     /**
      * isEqual element node parser
@@ -576,6 +575,7 @@ class Parser
             else if ($item->nodeName == '#comment')
             {
                 // 処理なし
+                continue;
             }
             else
             {

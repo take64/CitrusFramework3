@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,6 +10,9 @@
 
 namespace Citrus;
 
+/**
+ * 共通オブジェクト
+ */
 class Struct
 {
     /**
@@ -123,7 +129,7 @@ class Struct
 
         if ($add == null)
         {
-            if (is_array($value) === true)
+            if (true === is_array($value))
             {
                 $add = $value;
             }
@@ -132,11 +138,11 @@ class Struct
                 $add = [$value];
             }
         }
-        else if (is_array($add) === true)
+        else if (true === is_array($add))
         {
-            if (is_array($value))
+            if (true === is_array($value))
             {
-                $add = $add + $value;
+                $add += $value;
             }
             else
             {
@@ -205,9 +211,10 @@ class Struct
      * general bind method
      *
      * @param array|null $array
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bind(array $array = null, bool $strict = false)
+    public function bind(?array $array = null, ?bool $strict = false): void
     {
         $this->bindArray($array, $strict);
     }
@@ -218,9 +225,10 @@ class Struct
      * general bind array method
      *
      * @param array|null $array
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bindArray(array $array = null, bool $strict = false)
+    public function bindArray(?array $array = null, ?bool $strict = false): void
     {
         if (is_null($array) === true)
         {
@@ -238,9 +246,10 @@ class Struct
      * general bind object method
      *
      * @param mixed|null $object
-     * @param bool       $strict
+     * @param bool|null  $strict
+     * @return void
      */
-    public function bindObject($object = null, $strict = false)
+    public function bindObject($object = null, ?bool $strict = false): void
     {
         if (is_null($object) === true)
         {

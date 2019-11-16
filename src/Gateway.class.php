@@ -43,13 +43,13 @@ class Gateway
         foreach ($_REQUEST as &$one) { $one = str_replace($search, $replace, $one); }
 
         // logic selecter
-        if ($type == self::TYPE_CONTROLLER)
+        if (self::TYPE_CONTROLLER === $type)
         {
             // セッション処理開始
             Session::factory(true);
             self::controller();
         }
-        else if ($type == self::TYPE_COMMAND)
+        else if (self::TYPE_COMMAND === $type)
         {
             // セッション処理開始
             Session::part();
