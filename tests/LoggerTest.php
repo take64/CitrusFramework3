@@ -35,10 +35,7 @@ class LoggerTest extends TestCase
     {
         parent::setUp();
 
-        // 設定ファイル
-        $configures = require(dirname(__DIR__). '/tests/citrus-configure.php');
-        // 初期化
-        Logger::initialize($configures);
+        // ロガー初期化はbootstrapでしている
         $this->logger = Logger::getInstance();
     }
 

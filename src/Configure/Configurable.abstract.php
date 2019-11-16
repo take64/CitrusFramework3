@@ -154,7 +154,6 @@ abstract class Configurable
         {
             if (false === array_key_exists($key, $configures))
             {
-                var_dump($key);
                 throw new ConfigureException(sprintf('設定ファイルに %s の設定が存在しません', $key));
             }
         }

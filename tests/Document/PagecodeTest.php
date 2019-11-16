@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Test\Document;
 
-use Citrus\CitrusException;
 use Citrus\Configure;
 use Citrus\Document\Pagecode;
 use Citrus\Session;
@@ -58,7 +57,6 @@ class PagecodeTest extends TestCase
 
     /**
      * @test
-     * @throws CitrusException
      */
     public function リソースパス設定_Javascript()
     {
@@ -92,7 +90,6 @@ class PagecodeTest extends TestCase
 
     /**
      * @test
-     * @throws CitrusException
      */
     public function リソースパス設定_Styleseet()
     {
