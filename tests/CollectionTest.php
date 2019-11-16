@@ -53,7 +53,7 @@ class CollectionTest extends TestCase
         ];
 
         // いい感じのマージ
-        $actual = Collection::goodMerge($array1, $array2);
+        $actual = Collection::betterMerge($array1, $array2);
 
         // 検算
         $this->assertSame($expected, $actual);

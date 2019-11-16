@@ -22,20 +22,15 @@ class Collection
      * @param array $array2
      * @return array
      */
-    public static function goodMerge(array $array1, array $array2): array
+    public static function betterMerge(array $array1, array $array2): array
     {
         foreach ($array2 as $ky => $vl)
         {
-            // 配列である
-            if (true === is_array($vl))
-            {
-                $array1[$ky] = self::goodMerge($array1[$ky], $array2[$ky]);
-            }
-            // 普通の値
-            else
-            {
-                $array1[$ky] = $array2[$ky];
-            }
+            $array1[$ky] = (
+                true === is_array($vl)
+                    ? self::betterMerge($array1[$ky], $array2[$ky]) // 配列の場合
+                    : $array2[$ky]                                  // 配列以外の場合
+            );
         }
 
         return $array1;
