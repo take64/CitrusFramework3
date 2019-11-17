@@ -79,10 +79,11 @@ abstract class Configurable
             $domains = ($configures[$this->domainCode()][$this->configureKey()] ?? []);
         }
 
-        // 設定値のいい感じのマージ
-        $this->configures = Collection::betterMerge($defaults, $domains);
-        // デフォルト値を設定する
-        $this->configures = Collection::betterMerge($this->configures, $this->configureDefaults());
+        // デフォルトに、ドメイン設定、デフォルト設定をマージする
+        $this->configures = Collection::stream($defaults)
+            ->betterMerge($domains)
+            ->betterMerge($this->configureDefaults())
+            ->toList();
 
         // 設定値チェック
         $this->validation();

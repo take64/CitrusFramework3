@@ -53,7 +53,7 @@ class CollectionTest extends TestCase
         ];
 
         // いい感じのマージ
-        $actual = Collection::betterMerge($array1, $array2);
+        $actual = Collection::stream($array1)->betterMerge($array2)->toList();
 
         // 検算
         $this->assertSame($expected, $actual);
@@ -80,9 +80,9 @@ class CollectionTest extends TestCase
             'd' => 4,
         ];
         // 検算
-        $this->assertSame($expected1, Collection::filter($values, function ($ky, $vl) {
+        $this->assertSame($expected1, Collection::stream($values)->filter(function ($ky, $vl) {
             return ('c' !== $ky);
-        }));
+        })->toList());
 
         // 値「2」を超えるものだけ残す
         $expected2 = [
@@ -90,8 +90,8 @@ class CollectionTest extends TestCase
             'd' => 4,
         ];
         // 検算
-        $this->assertSame($expected2, Collection::filter($values, function ($ky, $vl) {
+        $this->assertSame($expected2, Collection::stream($values)->filter(function ($ky, $vl) {
             return (2 < $vl);
-        }));
+        })->toList());
     }
 }
