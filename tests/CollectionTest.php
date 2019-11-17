@@ -21,7 +21,7 @@ class CollectionTest extends TestCase
     /**
      * @test
      */
-    public function 両方の要素を残したいい感じの配列マージ()
+    public function betterMerge_両方の要素を残したいい感じの配列マージ()
     {
         $array1 = [
             'a' => 1,
@@ -57,5 +57,41 @@ class CollectionTest extends TestCase
 
         // 検算
         $this->assertSame($expected, $actual);
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function filter_指定データのみ残した配列生成()
+    {
+        $values = [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            'd' => 4,
+        ];
+
+        // キー「c」以外を残す
+        $expected1 = [
+            'a' => 1,
+            'b' => 2,
+            'd' => 4,
+        ];
+        // 検算
+        $this->assertSame($expected1, Collection::filter($values, function ($ky, $vl) {
+            return ('c' !== $ky);
+        }));
+
+        // 値「2」を超えるものだけ残す
+        $expected2 = [
+            'c' => 3,
+            'd' => 4,
+        ];
+        // 検算
+        $this->assertSame($expected2, Collection::filter($values, function ($ky, $vl) {
+            return (2 < $vl);
+        }));
     }
 }
