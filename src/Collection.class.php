@@ -35,4 +35,26 @@ class Collection
 
         return $array1;
     }
+
+
+
+    /**
+     * Closureがtrueの場合に配列要素を残す
+     *
+     * @param array    $values
+     * @param \Closure $closure
+     * @return array
+     */
+    public static function filter(array $values, \Closure $closure): array
+    {
+        $results = [];
+        foreach ($values as $ky => $vl)
+        {
+            if (true === $closure($ky, $vl))
+            {
+                $results[$ky] = $vl;
+            }
+        }
+        return $results;
+    }
 }
