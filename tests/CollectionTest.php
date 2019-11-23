@@ -124,4 +124,31 @@ class CollectionTest extends TestCase
             return null;
         })->toList());
     }
+
+
+
+    /**
+     * @test
+     */
+    public function map_データ編集して配列生成()
+    {
+        $values = [
+            1,
+            2,
+            3,
+            4,
+        ];
+
+        // 全部1を足す
+        $expected = [
+            (1 + 1),
+            (2 + 1),
+            (3 + 1),
+            (4 + 1),
+        ];
+        // 検算
+        $this->assertSame($expected, Collection::stream($values)->map(function ($ky, $vl) {
+            return ($vl + 1);
+        })->toList());
+    }
 }

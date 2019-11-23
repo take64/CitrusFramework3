@@ -135,6 +135,24 @@ class Collection
         }
         $this->source = $results;
         return $this;
+    }
 
+
+
+    /**
+     * callable関数で編集した内容を積んでいく
+     *
+     * @param callable $callable
+     * @return self
+     */
+    public function map(callable $callable): self
+    {
+        $results = [];
+        foreach ($this->source as $ky => $vl)
+        {
+            $results[] = $callable($ky, $vl);
+        }
+        $this->source = $results;
+        return $this;
     }
 }
