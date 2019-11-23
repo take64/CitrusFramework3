@@ -10,9 +10,14 @@ endef
 test_all:
 	@./vendor/bin/phpunit
 
+.PHONY: composer_reload
+composer_reload:
+	@composer clear-cache
+	@composer dump-autoload
+
 .PHONY: composer_develop
 composer_develop:
-	@composer update -vvv --dev --prefer-dist --optimize-autoloader
+	@composer install -vvv --dev --prefer-dist --optimize-autoloader
 
 .PHONY: composer_public
 composer_public:
