@@ -59,7 +59,7 @@ class Formmap
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // configure
@@ -84,7 +84,7 @@ class Formmap
         // bad request
         if (is_null($path) === true)
         {
-            return ;
+            return;
         }
 
         // parse xml formmap
@@ -95,14 +95,14 @@ class Formmap
             $path = sprintf('%s/%s', Configure::$DIR_BUSINESS_FORMMAP, basename($path));
             if (file_exists($path) === false)
             {
-                return ;
+                return;
             }
         }
 
         // 多重読み込み防止
         if (in_array($path, $this->loaded_files) === true)
         {
-            return ;
+            return;
         }
 
         // load formmap
@@ -166,7 +166,7 @@ class Formmap
         // 多重バインド防止
         if ($this->is_bound === true && $force === false)
         {
-            return ;
+            return;
         }
 
         $request_list = Session::$request->properties()

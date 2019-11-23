@@ -54,7 +54,7 @@ class Authentication
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // 認証設定

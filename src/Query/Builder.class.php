@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Citrus\Query;
 
-use Citrus\NVL;
 use Citrus\Database\Column;
+use Citrus\NVL;
 use Citrus\Sqlmap\Condition;
 use Citrus\Sqlmap\Executor;
 use Citrus\Sqlmap\Statement;
@@ -21,6 +21,8 @@ use Citrus\Sqlmap\Statement;
  */
 class Builder
 {
+    use Optimize;
+
     /** query type selct */
     const QUERY_TYPE_SELECT = 'select';
 
@@ -167,8 +169,8 @@ class Builder
         $query = sprintf('INSERT INTO %s.%s (%s) VALUES (%s);',
             $value->schema,
             $table_name,
-            implode(',' , array_keys($columns)),
-            implode(',' , array_values($columns))
+            implode(',', array_keys($columns)),
+            implode(',', array_values($columns))
             );
 
         $this->statement->query = $query;
@@ -232,8 +234,8 @@ class Builder
         $query = sprintf('UPDATE %s.%s SET %s WHERE %s;',
             $value->schema,
             $table_name,
-            implode(', ' , array_values($columns)),
-            implode(' AND ' , array_values($wheres))
+            implode(', ', array_values($columns)),
+            implode(' AND ', array_values($wheres))
         );
 
         $this->statement->query = $query;
@@ -279,7 +281,7 @@ class Builder
         $query = sprintf('DELETE FROM %s.%s WHERE %s;',
             $condition->schema,
             $table_name,
-            implode(',' , array_values($wheres))
+            implode(',', array_values($wheres))
         );
 
         $this->statement->query = $query;
@@ -324,37 +326,5 @@ class Builder
         }
 
         return $result;
-    }
-
-
-
-    /**
-     * クエリに定義されていないパラメータを消す
-     *
-     * @param string     $query
-     * @param array|null $parameters
-     * @return array
-     */
-    public static function optimizeParameter(string $query, array $parameters = null) : array
-    {
-        // パラメータがなければスルー
-        if (is_null($parameters) === true)
-        {
-            return $parameters;
-        }
-
-        // conditionの削除
-        unset($parameters[':condition']);
-
-        // パラメータの最適化
-        foreach ($parameters as $ky => $vl)
-        {
-            if (strpos($query, $ky) === false)
-            {
-                unset($parameters[$ky]);
-            }
-        }
-
-        return $parameters;
     }
 }

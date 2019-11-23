@@ -300,9 +300,9 @@ EOT;
 
 EOT;
             // 置換
-            $property = str_replace('{#class_name#}',   $data_type,     $property);
-            $property = str_replace('{#comment#}',      $comment,       $property);
-            $property = str_replace('{#property_name#}',$property_name, $property);
+            $property = str_replace('{#class_name#}', $data_type, $property);
+            $property = str_replace('{#comment#}', $comment, $property);
+            $property = str_replace('{#property_name#}', $property_name, $property);
             $properties[] = $property;
         }
 

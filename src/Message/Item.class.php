@@ -59,7 +59,7 @@ class Item
         // 内容がなければ無効
         if (is_null($description) === true)
         {
-            return ;
+            return;
         }
 
         // date

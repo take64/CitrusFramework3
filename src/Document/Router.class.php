@@ -66,7 +66,7 @@ class Router extends Struct
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // デバイス一覧

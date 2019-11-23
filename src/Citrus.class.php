@@ -43,7 +43,7 @@ class Citrus
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         $base_path = dirname(__FILE__);
@@ -54,10 +54,10 @@ class Citrus
 
         // timestamp
         self::$TIMESTAMP_INT    = $_SERVER['REQUEST_TIME'];
-        self::$TIMESTAMP_CHAR14 = date('YmdHis',      self::$TIMESTAMP_INT);
+        self::$TIMESTAMP_CHAR14 = date('YmdHis', self::$TIMESTAMP_INT);
         self::$TIMESTAMP_FORMAT = date('Y-m-d H:i:s', self::$TIMESTAMP_INT);
         // date
-        self::$DATE_CHAR8       = date('Ymd',   self::$TIMESTAMP_INT);
+        self::$DATE_CHAR8       = date('Ymd', self::$TIMESTAMP_INT);
         self::$DATE_FORMAT      = date('Y-m-d', self::$TIMESTAMP_INT);
 
         // initialized

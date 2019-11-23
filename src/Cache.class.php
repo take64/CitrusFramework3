@@ -44,7 +44,7 @@ class Cache
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // configure
@@ -53,7 +53,7 @@ class Cache
         // configure empty
         if (empty($configure) === true)
         {
-            return ;
+            return;
         }
 
         // cache engine type select

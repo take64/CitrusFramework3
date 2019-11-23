@@ -73,11 +73,11 @@ class Parser
         $nodeList = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']");
         if ($nodeList->length == 0)
         {
-            trigger_error(sprintf('Warning: Undefined SQLMAP transaction "%s" in %s', $id, $path),E_USER_WARNING);
+            trigger_error(sprintf('Warning: Undefined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
         }
         else if ($nodeList->length > 1)
         {
-            trigger_error(sprintf('Warning: Duplicate defined SQLMAP transaction "%s" in %s', $id, $path),E_USER_WARNING);
+            trigger_error(sprintf('Warning: Duplicate defined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
         }
         $element = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']")->item(0);
 

@@ -510,7 +510,7 @@ class Element extends Struct
         // null return
         if (is_null($result) === true)
         {
-            return ;
+            return;
         }
 
         // convert

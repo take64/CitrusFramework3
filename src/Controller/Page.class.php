@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 namespace Citrus\Controller;
 
-use Citrus\Configure;
 use Citrus\CitrusException;
-use Citrus\Formmap;
-use Citrus\Message;
-use Citrus\Session;
+use Citrus\Configure;
 use Citrus\Document\Pagecode;
 use Citrus\Document\Router;
+use Citrus\Formmap;
 use Citrus\Http\Header;
 use Citrus\Library\Smarty3;
+use Citrus\Message;
+use Citrus\Session;
 use Citrus\Struct;
 use Exception;
 use Smarty_Internal_Template;
@@ -37,8 +37,12 @@ class Page extends Struct
     /** @var Formmap */
     protected $formmap = null;
 
+
+
     /**
      * controller run
+     *
+     * @throws CitrusException
      */
     public function run()
     {
@@ -79,10 +83,10 @@ class Page extends Struct
             // テンプレート当て込み
             $this->callSmarty()->assign('router', Session::$router);
             $this->callSmarty()->assign('pagecode', $this->callPagecode());
-            $this->callSmarty()->assign('formmap',  $this->callFormmap());
-            $this->callSmarty()->assign('errors',   Message::popErrors());
+            $this->callSmarty()->assign('formmap', $this->callFormmap());
+            $this->callSmarty()->assign('errors', Message::popErrors());
             $this->callSmarty()->assign('messages', Message::popMessages());
-            $this->callSmarty()->assign('successes',Message::popSuccesses());
+            $this->callSmarty()->assign('successes', Message::popSuccesses());
 
             // セッションのコミット
             Session::commit();
@@ -108,64 +112,11 @@ class Page extends Struct
 
 
     /**
-     * リソース読み込み
-     *
-     * @param Router|null $router
-     */
-    private function loadResource(Router $router = null)
-    {
-        $router = $router ?: Session::$router;
-
-        // リソース配列用パス
-        $resourceDocumentList = explode('_', str_replace('-', '_', $router->document));
-        $resourceList = [$router->device];
-        foreach ($resourceDocumentList as $ky => $vl)
-        {
-            $resourceList[] = $vl;
-        }
-        $resourceList[] = $router->action;
-        foreach ($resourceList as $ky => $vl)
-        {
-            $resourceList[$ky] = ucfirst(strtolower($vl));
-        }
-
-        // stylesheet, javascript
-        $resourceAppendedList = [];
-        foreach ($resourceList as $ky => $vl)
-        {
-            $resourceAppendedList[] = $vl;
-            $path = '/' . implode('/', $resourceAppendedList);
-            $this->callPagecode()->addStylesheet($path . '.css');
-            $this->callPagecode()->addJavascript($path . '.js');
-        }
-
-        // プラグイン
-        $this->callSmarty()->addPluginsDir([Configure::$CONFIGURE_ITEM->paths->callTemplate('/Plug')]);
-    }
-
-
-
-    /**
-     * テンプレート読み込み
-     *
-     * @param Router|null $router
-     * @throws CitrusException
-     */
-    private function loadTemplate(Router $router = null)
-    {
-        $router = $router ?: Session::$router;
-
-        self::displayTemplate($this->callSmarty(), $router);
-    }
-
-
-
-    /**
      * テンプレート読み込んで表示
      *
      * @param Smarty_Internal_Template|Smarty3|null $template
      * @param Router|null     $router
-     * @throws CitrusException
+     * @throws CitrusException|\SmartyException
      */
     public static function displayTemplate($template, Router $router = null)
     {
@@ -192,6 +143,7 @@ class Page extends Struct
         }
         $template->display($template_path);
     }
+
 
 
     /**
@@ -280,5 +232,58 @@ class Page extends Struct
             $this->smarty = new Smarty3();
         }
         return $this->smarty;
+    }
+
+
+
+    /**
+     * リソース読み込み
+     *
+     * @param Router|null $router
+     */
+    private function loadResource(Router $router = null)
+    {
+        $router = $router ?: Session::$router;
+
+        // リソース配列用パス
+        $resourceDocumentList = explode('_', str_replace('-', '_', $router->document));
+        $resourceList = [$router->device];
+        foreach ($resourceDocumentList as $ky => $vl)
+        {
+            $resourceList[] = $vl;
+        }
+        $resourceList[] = $router->action;
+        foreach ($resourceList as $ky => $vl)
+        {
+            $resourceList[$ky] = ucfirst(strtolower($vl));
+        }
+
+        // stylesheet, javascript
+        $resourceAppendedList = [];
+        foreach ($resourceList as $ky => $vl)
+        {
+            $resourceAppendedList[] = $vl;
+            $path = '/' . implode('/', $resourceAppendedList);
+            $this->callPagecode()->addStylesheet($path . '.css');
+            $this->callPagecode()->addJavascript($path . '.js');
+        }
+
+        // プラグイン
+        $this->callSmarty()->addPluginsDir([Configure::$CONFIGURE_ITEM->paths->callTemplate('/Plug')]);
+    }
+
+
+
+    /**
+     * テンプレート読み込み
+     *
+     * @param Router|null $router
+     * @throws CitrusException|\SmartyException
+     */
+    private function loadTemplate(Router $router = null)
+    {
+        $router = $router ?: Session::$router;
+
+        self::displayTemplate($this->callSmarty(), $router);
     }
 }

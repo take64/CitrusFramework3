@@ -61,8 +61,7 @@ CREATE TABLE IF NOT EXISTS {SCHEMA}cf_migrations (
     PRIMARY KEY (version_code)
 );
 SQL;
-        $query = $this->replaceSchema($query);
-        $this->handler->query($query);
+        self::executeQuery($query);
     }
 
 
@@ -163,6 +162,25 @@ SQL;
 
 
     /**
+     * スキーマ指定の置換
+     *
+     * @param string $query 置換対象文字列
+     * @return string 置換済み文字列
+     */
+    public function replaceSchema(string $query): string
+    {
+        // スキーマに文字列があれば、ドットでつなぐ
+        $schema = $this->dsn->schema;
+        if (false === is_null($schema) && 0 < strlen($schema))
+        {
+            $schema .= '.';
+        }
+        return str_replace('{SCHEMA}', $schema, $query);
+    }
+
+
+
+    /**
      * 指定のバージョンの正方向実行が可能か
      *
      * @param string $version
@@ -207,6 +225,25 @@ SQL;
 
 
     /**
+     * プリペアクエリの実行
+     *
+     * @param string $query      実行したいクエリー
+     * @param array  $parameters パラメータ
+     * @return \PDOStatement|null
+     */
+    private function prepareQuery(string $query, array $parameters): ?\PDOStatement
+    {
+        // スキーマ置換
+        $query = $this->replaceSchema($query);
+        // プリペア実行
+        $statement = $this->handler->prepare($query);
+        $result = $statement->execute($parameters);
+        return (true === $result ? $statement : null);
+    }
+
+
+
+    /**
      * 指定のバージョンの実行ログが存在するか
      *
      * @param string $version チェックしたいバージョン
@@ -214,12 +251,13 @@ SQL;
      */
     private function existVersion(string $version): bool
     {
-        $query = 'SELECT * FROM {SCHEMA}cf_migrations WHERE version_code = :version_code;';
-        $query = $this->replaceSchema($query);
-        $statement = $this->handler->prepare($query);
-        $statement->execute([
+        $statement = self::prepareQuery('SELECT * FROM {SCHEMA}cf_migrations WHERE version_code = :version_code;', [
             ':version_code' => $version,
         ]);
+        if (true === is_null($statement))
+        {
+            return false;
+        }
         // 件数が0を超える場合、対象バージョンが存在する
         return (0 < count($statement->fetchAll(PDO::FETCH_ASSOC)) ? true : false);
     }
@@ -230,10 +268,10 @@ SQL;
      * バージョン情報の登録
      *
      * @param string $version
-     * @return bool
+     * @return void
      * @throws CitrusException
      */
-    private function registVersion(string $version): bool
+    private function registVersion(string $version): void
     {
         $now = null;
         try
@@ -244,11 +282,7 @@ SQL;
         {
             throw CitrusException::convert($e);
         }
-
-        $query = 'INSERT INTO {SCHEMA}cf_migrations (version_code, migrated_at) VALUES (:version_code, :migrated_at);';
-        $query = $this->replaceSchema($query);
-        $statement = $this->handler->prepare($query);
-        return $statement->execute([
+        self::prepareQuery('INSERT INTO {SCHEMA}cf_migrations (version_code, migrated_at) VALUES (:version_code, :migrated_at);', [
             ':version_code' => $version,
             ':migrated_at' => $now,
         ]);
@@ -260,35 +294,12 @@ SQL;
      * バージョン情報の削除
      *
      * @param string $version
-     * @return bool
+     * @return void
      */
-    private function removeVersion(string $version): bool
+    private function removeVersion(string $version): void
     {
-        $query = 'DELETE FROM {SCHEMA}cf_migrations WHERE version_code = :version_code;';
-        $query = $this->replaceSchema($query);
-        $statement = $this->handler->prepare($query);
-        return $statement->execute([
+        self::prepareQuery('DELETE FROM {SCHEMA}cf_migrations WHERE version_code = :version_code;', [
             ':version_code' => $version,
         ]);
-    }
-
-
-
-    /**
-     * スキーマ指定の置換
-     *
-     * @param string $query 置換対象文字列
-     * @return string 置換済み文字列
-     */
-    public function replaceSchema(string $query): string
-    {
-        // スキーマに文字列があれば、ドットでつなぐ
-        $schema = $this->dsn->schema;
-        if (false === is_null($schema) && 0 < strlen($schema))
-        {
-            $schema .= '.';
-        }
-
-        return str_replace('{SCHEMA}', $schema, $query);
     }
 }

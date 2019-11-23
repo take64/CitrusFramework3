@@ -103,7 +103,7 @@ class Configure
         // is initialized
         if (self::$IS_INITIALIZED_FRAMEWORK === true)
         {
-            return ;
+            return;
         }
 
         // path framework
@@ -128,7 +128,7 @@ class Configure
         // is initialized
         if (self::$IS_INITIALIZED_DIRECTORY === true)
         {
-            return ;
+            return;
         }
 
         // 親参照指定を取り除く
@@ -166,7 +166,7 @@ class Configure
         // is initialized
         if (self::$IS_INITIALIZED_CONFIGURE === true)
         {
-            return ;
+            return;
         }
 
         // 設定の読み込み

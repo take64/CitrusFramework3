@@ -12,8 +12,8 @@ namespace Citrus\Authentication;
 
 use Citrus\Authentication;
 use Citrus\Logger;
-use Citrus\Session;
 use Citrus\Query\Builder;
+use Citrus\Session;
 
 /**
  * このモジュールを利用する場合は以下の構成のテーブルが必要です

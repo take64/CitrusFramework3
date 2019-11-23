@@ -134,7 +134,7 @@ class Accessor
         // nullはスルー
         if (true === is_null($array))
         {
-            return ;
+            return;
         }
 
         // 配置
@@ -157,7 +157,7 @@ class Accessor
         // nullはスルー
         if (true === is_null($object))
         {
-            return ;
+            return;
         }
 
         // 配列化して追加
