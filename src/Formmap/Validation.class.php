@@ -56,26 +56,21 @@ class Validation
     {
         // 入力がある場合のみチェックする。
         // null もしくは 空文字 はスルー
-        if (true === is_null($element->value) or '' === $element->value)
+        if (true === is_null($element->value) or '' === $element->value or true === is_null($element->max))
         {
             return true;
         }
 
         // 入力値チェック
-        $result = true;
-        if (false === is_null($element->max))
+        if (true === in_array($element->var_type, [ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC], true))
         {
-            // numeric
-            if (true === in_array($element->var_type, [ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC], true))
-            {
-                $result = self::numericMax($element);
-            }
-            else if (ElementType::VAR_TYPE_STRING === $element->var_type)
-            {
-                $result = self::lengthMax($element);
-            }
+            return  self::numericMax($element);
         }
-        return $result;
+        else if (ElementType::VAR_TYPE_STRING === $element->var_type)
+        {
+            return  self::lengthMax($element);
+        }
+        return true;
     }
 
 
@@ -90,26 +85,21 @@ class Validation
     {
         // 入力がある場合のみチェックする。
         // null もしくは 空文字 はスルー
-        if (true === is_null($element->value) or '' === $element->value)
+        if (true === is_null($element->value) or '' === $element->value or true === is_null($element->min))
         {
             return true;
         }
 
         // 入力値チェック
-        $result = true;
-        if (false === is_null($element->min))
+        if (true === in_array($element->var_type, [ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC], true))
         {
-            // numeric
-            if (true === in_array($element->var_type, [ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC], true))
-            {
-                $result = self::numericMin($element);
-            }
-            else if (ElementType::VAR_TYPE_STRING === $element->var_type)
-            {
-                $result = self::lengthMin($element);
-            }
+            return self::numericMin($element);
         }
-        return $result;
+        else if (ElementType::VAR_TYPE_STRING === $element->var_type)
+        {
+            return self::lengthMin($element);
+        }
+        return true;
     }
 
 
@@ -122,17 +112,13 @@ class Validation
      */
     public static function numericMax(Element $element): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if ($element->value > $element->max)
         {
             $element->addError(sprintf('「%s」には「%s」以下の値を入力してください。', $element->name, $element->max));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -145,17 +131,13 @@ class Validation
      */
     public static function numericMin(Element $element): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if ($element->value < $element->min)
         {
             $element->addError(sprintf('「%s」には「%s」以上の値を入力してください。', $element->name, $element->min));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -168,18 +150,14 @@ class Validation
      */
     public static function lengthMax(Element $element): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         $length = mb_strwidth($element->value, 'UTF-8');
         if ($length > $element->max)
         {
             $element->addError(sprintf('「%s」には「%s」文字以下で入力してください。', $element->name, $element->max));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -192,18 +170,14 @@ class Validation
      */
     public static function lengthMin(Element $element): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         $length = mb_strwidth($element->value, 'UTF-8');
         if ($length < $element->min)
         {
             $element->addError(sprintf('「%s」には「%s」文字以上で入力してください。', $element->name, $element->min));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -306,18 +280,13 @@ class Validation
      */
     public static function varTypeInt(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeInt($element, $one);
-                if (false === $result)
+                if (false === self::varTypeInt($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
@@ -326,20 +295,19 @@ class Validation
             0 === preg_match('/^-?[0-9]*$/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には整数を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (PHP_INT_MAX <= $filtered_value)
         {
             $element->addError(sprintf('「%s」には「%s」以下の値を入力してください。', $element->name, PHP_INT_MAX));
-            $result = false;
+            return false;
         }
         else if (PHP_INT_MIN >= $filtered_value)
         {
             $element->addError(sprintf('「%s」には「%s」以上の値を入力してください。', $element->name, PHP_INT_MIN));
-            $result = false;
+            return false;
         }
-
-        return $result;
+        return true;
     }
 
 
@@ -353,28 +321,22 @@ class Validation
      */
     public static function varTypeFloat(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeFloat($element, $one);
-                if (false === $result)
+                if (false === self::varTypeFloat($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_float($filtered_value))
         {
             $element->addError(sprintf('「%s」には少数を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
-
-        return $result;
+        return true;
     }
 
 
@@ -388,28 +350,22 @@ class Validation
      */
     public static function varTypeNumeric(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeNumeric($element, $one);
-                if (false === $result)
+                if (false === self::varTypeNumeric($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_numeric($filtered_value))
         {
             $element->addError(sprintf('「%s」には数字を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
-
-        return $result;
+        return true;
     }
 
 
@@ -423,33 +379,27 @@ class Validation
      */
     public static function varTypeAlphabet(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeAlphabet($element, $one);
-                if (false === $result)
+                if (false === self::varTypeAlphabet($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^[a-zA-Z]/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には半角英字を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
-
-        return $result;
+        return true;
     }
 
 
@@ -463,33 +413,28 @@ class Validation
      */
     public static function varTypeAlphanumeric(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeAlphanumeric($element, $one);
-                if (false === $result)
+                if (false === self::varTypeAlphanumeric($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^[a-zA-Z0-9_.]/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には半角英数字を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -503,33 +448,28 @@ class Validation
      */
     public static function varTypeANMarks(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeANMarks($element, $one);
-                if (false === $result)
+                if (false === self::varTypeANMarks($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^[a-zA-Z0-9_.%&#-]/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には半角英数字および記号を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -552,7 +492,7 @@ class Validation
             foreach ($filtered_value as $one)
             {
                 $result = self::varTypeDate($element, $one);
-                if ($result === false)
+                if (fasle === $result)
                 {
                     break;
                 }
@@ -560,7 +500,7 @@ class Validation
         }
         else if (false === strtotime($filtered_value))
         {
-            $result = false;
+            return false;
         }
         else
         {
@@ -593,33 +533,28 @@ class Validation
      */
     public static function varTypeTime(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeTime($element, $one);
-                if (false === $result)
+                if (false === self::varTypeTime($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^[0-9]{2}:[0-5][0-9]:?([0-5][0-9])+?/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には時分秒または時分を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -633,33 +568,28 @@ class Validation
      */
     public static function varTypeDatetime(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeDatetime($element, $one);
-                if (false === $result)
+                if (false === self::varTypeDatetime($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (false === strtotime($filtered_value))
         {
             $element->addError(sprintf('「%s」には年月日時分秒を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -673,33 +603,28 @@ class Validation
      */
     public static function varTypeTel(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeTel($element, $one);
-                if ($result === false)
+                if (false === self::varTypeTel($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^[0-9]{2,3}-[0-9]{1,4}-[0-9]{2,4}$/', $filtered_value))
         {
             $element->addError(sprintf('「%s」には電話番号を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
 
@@ -713,32 +638,27 @@ class Validation
      */
     public static function varTypeEmail(Element $element, $filtered_value): bool
     {
-        // 結果
-        $result = true;
-
-        // 検証
         if (true === is_array($filtered_value))
         {
             foreach ($filtered_value as $one)
             {
-                $result = self::varTypeEmail($element, $one);
-                if ($result === false)
+                if (false === self::varTypeEmail($element, $one))
                 {
-                    break;
+                    return false;
                 }
             }
         }
         else if (false === is_string($filtered_value))
         {
             $element->addError(sprintf('「%s」には文字列を入力してください。', $element->name));
-            $result = false;
+            return false;
         }
         else if (0 === preg_match('/^([*+!.&#$|\'\\%\/0-9a-z^_`{}=?> :-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})$/i', $filtered_value))
         {
             $element->addError(sprintf('「%s」にはメールアドレスを入力してください。', $element->name));
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 }
