@@ -145,7 +145,7 @@ class Element extends Struct
     /** @var int validate min */
     public $min;
 
-    /** @var int property key */
+    /** @var string property key */
     public $property;
 
     /** @var string[] filters  */

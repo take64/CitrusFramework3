@@ -62,7 +62,7 @@ class Item extends Struct
      * session value regist method
      *
      * @param string $key
-     * @param Struct $value
+     * @param mixed  $value
      * @return void
      */
     public function regist(string $key, $value): void
