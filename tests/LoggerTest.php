@@ -12,7 +12,6 @@ namespace Test;
 
 use Citrus\Configure\ConfigureException;
 use Citrus\Logger;
-use Citrus\Logger\LogType;
 use PHPUnit\Framework\TestCase;
 
 /**
