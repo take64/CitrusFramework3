@@ -12,6 +12,7 @@ namespace Citrus\Controller;
 
 use Citrus\CitrusException;
 use Citrus\Configure;
+use Citrus\Configure\ConfigureException;
 use Citrus\Document\Pagecode;
 use Citrus\Document\Router;
 use Citrus\Formmap;
@@ -207,13 +208,14 @@ class Page extends Struct
      * call formmap element
      *
      * @return Formmap
+     * @throws ConfigureException
      */
     protected function callFormmap() : Formmap
     {
-        if (is_null($this->formmap) === true)
+        if (true === is_null($this->formmap))
         {
-            Formmap::initialize(Configure::$CONFIGURE_PLAIN_DEFAULT, Configure::$CONFIGURE_PLAIN_DOMAIN);
-            $this->formmap = new Formmap();
+            $this->formmap = Formmap::getInstance()
+                ->loadConfigures(Configure::$CONFIGURES);
         }
         return $this->formmap;
     }

@@ -12,6 +12,7 @@ namespace Citrus\Controller;
 
 use Citrus\CitrusException;
 use Citrus\Configure;
+use Citrus\Configure\ConfigureException;
 use Citrus\Database\Column;
 use Citrus\Document\Pager;
 use Citrus\Formmap;
@@ -155,13 +156,14 @@ class Xhr
      * call formmap element
      *
      * @return Formmap
+     * @throws ConfigureException
      */
     protected function callFormmap() : Formmap
     {
         if (is_null($this->formmap) === true)
         {
-            Formmap::initialize(Configure::$CONFIGURE_PLAIN_DEFAULT, Configure::$CONFIGURE_PLAIN_DOMAIN);
-            $this->formmap = new Formmap();
+            $this->formmap = Formmap::getInstance()
+                ->loadConfigures(Configure::$CONFIGURES);
         }
         return $this->formmap;
     }
