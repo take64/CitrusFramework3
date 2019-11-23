@@ -13,6 +13,7 @@ namespace Citrus;
 use Citrus\Configure\Configurable;
 use Citrus\Formmap\Button;
 use Citrus\Formmap\Element;
+use Citrus\Formmap\ElementType;
 use Citrus\Formmap\FormmapException;
 use Citrus\Formmap\Hidden;
 use Citrus\Formmap\Password;
@@ -221,7 +222,6 @@ class Formmap extends Configurable
      *
      * @param string|null $form_id
      * @return int
-     * @throws CitrusException
      */
     public function validate(string $form_id = null) : int
     {
@@ -304,6 +304,14 @@ class Formmap extends Configurable
         return $object;
     }
 
+
+
+    /**
+     * エレメント取得のマジックメソッド
+     *
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         return $this->elements[$name];
@@ -323,31 +331,31 @@ class Formmap extends Configurable
 
         switch ($form_type) {
             // デフォルトエレメント
-            case Element::FORM_TYPE_ELEMENT:
+            case ElementType::FORM_TYPE_ELEMENT:
                 return new Element($element);
             // 隠し要素
-            case Element::FORM_TYPE_HIDDEN:
+            case ElementType::FORM_TYPE_HIDDEN:
                 return new Hidden($element);
             // パスワード
-            case Element::FORM_TYPE_PASSWD:
+            case ElementType::FORM_TYPE_PASSWD:
                 return new Password($element);
             // SELECT
-            case Element::FORM_TYPE_SELECT:
+            case ElementType::FORM_TYPE_SELECT:
                 return new Select($element);
             // SUBMIT
-            case Element::FORM_TYPE_SUBMIT:
+            case ElementType::FORM_TYPE_SUBMIT:
                 return new Submit($element);
             // ボタン
-            case Element::FORM_TYPE_BUTTON:
+            case ElementType::FORM_TYPE_BUTTON:
                 return new Button($element);
             // インプットテキスト
-            case Element::FORM_TYPE_TEXT:
+            case ElementType::FORM_TYPE_TEXT:
                 return new Text($element);
             // テキストエリア
-            case Element::FORM_TYPE_TEXTAREA:
+            case ElementType::FORM_TYPE_TEXTAREA:
                 return new Textarea($element);
             // 検索エリア
-            case Element::FORM_TYPE_SEARCH:
+            case ElementType::FORM_TYPE_SEARCH:
                 return new Search($element);
             // 該当なし
             default:

@@ -55,11 +55,11 @@ class Hidden extends Element
             switch ($this->var_type)
             {
                 // datetime
-                case Element::VAR_TYPE_DATETIME :
+                case ElementType::VAR_TYPE_DATETIME :
                     $value = date('Y-m-d H:i:s', strtotime($this->default));
                     break;
                 // date
-                case Element::VAR_TYPE_DATE :
+                case ElementType::VAR_TYPE_DATE :
                     $value = date('Y-m-d', strtotime($this->default));
                     break;
                 // default

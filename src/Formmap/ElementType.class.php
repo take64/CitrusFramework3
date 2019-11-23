@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @copyright   Copyright 2019, CitrusFramework. All Rights Reserved.
+ * @author      take64 <take64@citrus.tk>
+ * @license     http://www.citrus.tk/
+ */
+
+namespace Citrus\Formmap;
+
+/**
+ * エレメントタイプ
+ */
+class ElementType
+{
+    /** var type int */
+    const VAR_TYPE_INT = 'int';
+
+    /** var type float */
+    const VAR_TYPE_FLOAT = 'float';
+
+    /** var type numeric */
+    const VAR_TYPE_NUMERIC = 'numeric';
+
+    /** var type string */
+    const VAR_TYPE_STRING = 'string';
+
+    /** var type alphabet */
+    const VAR_TYPE_ALPHABET = 'alphabet';
+
+    /** var type alphabet & numeric */
+    const VAR_TYPE_ALPHANUMERIC = 'alphanumeric';
+
+    /** var type alphabet & numeric & marks */
+    const VAR_TYPE_AN_MARKS = 'an_marks';
+
+    /** var type date */
+    const VAR_TYPE_DATE = 'date';
+
+    /** var type time */
+    const VAR_TYPE_TIME = 'time';
+
+    /** var type datetime */
+    const VAR_TYPE_DATETIME = 'dateime';
+
+    /** var type bool */
+    const VAR_TYPE_BOOL = 'bool';
+
+    /** var type file */
+    const VAR_TYPE_FILE = 'file';
+
+    /** var type telephone */
+    const VAR_TYPE_TELEPHONE = 'telephone';
+
+    /** var type tel */
+    const VAR_TYPE_TEL = 'tel';
+
+    /** var type fax */
+    const VAR_TYPE_FAX = 'fax';
+
+    /** var type year */
+    const VAR_TYPE_YEAR = 'year';
+
+    /** var type month */
+    const VAR_TYPE_MONTH = 'month';
+
+    /** var type day */
+    const VAR_TYPE_DAY = 'day';
+
+    /** var type email */
+    const VAR_TYPE_EMAIL = 'email';
+
+
+    /** form type element */
+    const FORM_TYPE_ELEMENT = 'element';
+
+    /** form type text */
+    const FORM_TYPE_TEXT = 'text';
+
+    /** form type text */
+    const FORM_TYPE_TEXTAREA = 'textarea';
+
+    /** form type search */
+    const FORM_TYPE_SEARCH = 'search';
+
+    /** form type hidden */
+    const FORM_TYPE_HIDDEN = 'hidden';
+
+    /** form type select */
+    const FORM_TYPE_SELECT = 'select';
+
+    /** form type password */
+    const FORM_TYPE_PASSWD = 'password';
+
+    /** form type submit */
+    const FORM_TYPE_SUBMIT = 'submit';
+
+    /** form type button */
+    const FORM_TYPE_BUTTON = 'button';
+
+    /** form type label */
+    const FORM_TYPE_LABEL = 'label';
+
+    /** html tag span */
+    const HTML_TAG_SPAN = 'span';
+}

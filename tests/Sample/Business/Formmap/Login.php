@@ -9,7 +9,7 @@ declare(strict_types=1);
  */
 
 use Citrus\Authentication\Item;
-use Citrus\Formmap\Element;
+use Citrus\Formmap\ElementType;
 
 return [
     'Login' => [
@@ -17,19 +17,19 @@ return [
             'class' => Item::class,
             'elements' => [
                 'user_id' => [
-                    'form_type' => Element::FORM_TYPE_TEXT,
+                    'form_type' => ElementType::FORM_TYPE_TEXT,
                     'property'  => 'user_id',
                     'name'      => 'ユーザID',
-                    'var_type'  => Element::VAR_TYPE_STRING,
+                    'var_type'  => ElementType::VAR_TYPE_STRING,
                 ],
                 'password' => [
-                    'form_type' => Element::FORM_TYPE_PASSWD,
+                    'form_type' => ElementType::FORM_TYPE_PASSWD,
                     'property'  => 'password',
                     'name'      => 'パスワード',
-                    'var_type'  => Element::VAR_TYPE_STRING,
+                    'var_type'  => ElementType::VAR_TYPE_STRING,
                 ],
                 'btn_login' => [
-                    'form_type' => Element::FORM_TYPE_SUBMIT,
+                    'form_type' => ElementType::FORM_TYPE_SUBMIT,
                     'name'      => 'ログイン',
                 ],
             ],

@@ -21,99 +21,6 @@ use Citrus\Struct;
  */
 class Element extends Struct
 {
-    /** var type int */
-    const VAR_TYPE_INT = 'int';
-
-    /** var type float */
-    const VAR_TYPE_FLOAT = 'float';
-
-    /** var type numeric */
-    const VAR_TYPE_NUMERIC = 'numeric';
-
-    /** var type string */
-    const VAR_TYPE_STRING = 'string';
-
-    /** var type alphabet */
-    const VAR_TYPE_ALPHABET = 'alphabet';
-
-    /** var type alphabet & numeric */
-    const VAR_TYPE_ALPHANUMERIC = 'alphanumeric';
-
-    /** var type alphabet & numeric & marks */
-    const VAR_TYPE_AN_MARKS = 'an_marks';
-
-    /** var type date */
-    const VAR_TYPE_DATE = 'date';
-
-    /** var type time */
-    const VAR_TYPE_TIME = 'time';
-
-    /** var type datetime */
-    const VAR_TYPE_DATETIME = 'dateime';
-
-    /** var type bool */
-    const VAR_TYPE_BOOL = 'bool';
-
-    /** var type file */
-    const VAR_TYPE_FILE = 'file';
-
-    /** var type telephone */
-    const VAR_TYPE_TELEPHONE = 'telephone';
-
-    /** var type tel */
-    const VAR_TYPE_TEL = 'tel';
-
-    /** var type fax */
-    const VAR_TYPE_FAX = 'fax';
-
-    /** var type year */
-    const VAR_TYPE_YEAR = 'year';
-
-    /** var type month */
-    const VAR_TYPE_MONTH = 'month';
-
-    /** var type day */
-    const VAR_TYPE_DAY = 'day';
-
-    /** var type email */
-    const VAR_TYPE_EMAIL = 'email';
-
-
-    /** form type element */
-    const FORM_TYPE_ELEMENT = 'element';
-
-    /** form type text */
-    const FORM_TYPE_TEXT = 'text';
-
-    /** form type text */
-    const FORM_TYPE_TEXTAREA = 'textarea';
-
-    /** form type search */
-    const FORM_TYPE_SEARCH = 'search';
-
-    /** form type hidden */
-    const FORM_TYPE_HIDDEN = 'hidden';
-
-    /** form type select */
-    const FORM_TYPE_SELECT = 'select';
-
-    /** form type password */
-    const FORM_TYPE_PASSWD = 'password';
-
-    /** form type submit */
-    const FORM_TYPE_SUBMIT = 'submit';
-
-    /** form type button */
-    const FORM_TYPE_BUTTON = 'button';
-
-    /** form type label */
-    const FORM_TYPE_LABEL = 'label';
-
-
-    /** html tag span */
-    const HTML_TAG_SPAN = 'span';
-
-
     /** @var string form id */
     public $id;
 
@@ -255,11 +162,11 @@ class Element extends Struct
     {
         // 閉じタグがあるタイプか否か
         $is_multiple_tag = in_array($tag, [
-            self::FORM_TYPE_SELECT,
-            self::FORM_TYPE_BUTTON,
-            self::FORM_TYPE_LABEL,
-            self::HTML_TAG_SPAN,
-            self::FORM_TYPE_TEXTAREA,
+            ElementType::FORM_TYPE_SELECT,
+            ElementType::FORM_TYPE_BUTTON,
+            ElementType::FORM_TYPE_LABEL,
+            ElementType::HTML_TAG_SPAN,
+            ElementType::FORM_TYPE_TEXTAREA,
         ]);
 
         // フォーム要素
@@ -279,7 +186,7 @@ class Element extends Struct
         if (is_array($options) === true)
         {
             // select
-            if ($tag == self::FORM_TYPE_SELECT)
+            if ($tag == ElementType::FORM_TYPE_SELECT)
             {
                 foreach ($options as $ky => $vl)
                 {
@@ -522,14 +429,14 @@ class Element extends Struct
         $is_converted = false;
         switch ($this->var_type)
         {
-            case self::VAR_TYPE_INT:
+            case ElementType::VAR_TYPE_INT:
                 $is_converted = settype($result, 'int');
                 break;
-            case self::VAR_TYPE_FLOAT:
-            case self::VAR_TYPE_NUMERIC:
+            case ElementType::VAR_TYPE_FLOAT:
+            case ElementType::VAR_TYPE_NUMERIC:
                 $is_converted = settype($result, 'float');
                 break;
-            case self::VAR_TYPE_BOOL:
+            case ElementType::VAR_TYPE_BOOL:
                 $is_converted = settype($result, 'bool');
                 break;
             default:
@@ -635,66 +542,66 @@ class Element extends Struct
         switch($this->var_type)
         {
             // int
-            case self::VAR_TYPE_INT :
+            case ElementType::VAR_TYPE_INT :
                 $result = $this->_validateVarTypeInt($filtered_value);
                 break;
 
             // float
-            case self::VAR_TYPE_FLOAT :
+            case ElementType::VAR_TYPE_FLOAT :
                 $result = $this->_validateVarTypeFloat($filtered_value);
                 break;
 
             // numeric
-            case self::VAR_TYPE_NUMERIC :
+            case ElementType::VAR_TYPE_NUMERIC :
                 $result = $this->_validateVarTypeNumeric($filtered_value);
                 break;
 
             // string
-            case self::VAR_TYPE_STRING :
+            case ElementType::VAR_TYPE_STRING :
                 break;
 
             // alphabet
-            case self::VAR_TYPE_ALPHABET :
+            case ElementType::VAR_TYPE_ALPHABET :
                 $result = $this->_validateVarTypeAlphabet($filtered_value);
                 break;
 
             // alphabet & numeric
-            case self::VAR_TYPE_ALPHANUMERIC :
+            case ElementType::VAR_TYPE_ALPHANUMERIC :
                 $result = $this->_validateVarTypeAlphanumeric($filtered_value);
                 break;
 
             // alphabet & numeric & marks
-            case self::VAR_TYPE_AN_MARKS :
+            case ElementType::VAR_TYPE_AN_MARKS :
                 $result = $this->_validateVarTypeANMarks($filtered_value);
                 break;
 
             // date
-            case self::VAR_TYPE_DATE :
+            case ElementType::VAR_TYPE_DATE :
                 $result = $this->_validateVarTypeDate($filtered_value);
                 break;
 
             // time
-            case self::VAR_TYPE_TIME :
+            case ElementType::VAR_TYPE_TIME :
                 $result = $this->_validateVarTypeTime($filtered_value);
                 break;
 
             // datetime
-            case self::VAR_TYPE_DATETIME :
+            case ElementType::VAR_TYPE_DATETIME :
                 $result = $this->_validateVarTypeDatetime($filtered_value);
                 break;
 
             // tel
-            case self::VAR_TYPE_TEL :
+            case ElementType::VAR_TYPE_TEL :
                 $result = $this->_validateVarTypeTel($filtered_value);
                 break;
 
             // fax
-            case self::VAR_TYPE_FAX :
+            case ElementType::VAR_TYPE_FAX :
                 $result = $this->_validateVarTypeFax($filtered_value);
                 break;
 
             // email
-            case self::VAR_TYPE_EMAIL :
+            case ElementType::VAR_TYPE_EMAIL :
                 $result = $this->_validateVarTypeEmail($filtered_value);
                 break;
 
@@ -1208,11 +1115,11 @@ class Element extends Struct
         if (is_null($this->max) === false)
         {
             // numeric
-            if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+            if (in_array($this->var_type, [ ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC ], true) === true)
             {
                 $result = $this->_validateNumericMax();
             }
-            else if ($this->var_type == self::VAR_TYPE_STRING)
+            else if ($this->var_type == ElementType::VAR_TYPE_STRING)
             {
                 $result = $this->_validateLengthMax();
             }
@@ -1241,11 +1148,11 @@ class Element extends Struct
         if (is_null($this->min) === false)
         {
             // numeric
-            if (in_array($this->var_type, [ self::VAR_TYPE_INT, self::VAR_TYPE_FLOAT, self::VAR_TYPE_NUMERIC ], true) === true)
+            if (in_array($this->var_type, [ ElementType::VAR_TYPE_INT, ElementType::VAR_TYPE_FLOAT, ElementType::VAR_TYPE_NUMERIC ], true) === true)
             {
                 $result = $this->_validateNumericMin();
             }
-            else if ($this->var_type === self::VAR_TYPE_STRING)
+            else if ($this->var_type === ElementType::VAR_TYPE_STRING)
             {
                 $result = $this->_validateLengthMin();
             }
