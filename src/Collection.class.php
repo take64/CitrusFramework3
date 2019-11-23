@@ -113,4 +113,28 @@ class Collection
         $this->source = $results;
         return $this;
     }
+
+
+
+    /**
+     * callable関数がnull以外を返す場合に配列に積んでいく
+     *
+     * @param callable $callable
+     * @return self
+     */
+    public function append(callable $callable): self
+    {
+        $results = [];
+        foreach ($this->source as $ky => $vl)
+        {
+            $append = $callable($ky, $vl);
+            if (false === is_null($append))
+            {
+                $results[] = $append;
+            }
+        }
+        $this->source = $results;
+        return $this;
+
+    }
 }
