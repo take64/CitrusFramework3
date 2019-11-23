@@ -57,9 +57,6 @@ class ElementType
     /** var type tel */
     const VAR_TYPE_TEL = 'tel';
 
-    /** var type fax */
-    const VAR_TYPE_FAX = 'fax';
-
     /** var type year */
     const VAR_TYPE_YEAR = 'year';
 
