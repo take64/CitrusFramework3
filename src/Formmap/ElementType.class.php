@@ -105,4 +105,50 @@ class ElementType
 
     /** html tag span */
     const HTML_TAG_SPAN = 'span';
+
+
+
+    /**
+     * formmapのelement配列要素からフォームインスタンスを生成
+     *
+     * @param array $element formmap要素
+     * @return Element|null フォームインスタンス
+     */
+    public static function generate(array $element): ?Element
+    {
+        $form_type = $element['form_type'];
+
+        switch ($form_type) {
+            // デフォルトエレメント
+            case ElementType::FORM_TYPE_ELEMENT:
+                return new Element($element);
+            // 隠し要素
+            case ElementType::FORM_TYPE_HIDDEN:
+                return new Hidden($element);
+            // パスワード
+            case ElementType::FORM_TYPE_PASSWD:
+                return new Password($element);
+            // SELECT
+            case ElementType::FORM_TYPE_SELECT:
+                return new Select($element);
+            // SUBMIT
+            case ElementType::FORM_TYPE_SUBMIT:
+                return new Submit($element);
+            // ボタン
+            case ElementType::FORM_TYPE_BUTTON:
+                return new Button($element);
+            // インプットテキスト
+            case ElementType::FORM_TYPE_TEXT:
+                return new Text($element);
+            // テキストエリア
+            case ElementType::FORM_TYPE_TEXTAREA:
+                return new Textarea($element);
+            // 検索エリア
+            case ElementType::FORM_TYPE_SEARCH:
+                return new Search($element);
+            // 該当なし
+            default:
+                return null;
+        }
+    }
 }

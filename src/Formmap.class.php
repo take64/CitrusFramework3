@@ -11,17 +11,9 @@ declare(strict_types=1);
 namespace Citrus;
 
 use Citrus\Configure\Configurable;
-use Citrus\Formmap\Button;
 use Citrus\Formmap\Element;
 use Citrus\Formmap\ElementType;
 use Citrus\Formmap\FormmapException;
-use Citrus\Formmap\Hidden;
-use Citrus\Formmap\Password;
-use Citrus\Formmap\Search;
-use Citrus\Formmap\Select;
-use Citrus\Formmap\Submit;
-use Citrus\Formmap\Text;
-use Citrus\Formmap\Textarea;
 use Exception;
 
 /**
@@ -100,7 +92,7 @@ class Formmap extends Configurable
                 foreach ($elements as $element_id => $element)
                 {
                     // エレメントの生成
-                    $form = $this->generateElement($element);
+                    $form = ElementType::generate($element);
                     // 外部情報の設定
                     $form->id = $element_id;
                     $form->prefix = $prefix;
@@ -315,52 +307,6 @@ class Formmap extends Configurable
     public function __get($name)
     {
         return $this->elements[$name];
-    }
-
-
-
-    /**
-     * formmapの要素からフォームインスタンスを生成
-     *
-     * @param array $element formmap要素
-     * @return Element|null フォームインスタンス
-     */
-    private function generateElement(array $element): ?Element
-    {
-        $form_type = $element['form_type'];
-
-        switch ($form_type) {
-            // デフォルトエレメント
-            case ElementType::FORM_TYPE_ELEMENT:
-                return new Element($element);
-            // 隠し要素
-            case ElementType::FORM_TYPE_HIDDEN:
-                return new Hidden($element);
-            // パスワード
-            case ElementType::FORM_TYPE_PASSWD:
-                return new Password($element);
-            // SELECT
-            case ElementType::FORM_TYPE_SELECT:
-                return new Select($element);
-            // SUBMIT
-            case ElementType::FORM_TYPE_SUBMIT:
-                return new Submit($element);
-            // ボタン
-            case ElementType::FORM_TYPE_BUTTON:
-                return new Button($element);
-            // インプットテキスト
-            case ElementType::FORM_TYPE_TEXT:
-                return new Text($element);
-            // テキストエリア
-            case ElementType::FORM_TYPE_TEXTAREA:
-                return new Textarea($element);
-            // 検索エリア
-            case ElementType::FORM_TYPE_SEARCH:
-                return new Search($element);
-            // 該当なし
-            default:
-                return null;
-        }
     }
 
 
