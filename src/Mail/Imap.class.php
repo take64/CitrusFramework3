@@ -244,7 +244,7 @@ class Imap
         // 条件がない場合は処理しない
         if (empty($condition->uids) === true && empty($condition->msgnos) === true)
         {
-            return ;
+            return;
         }
 
         // メールボックスハンドル

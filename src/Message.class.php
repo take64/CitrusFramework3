@@ -44,7 +44,7 @@ class Message extends Accessor
         // is initialized
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // メッセージ設定
@@ -407,7 +407,7 @@ class Message extends Accessor
         // タグ指定がない場合は戻る
         if (empty($tag) === true)
         {
-            return ;
+            return;
         }
 
         // init
@@ -416,7 +416,7 @@ class Message extends Accessor
         // メッセージがない場合。
         if (empty(self::$items) === true)
         {
-            return ;
+            return;
         }
 
         // エイリアス

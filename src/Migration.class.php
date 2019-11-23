@@ -282,7 +282,7 @@ EOT;
      * @param string|null $version    バージョン指定
      * @return Item|null
      */
-    private function callInstance(string $output_dir, string $filename,  string $version = null): ?Item
+    private function callInstance(string $output_dir, string $filename, string $version = null): ?Item
     {
         // マイグレーションファイルパス
         $class_path = sprintf('%s/%s', $output_dir, $filename);

@@ -93,7 +93,7 @@ class Pagecode extends Struct
         {
             $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $javascript);
             $this->add('javascripts', $path);
-            return ;
+            return;
         }
         // パスがベースディレクトリ以下指定の場合
         $path = Configure::$CONFIGURE_ITEM->application->path . $javascript;

@@ -35,7 +35,7 @@ class Aws
         // is initialize
         if (self::$IS_INITIALIZED === true)
         {
-            return ;
+            return;
         }
 
         // configure

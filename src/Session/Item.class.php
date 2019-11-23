@@ -27,7 +27,7 @@ class Item extends Struct
         // is null
         if (true === is_null($session))
         {
-            return ;
+            return;
         }
 
         if ($session instanceof Item)
@@ -132,7 +132,7 @@ class Item extends Struct
     {
         if (true === is_null($array))
         {
-            return ;
+            return;
         }
         foreach ($array as $ky => $vl)
         {
@@ -153,7 +153,7 @@ class Item extends Struct
     {
         if (true === is_null($object))
         {
-            return ;
+            return;
         }
         $array = get_object_vars($object);
         $this->bindArray($array, $strict);

@@ -80,7 +80,7 @@ class Cloudwatch extends Struct
         // 作成しない場合は、ログストリームが存在しなければ終わり
         else if (false === $this->existLogStream($log_group_name, $log_stream_name))
         {
-            return ;
+            return;
         }
 
         // ログ送信パラメタ

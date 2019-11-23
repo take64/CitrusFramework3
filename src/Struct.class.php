@@ -232,7 +232,7 @@ class Struct
     {
         if (is_null($array) === true)
         {
-            return ;
+            return;
         }
         foreach ($array as $ky => $vl)
         {
@@ -253,7 +253,7 @@ class Struct
     {
         if (is_null($object) === true)
         {
-            return ;
+            return;
         }
         $array = get_object_vars($object);
         $this->bindArray($array, $strict);

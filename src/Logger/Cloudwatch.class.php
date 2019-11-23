@@ -108,7 +108,7 @@ class Cloudwatch extends Struct implements LogType
         // バッファがない場合はスルー
         if (true === empty($this->buffers))
         {
-            return ;
+            return;
         }
 
         $this->cloudwatch->flush($this->group, $this->stream, $this->buffers, true);

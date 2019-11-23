@@ -68,7 +68,7 @@ class Http
         }
 
         // URL
-        curl_setopt($handle, CURLOPT_URL,   $url);
+        curl_setopt($handle, CURLOPT_URL, $url);
         curl_setopt($handle, CURLOPT_HEADER, 0);
 
         // リクエストパラメータ(POST)

@@ -387,7 +387,7 @@ class Xhr
         {
             $condition->orderby = $this->suggest_orderby;
         }
-        $condition->pageLimit(1,$condition->limit);
+        $condition->pageLimit(1, $condition->limit);
         $condition->toLike($this->search_column_to_like);
         $list = $this->callService()->names($condition);
 
