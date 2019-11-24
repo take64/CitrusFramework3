@@ -103,6 +103,13 @@ class ElementType
     /** html tag span */
     const HTML_TAG_SPAN = 'span';
 
+    /** @var string[] 数値系要素 */
+    public static $NUMERICALS = [
+        self::VAR_TYPE_INT,
+        self::VAR_TYPE_FLOAT,
+        self::VAR_TYPE_NUMERIC,
+    ];
+
 
 
     /**

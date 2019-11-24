@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Test;
 
 use Citrus\Formmap\Element;
+use Citrus\Formmap\FormmapException;
 use Citrus\Formmap\Validation;
 use Citrus\Session;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,10 @@ class ValidationTest extends TestCase
     }
 
 
+
+    /**
+     * {@inheritDoc}
+     */
     public function tearDown(): void
     {
         parent::tearDown();
@@ -44,309 +49,522 @@ class ValidationTest extends TestCase
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function required_必須チェック()
+    public function required_必須チェック_正常()
     {
-        // true
         $element = new Element([
            'id' => 'user_id',
            'value' => 'hogehoge',
            'required' => true,
         ]);
-        $this->assertTrue(Validation::required($element));
-
-        // false
-        $element->value = null;
-        $this->assertFalse(Validation::required($element));
+        Validation::required($element);
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeInt_数値チェック()
+    public function required_必須チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => null,
+            'required' => true,
+        ]);
+        Validation::required($element);
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeInt_数値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 11,
         ]);
-        $this->assertTrue(Validation::varTypeInt($element, $element->filter()));
-
-        // false
-        $element->value = null;
-        $this->assertFalse(Validation::varTypeInt($element, $element->filter()));
+        Validation::varTypeInt($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeFlaot_浮動小数点チェック()
+    public function varTypeInt_数値チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => null,
+        ]);
+        Validation::varTypeInt($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeFlaot_浮動小数点チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 11.5,
         ]);
-        $this->assertTrue(Validation::varTypeFloat($element, $element->filter()));
-
-        // false
-        $element->value = null;
-        $this->assertFalse(Validation::varTypeFloat($element, $element->filter()));
+        Validation::varTypeFloat($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeNumeric_数値チェック()
+    public function varTypeFlaot_浮動小数点チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => null,
+        ]);
+        Validation::varTypeFloat($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeNumeric_数値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 11.5,
         ]);
-        $this->assertTrue(Validation::varTypeNumeric($element, $element->filter()));
-
-        // false
-        $element->value = 'aaa';
-        $this->assertFalse(Validation::varTypeNumeric($element, $element->filter()));
+        Validation::varTypeNumeric($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeAlphabet_アルファベットチェック()
+    public function varTypeNumeric_数値チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => 'aaa',
+        ]);
+        Validation::varTypeNumeric($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeAlphabet_アルファベットチェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 'abc',
         ]);
-        $this->assertTrue(Validation::varTypeAlphabet($element, $element->filter()));
-
-        // false
-        $element->value = 11;
-        $this->assertFalse(Validation::varTypeAlphabet($element, $element->filter()));
+        Validation::varTypeAlphabet($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeAlphanumeric_英数字チェック()
+    public function varTypeAlphabet_アルファベットチェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '11',
+        ]);
+        Validation::varTypeAlphabet($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeAlphanumeric_英数字チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 'abc11',
         ]);
-        $this->assertTrue(Validation::varTypeAlphanumeric($element, $element->filter()));
-
-        // false
-        $element->value = '#$a';
-        $this->assertFalse(Validation::varTypeAlphanumeric($element, $element->filter()));
+        Validation::varTypeAlphanumeric($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeANMarks_英数字記号チェック()
+    public function varTypeAlphanumeric_英数字チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '#$a',
+        ]);
+        Validation::varTypeAlphanumeric($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeANMarks_英数字記号チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 'abc11$#',
         ]);
-        $this->assertTrue(Validation::varTypeANMarks($element, $element->filter()));
-
-        // false
-        $element->value = 'あああ';
-        $this->assertFalse(Validation::varTypeANMarks($element, $element->filter()));
+        Validation::varTypeANMarks($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeDate_日付チェック()
+    public function varTypeANMarks_英数字記号チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => 'あああ',
+        ]);
+        Validation::varTypeANMarks($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeDate_日付チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => '2019-11-11',
         ]);
-        $this->assertTrue(Validation::varTypeDate($element, $element->filter()));
-
-        // false
-        $element->value = '2019-13-13';
-        $this->assertFalse(Validation::varTypeDate($element, $element->filter()));
+        Validation::varTypeDate($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeTime_時間チェック()
+    public function varTypeDate_日付チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '2019-13-13',
+        ]);
+        Validation::varTypeDate($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeTime_時間チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => '01:02:03',
         ]);
-        $this->assertTrue(Validation::varTypeTime($element, $element->filter()));
-
-        // false
-        $element->value = '01:02:79';
-        $this->assertFalse(Validation::varTypeTime($element, $element->filter()));
+        Validation::varTypeTime($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeDatetime_日時チェック()
+    public function varTypeTime_時間チェック_例外()
+    {
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '01:02:79',
+        ]);
+        Validation::varTypeTime($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeDatetime_日時チェック_正常()
     {
         // true
         $element = new Element([
             'id' => 'user_id',
             'value' => '2019-11-11 01:02:03',
         ]);
-        $this->assertTrue(Validation::varTypeDatetime($element, $element->filter()));
-
-        // false
-        $element->value = '2019-13-13 01:02:79';
-        $this->assertFalse(Validation::varTypeDatetime($element, $element->filter()));
+        Validation::varTypeDatetime($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeTel_電話番号チェック()
+    public function varTypeDatetime_日時チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '2019-13-13 01:02:79',
+        ]);
+        Validation::varTypeDatetime($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeTel_電話番号チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => '01-2345-6789',
         ]);
-        $this->assertTrue(Validation::varTypeTel($element, $element->filter()));
-
-        // false
-        $element->value = '0001-2345-6789';
-        $this->assertFalse(Validation::varTypeTel($element, $element->filter()));
+        Validation::varTypeTel($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function varTypeEmail_メールアドレスチェック()
+    public function varTypeTel_電話番号チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '0001-2345-6789',
+        ]);
+        Validation::varTypeTel($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function varTypeEmail_メールアドレスチェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 'hoge@example.com',
         ]);
-        $this->assertTrue(Validation::varTypeEmail($element, $element->filter()));
-
-        // false
-        $element->value = 'hoge[at]example.c';
-        $this->assertFalse(Validation::varTypeEmail($element, $element->filter()));
+        Validation::varTypeEmail($element, $element->filter());
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function numericMax_最大値チェック()
+    public function varTypeEmail_メールアドレスチェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => 'hoge[at]example.c',
+        ]);
+        Validation::varTypeEmail($element, $element->filter());
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function numericMax_最大値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 10,
             'max' => 10
         ]);
-        $this->assertTrue(Validation::numericMax($element));
-
-        // false
-        $element->value = 11;
-        $this->assertFalse(Validation::numericMax($element));
+        Validation::numericMax($element);
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function numericMin_最小値チェック()
+    public function numericMax_最大値チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => 11,
+            'max' => 10
+        ]);
+        Validation::numericMax($element);
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function numericMin_最小値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => 1,
             'min' => 1
         ]);
-        $this->assertTrue(Validation::numericMin($element));
-
-        // false
-        $element->value = 0;
-        $this->assertFalse(Validation::numericMin($element));
+        Validation::numericMin($element);
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function lengthMax_最大値チェック()
+    public function numericMin_最小値チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => 0,
+            'min' => 1
+        ]);
+        Validation::numericMin($element);
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function lengthMax_最大値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => '0123456789',
             'max' => 10
         ]);
-        $this->assertTrue(Validation::lengthMax($element));
-
-        // false
-        $element->value = '01234567890';
-        $this->assertFalse(Validation::lengthMax($element));
+        Validation::lengthMax($element);
     }
 
 
 
     /**
      * @test
+     * @throws FormmapException
      */
-    public function lengthMin_最小値チェック()
+    public function lengthMax_最大値チェック_例外()
     {
-        // true
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '01234567890',
+            'max' => 10
+        ]);
+        Validation::lengthMax($element);
+    }
+
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function lengthMin_最小値チェック_正常()
+    {
         $element = new Element([
             'id' => 'user_id',
             'value' => '01',
             'min' => 2
         ]);
-        $this->assertTrue(Validation::lengthMin($element));
+        Validation::lengthMin($element);
+    }
 
-        // false
-        $element->value = '0';
-        $this->assertFalse(Validation::lengthMin($element));
+
+
+    /**
+     * @test
+     * @throws FormmapException
+     */
+    public function lengthMin_最小値チェック_例外()
+    {
+        $this->expectException(FormmapException::class);
+
+        $element = new Element([
+            'id' => 'user_id',
+            'value' => '0',
+            'min' => 2
+        ]);
+        Validation::lengthMin($element);
     }
 }
 

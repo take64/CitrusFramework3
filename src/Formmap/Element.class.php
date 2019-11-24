@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Citrus\Formmap;
 
-use Citrus\CitrusException;
 use Citrus\Collection;
 use Citrus\Formmap;
 use Citrus\Message;
@@ -371,37 +370,26 @@ class Element extends Struct
      * validate
      *
      * @return int
-     * @throws CitrusException
      */
     public function validate(): int
     {
-        $result = 0;
-        // validate require
-        if (false === Validation::required($this))
+        try
         {
-            $result++;
+            // 必須チェック
+            Validation::required($this);
+            // 変数型チェック
+            Validation::varType($this);
+            // 最大値チェック
+            Validation::max($this);
+            // 最小値チェック
+            Validation::min($this);
         }
-        else
+        catch (FormmapException $e)
         {
-            // validate type
-            if (false === Validation::varType($this))
-            {
-                $result++;
-            }
-
-            // validate max
-            if (false === Validation::max($this))
-            {
-                $result++;
-            }
-
-            // validate min
-            if (false === Validation::min($this))
-            {
-                $result++;
-            }
+            Message::addError($e->getMessage(), null, Formmap::MESSAGE_TAG);
+            return 1;
         }
-        return $result;
+        return 0;
     }
 
 
@@ -507,17 +495,5 @@ class Element extends Struct
     public function filterLike($value)
     {
         return sprintf('%%%s%%', $value);
-    }
-
-
-
-    /**
-     * add formmap error message
-     *
-     * @param string $message
-     */
-    public function addError(string $message)
-    {
-        Message::addError($message, null, Formmap::MESSAGE_TAG);
     }
 }
