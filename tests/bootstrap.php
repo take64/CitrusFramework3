@@ -1,7 +1,5 @@
 <?php
 
-use Citrus\Logger;
-
 require __DIR__ . '/../vendor/autoload.php';
 
 \Citrus\Citrus::initialize();
@@ -10,6 +8,8 @@ require __DIR__ . '/../vendor/autoload.php';
 define('UNIT_TEST', true);
 
 // 設定ファイル
-$configures = require(dirname(__DIR__). '/tests/citrus-configure.php');
+$configure_path = dirname(__DIR__). '/tests/citrus-configure.php';
+\Citrus\Configure::initialize($configure_path);
+
 // ロガー初期化
-Logger::initialize($configures);
+\Citrus\Logger::initialize(\Citrus\Configure::$CONFIGURES);

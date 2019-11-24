@@ -94,4 +94,61 @@ class CollectionTest extends TestCase
             return (2 < $vl);
         })->toList());
     }
+
+
+
+    /**
+     * @test
+     */
+    public function append_データ生成できたものだけで配列生成()
+    {
+        $values = [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            'd' => 4,
+        ];
+
+        // キー「c」以外を残して、全部1を足す
+        $expected = [
+            (1 + 1),
+            (2 + 1),
+            (4 + 1),
+        ];
+        // 検算
+        $this->assertSame($expected, Collection::stream($values)->append(function ($ky, $vl) {
+            if ('c' !== $ky)
+            {
+                return ($vl + 1);
+            }
+            return null;
+        })->toList());
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function map_データ編集して配列生成()
+    {
+        $values = [
+            1,
+            2,
+            3,
+            4,
+        ];
+
+        // 全部1を足す
+        $expected = [
+            (1 + 1),
+            (2 + 1),
+            (3 + 1),
+            (4 + 1),
+        ];
+        // 検算
+        $this->assertSame($expected, Collection::stream($values)->map(function ($ky, $vl) {
+            return ($vl + 1);
+        })->toList());
+    }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,27 +10,21 @@
 
 namespace Citrus;
 
-use Citrus\Formmap\Button;
+use Citrus\Configure\Configurable;
 use Citrus\Formmap\Element;
-use Citrus\Formmap\Hidden;
-use Citrus\Formmap\Password;
-use Citrus\Formmap\Search;
-use Citrus\Formmap\Select;
-use Citrus\Formmap\Submit;
-use Citrus\Formmap\Text;
-use Citrus\Formmap\Textarea;
+use Citrus\Formmap\ElementType;
+use Citrus\Formmap\FormmapException;
 use Exception;
 
-class Formmap
+/**
+ * フォームマップ
+ */
+class Formmap extends Configurable
 {
+    use Singleton;
+
     /** @var string message tag */
     const MESSAGE_TAG = 'formmap';
-
-    /** @var bool is cache */
-    public static $IS_CACHE = false;
-
-    /** @var bool is initialize */
-    public static $IS_INITIALIZED = false;
 
     /** @var array(string::'form id' => CitrusFormElement) */
     private $elements = [];
@@ -48,103 +45,64 @@ class Formmap
     private $is_bound = false;
 
 
-    /**
-     * initialize formmap
-     *
-     * @param array $default_configure
-     * @param array $configure_domain
-     */
-    public static function initialize($default_configure = [], $configure_domain = [])
-    {
-        // is initialized
-        if (self::$IS_INITIALIZED === true)
-        {
-            return;
-        }
-
-        // configure
-        $configure = Configure::configureMerge('formmap', $default_configure, $configure_domain);
-
-        // cache
-        self::$IS_CACHE = $configure['cache'];
-
-        // initialized
-        self::$IS_INITIALIZED = true;
-    }
-
-
 
     /**
      * formmap definition loader
      *
-     * @param string|null $path
+     * @param string $path
+     * @return void
+     * @throws FormmapException
      */
-    public function load(string $path = null)
+    public function load(string $path): void
     {
-        // bad request
-        if (is_null($path) === true)
+        // 指定したフォームマップファイルが存在しない
+        if (true === is_null($path))
         {
-            return;
+            throw new FormmapException(sprintf('Formmap定義ファイル「%s」が存在しません', $path));
         }
-
-        // parse xml formmap
-
-        // file exists xmls？
-        if (file_exists($path) === false)
+        if (false === file_exists($path))
         {
+            // ファイル名だけの場合を考慮する
             $path = sprintf('%s/%s', Configure::$DIR_BUSINESS_FORMMAP, basename($path));
-            if (file_exists($path) === false)
+            if (false === file_exists($path))
             {
-                return;
+                throw new FormmapException(sprintf('Formmap定義ファイル「%s」が存在しません', $path));
             }
         }
 
         // 多重読み込み防止
-        if (in_array($path, $this->loaded_files) === true)
+        if (true === in_array($path, $this->loaded_files))
         {
             return;
         }
 
         // load formmap
-        $formlist = include($path);
+        $formmap_list = include($path);
 
         // parse formmap
-        foreach ($formlist as $namespace => $formmaps)
+        foreach ($formmap_list as $namespace => $formmaps)
         {
             foreach ($formmaps as $form_id => $formmap)
             {
                 $class_name = $formmap['class'];
-                $prefix     = NVL::ArrayVL($formmap, 'prefix', '');
-                $_elements   = $formmap['elements'];
+                $prefix = ($formmap['prefix'] ?? '');
+                $elements = $formmap['elements'];
 
                 // parse element
-                foreach ($_elements as $element_id => $element)
+                foreach ($elements as $element_id => $element)
                 {
-                    $form = null;
-                    switch ($element['form_type']) {
-                        case Element::FORM_TYPE_ELEMENT : $form = new Element($element);    break;
-                        case Element::FORM_TYPE_HIDDEN  : $form = new Hidden($element);     break;
-                        case Element::FORM_TYPE_PASSWD  : $form = new Password($element);   break;
-                        case Element::FORM_TYPE_SELECT  : $form = new Select($element);     break;
-                        case Element::FORM_TYPE_SUBMIT  : $form = new Submit($element);     break;
-                        case Element::FORM_TYPE_BUTTON  : $form = new Button($element);     break;
-                        case Element::FORM_TYPE_TEXT    : $form = new Text($element);       break;
-                        case Element::FORM_TYPE_TEXTAREA: $form = new Textarea($element);   break;
-                        case Element::FORM_TYPE_SEARCH  : $form = new Search($element);     break;
-                        default                         :                                   break;
-                    }
+                    // エレメントの生成
+                    $form = ElementType::generate($element);
                     // 外部情報の設定
                     $form->id = $element_id;
                     $form->prefix = $prefix;
                     // element_idの設定
                     $element_id = $form->prefix . $form->id;
-
-
-                    $this->elements[$element_id]                    =  $form;
-                    $this->maps[$namespace][$form_id][$element_id]  =& $this->elements[$element_id];
-                    $this->classes[$namespace][$form_id]            = $class_name;
+                    // 各要素への設定
+                    $this->elements[$element_id] = $form;
+                    $this->maps[$namespace][$form_id][$element_id] =& $this->elements[$element_id];
+                    $this->classes[$namespace][$form_id] = $class_name;
                 }
-                
             }
         }
 
@@ -160,11 +118,12 @@ class Formmap
      * form data binder
      *
      * @param bool $force 強制バインド
+     * @return void
      */
-    public function bind(bool $force = false)
+    public function bind(bool $force = false): void
     {
         // 多重バインド防止
-        if ($this->is_bound === true && $force === false)
+        if (true === $this->is_bound and false === $force)
         {
             return;
         }
@@ -173,29 +132,28 @@ class Formmap
                       + Session::$filedata->properties();
 
         $json_request_list = json_decode(file_get_contents('php://input'), true);
-        if (is_null($json_request_list) === false)
+        if (false === is_null($json_request_list))
         {
             $request_list += $json_request_list;
         }
         // CitrusRouterからのリクエストを削除
-        if (isset($request_list['url']) === true)
+        if (true === isset($request_list['url']))
         {
             unset($request_list['url']);
         }
-
-        $prefix = NVL::ArrayVL($request_list, 'prefix', '');
+        $prefix = ($request_list['prefix'] ?? '');
 
         // $this->mapsには$this->elementsの参照から渡される。
         foreach ($request_list as $ky => $vl)
         {
             // imageボタン対応
-            if (preg_match('/.*(_y|_x)$/i', $ky) > 0)
+            if (0 < preg_match('/.*(_y|_x)$/i', $ky))
             {
                 $ky = substr($ky, 0, -2);
 
-                if (isset($this->elements[$prefix.$ky]) === true)
+                if (true === isset($this->elements[$prefix.$ky]))
                 {
-                    if (is_array($this->elements[$prefix.$ky]->value) === false)
+                    if (false === is_array($this->elements[$prefix.$ky]->value))
                     {
                         $this->elements[$prefix.$ky]->value = [];
                     }
@@ -208,7 +166,7 @@ class Formmap
             }
             else
             {
-                if (isset($this->elements[$prefix.$ky]) === true)
+                if (true === isset($this->elements[$prefix.$ky]))
                 {
                     $this->elements[$prefix.$ky]->value = $vl;
                 }
@@ -256,7 +214,6 @@ class Formmap
      *
      * @param string|null $form_id
      * @return int
-     * @throws CitrusException
      */
     public function validate(string $form_id = null) : int
     {
@@ -339,8 +296,50 @@ class Formmap
         return $object;
     }
 
+
+
+    /**
+     * エレメント取得のマジックメソッド
+     *
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         return $this->elements[$name];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'formmap';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'cache' => false,
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'cache',
+        ];
     }
 }

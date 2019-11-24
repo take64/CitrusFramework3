@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -11,11 +14,16 @@ use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Item;
 use Citrus\Document\Router;
 
+/**
+ * 設定
+ */
 class Configure
 {
     /** @var string CitrusConfigureのデフォルトキー */
     const CONFIGURE_DEFAULT_KEY = 'default';
 
+    /** @var array 設定ファイル内容 */
+    public static $CONFIGURES = [];
 
     /** @var Item */
     public static $CONFIGURE_ITEM = null;
@@ -83,11 +91,14 @@ class Configure
      */
     public static function initialize($path_configure)
     {
+        self::$CONFIGURES = include($path_configure);
+
         // framework initialize
         self::fremework();
 
         // directory initialize
-        self::directory(dirname($path_configure));
+        $app_path = self::$CONFIGURES['default']['application']['path'];
+        self::directory($app_path);
 
         // configure initialize
         self::configure($path_configure);
@@ -132,7 +143,7 @@ class Configure
         }
 
         // 親参照指定を取り除く
-        $path_application_dir = Directory::suitablePath($path_application_dir . '/src');
+        $path_application_dir = Directory::suitablePath($path_application_dir);
 
         // directory
         self::$DIR_APP                  = $path_application_dir;

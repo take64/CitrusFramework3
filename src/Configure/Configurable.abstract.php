@@ -57,9 +57,10 @@ abstract class Configurable
      * 設定値配列の読み込み
      *
      * @param array $configures 設定値配列(全て)
+     * @return self
      * @throws ConfigureException
      */
-    public function loadConfigures(array $configures = []): void
+    public function loadConfigures(array $configures = []): self
     {
         // ドメイン設定されている
         $is_domainable = $this->isDomainable($configures);
@@ -87,6 +88,8 @@ abstract class Configurable
 
         // 設定値チェック
         $this->validation();
+
+        return $this;
     }
 
 

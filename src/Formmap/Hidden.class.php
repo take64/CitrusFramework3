@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,9 +10,11 @@
 
 namespace Citrus\Formmap;
 
-
 use Citrus\NVL;
 
+/**
+ * 隠し要素
+ */
 class Hidden extends Element
 {
     /**
@@ -50,11 +55,11 @@ class Hidden extends Element
             switch ($this->var_type)
             {
                 // datetime
-                case Element::VAR_TYPE_DATETIME :
+                case ElementType::VAR_TYPE_DATETIME :
                     $value = date('Y-m-d H:i:s', strtotime($this->default));
                     break;
                 // date
-                case Element::VAR_TYPE_DATE :
+                case ElementType::VAR_TYPE_DATE :
                     $value = date('Y-m-d', strtotime($this->default));
                     break;
                 // default
