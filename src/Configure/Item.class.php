@@ -64,6 +64,7 @@ class Item
         $this->paths->bind(NVL::ArrayVL($configure, $key, []));
 
         // routing
+        // TODO: 新しいConfigureへの頭からの修正が必要
         $key = 'routing';
         $this->routing = new Routing();
         $this->routing->bind(NVL::ArrayVL($default_configure, $key, []));
