@@ -34,7 +34,7 @@ class CatalogManagerTest extends TestCase
     private $sqlite_file;
 
     /** @var array 設定配列 */
-    private $configure;
+    private $configures;
 
 
 
@@ -50,15 +50,17 @@ class CatalogManagerTest extends TestCase
         $this->sqlite_file = $this->output_dir . '/test.sqlite';
 
         // 設定配列
-        $this->configure = [
-            'database' => [
-                'type'      => 'sqlite',
-                'hostname'  => $this->sqlite_file,
+        $this->configures = [
+            'migration' => [
+                'database' => [
+                    'type'      => 'sqlite',
+                    'hostname'  => $this->sqlite_file,
+                ],
+                'output_dir' => $this->output_dir,
+                'mode' => 0755,
+                'owner' => posix_getpwuid(posix_geteuid())['name'],
+                'group' => posix_getgrgid(posix_getegid())['name'],
             ],
-            'output_dir' => $this->output_dir,
-            'mode' => 0755,
-            'owner' => posix_getpwuid(posix_geteuid())['name'],
-            'group' => posix_getgrgid(posix_getegid())['name'],
         ];
     }
 
@@ -84,10 +86,11 @@ class CatalogManagerTest extends TestCase
     public function 生成したテーブル情報が取得できる()
     {
         // インスタンスの生成
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()
+            ->loadConfigures($this->configures);
         /** @var DSN $dsn */
         $dsn = new DSN();
-        $dsn->bind($this->configure['database']);
+        $dsn->bind($this->configures['migration']['database']);
         // バージョンマネージャー
         $versionManager = new VersionManager($dsn);
 

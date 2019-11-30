@@ -30,7 +30,7 @@ class DatabasenTest extends TestCase
     private $sqlite_file;
 
     /** @var array 設定配列 */
-    private $configure;
+    private $configures;
 
 
 
@@ -46,16 +46,28 @@ class DatabasenTest extends TestCase
         $this->sqlite_file = $this->output_dir . '/test.sqlite';
 
         // 設定配列
-        $this->configure = [
-            'database' => [
-                'type'      => 'sqlite',
-                'hostname'  => $this->sqlite_file,
+        $this->configures = [
+            'migration' => [
+                'database' => [
+                    'type'      => 'sqlite',
+                    'hostname'  => $this->sqlite_file,
+                ],
+                'output_dir' => $this->output_dir,
+                'mode' => 0755,
+                'owner' => posix_getpwuid(posix_geteuid())['name'],
+                'group' => posix_getgrgid(posix_getegid())['name'],
             ],
-            'output_dir' => $this->output_dir,
-            'mode' => 0755,
-            'owner' => posix_getpwuid(posix_geteuid())['name'],
-            'group' => posix_getgrgid(posix_getegid())['name'],
-            'namespace' => 'Test',
+            'integration' => [
+                'database' => [
+                    'type'      => 'sqlite',
+                    'hostname'  => $this->sqlite_file,
+                ],
+                'output_dir' => $this->output_dir,
+                'mode' => 0755,
+                'owner' => posix_getpwuid(posix_geteuid())['name'],
+                'group' => posix_getgrgid(posix_getegid())['name'],
+                'namespace' => 'Test',
+            ],
         ];
     }
 
@@ -81,7 +93,7 @@ class DatabasenTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        (new Migration($this->configure));
+        Migration::getInstance()->loadConfigures($this->configures);
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));
@@ -97,11 +109,11 @@ class DatabasenTest extends TestCase
     {
         // テーブル生成
         $name = 'CreateTableUsers';
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()->loadConfigures($this->configures);
         $migration->up($name);
 
         // ファイル生成
-        $generate = new Generate($this->configure);
+        $generate = new Generate($this->configures['integration']);
         $generate->all('users', 'User');
 
         // ファイル生成されている

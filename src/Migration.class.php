@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Configure\Configurable;
 use Citrus\Database\DSN;
 use Citrus\Migration\Item;
 use Citrus\Migration\VersionManager;
@@ -17,8 +18,10 @@ use Citrus\Migration\VersionManager;
 /**
  * マイグレーション処理
  */
-class Migration
+class Migration extends Configurable
 {
+    use Singleton;
+
     /** @var string 生成 */
     const ACTION_GENERATE = 'generate';
 
@@ -31,61 +34,30 @@ class Migration
     /** @var string マイグレーションREBIRTH */
     const ACTION_MIGRATION_REBIRTH = 'rebirth';
 
-    /** @var array 設定ファイル */
-    protected $configure;
-
-    /** @var DSN DSN情報 */
-    protected $dsn;
-
     /** @var VersionManager バージョンマネージャー */
     protected $versionManager;
 
 
 
     /**
-     * constructor.
-     *
-     * @param array|null $citrus_configure Citrus設定ファイル
-     * @throws CitrusException
+     * {@inheritDoc}
      */
-    public function __construct(array $citrus_configure = [])
+    public function loadConfigures(array $configures = []): Configurable
     {
-         if (0 < count($citrus_configure))
-         {
-             $this->setupConfigure($citrus_configure);
-         }
-    }
-
-
-
-    /**
-     * 設定ファイルの設定とチェック
-     *
-     * @param array $citrus_configure
-     * @return void
-     * @throws CitrusException
-     */
-    public function setupConfigure(array $citrus_configure): void
-    {
-        // 設定値チェック
-        Configure::requireCheck($citrus_configure, [
-            'database',
-            'mode',
-            'owner',
-            'group',
-            'output_dir',
-        ]);
-        $this->configure = $citrus_configure;
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
 
         // 出力ファイル出力パスの設定
         self::setupOutputDirectory();
 
         // DSN情報
         $dsn = new DSN();
-        $dsn->bind($this->configure['database']);
+        $dsn->bind($this->configures['database']);
 
         // バージョンマネージャー
         $this->versionManager = new VersionManager($dsn);
+
+        return $this;
     }
 
 
@@ -158,7 +130,7 @@ EOT;
     public function up(string $version = null): void
     {
         // 出力パス
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
 
         // 対象ファイルの取得
         $migration_files = scandir($output_dir);
@@ -190,7 +162,7 @@ EOT;
     public function down(string $version = null): void
     {
         // 出力パス
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
 
         // 対象ファイルの取得
         $migration_files = scandir($output_dir);
@@ -238,15 +210,15 @@ EOT;
     private function setupOutputDirectory(): void
     {
         // 出力ディレクトリ
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
 
         // ディレクトリがなければ生成
         if (false === file_exists($output_dir))
         {
             mkdir($output_dir);
-            chmod($output_dir, $this->configure['mode']);
-            chown($output_dir, $this->configure['owner']);
-            chgrp($output_dir, $this->configure['group']);
+            chmod($output_dir, $this->configures['mode']);
+            chown($output_dir, $this->configures['owner']);
+            chgrp($output_dir, $this->configures['group']);
         }
     }
 
@@ -261,7 +233,7 @@ EOT;
      */
     private function saveMigrationFile(string $class_name, string $file_contents): void
     {
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
         file_put_contents(
             sprintf(
                 '%s/%s.class.php',
@@ -305,5 +277,45 @@ EOT;
         // ファイルであれば読み込み
         include_once($class_path);
         return new $class_name();
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'migration';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'mode' => 0755,
+            'owner' => posix_getpwuid(posix_geteuid())['name'],
+            'group' => posix_getgrgid(posix_getegid())['name'],
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+        ];
     }
 }
