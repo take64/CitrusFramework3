@@ -31,7 +31,7 @@ class MigrationTest extends TestCase
     private $sqlite_file;
 
     /** @var array 設定配列 */
-    private $configure;
+    private $configures;
 
 
 
@@ -47,15 +47,17 @@ class MigrationTest extends TestCase
         $this->sqlite_file = $this->output_dir . '/test.sqlite';
 
         // 設定配列
-        $this->configure = [
-            'database' => [
-                'type'      => 'sqlite',
-                'hostname'  => $this->sqlite_file,
+        $this->configures = [
+            'migration' => [
+                'database' => [
+                    'type'      => 'sqlite',
+                    'hostname'  => $this->sqlite_file,
+                ],
+                'output_dir' => $this->output_dir,
+                'mode' => 0755,
+                'owner' => posix_getpwuid(posix_geteuid())['name'],
+                'group' => posix_getgrgid(posix_getegid())['name'],
             ],
-            'output_dir' => $this->output_dir,
-            'mode' => 0755,
-            'owner' => posix_getpwuid(posix_geteuid())['name'],
-            'group' => posix_getgrgid(posix_getegid())['name'],
         ];
     }
 
@@ -81,7 +83,7 @@ class MigrationTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        (new Migration($this->configure));
+        Migration::getInstance()->loadConfigures($this->configures);
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));
@@ -99,7 +101,7 @@ class MigrationTest extends TestCase
         $name = 'CreateTableUsers';
 
         // インスタンス生成と実行
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()->loadConfigures($this->configures);
         $migration->generate($name);
 
         // ファイルができている
@@ -116,10 +118,10 @@ class MigrationTest extends TestCase
     public function マイグレーション_両方向実行()
     {
         // インスタンスの生成
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()->loadConfigures($this->configures);
         /** @var DSN $dsn */
         $dsn = new DSN();
-        $dsn->bind($this->configure['database']);
+        $dsn->bind($migration->configures['database']);
         // 検算用PDO
         $pdo = new \PDO($dsn->toString());
         // バージョンマネージャー
@@ -152,10 +154,10 @@ class MigrationTest extends TestCase
     public function バージョン情報が取れる()
     {
         // インスタンスの生成
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()->loadConfigures($this->configures);
         /** @var DSN $dsn */
         $dsn = new DSN();
-        $dsn->bind($this->configure['database']);
+        $dsn->bind($migration->configures['database']);
 
         // マイグレーションアイテムの生成
         $item = new Citrus_20190101000000_CreateTableUsers();

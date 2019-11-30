@@ -38,7 +38,8 @@ class MigrationCommand extends Command
         $name = $this->parameter('name');
         $version = $this->parameter('version');
 
-        $migration = new Migration($this->configure);
+        $migration = Migration::getInstance()
+            ->loadConfigures($this->configure);
 
         switch ($action)
         {
