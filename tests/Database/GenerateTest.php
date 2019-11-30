@@ -113,7 +113,7 @@ class DatabasenTest extends TestCase
         $migration->up($name);
 
         // ファイル生成
-        $generate = new Generate($this->configures['integration']);
+        $generate = Generate::getInstance()->loadConfigures($this->configures);
         $generate->all('users', 'User');
 
         // ファイル生成されている

@@ -11,17 +11,18 @@ declare(strict_types=1);
 namespace Citrus\Database;
 
 use Citrus\Citrus;
-use Citrus\CitrusException;
 use Citrus\Command\Console;
-use Citrus\Configure;
+use Citrus\Configure\Configurable;
 use Citrus\Database\Catalog\CatalogManager;
+use Citrus\Singleton;
 
 /**
  * データベースオブジェクト生成処理
  */
-class Generate
+class Generate extends Configurable
 {
     use Console;
+    use Singleton;
 
     /** @var string Propertyクラス */
     const TYPE_PROPERTY = 'property';
@@ -35,59 +36,30 @@ class Generate
     /** @var string 全て */
     const TYPE_ALL = 'all';
 
-    /** @var array 設定ファイル */
-    protected $configure;
-
     /** @var CatalogManager カタログマネージャ */
     protected $catalogManager;
 
 
 
     /**
-     * constructor.
-     *
-     * @param array|null $citrus_configure Citrus設定ファイル
-     * @throws CitrusException
+     * {@inheritDoc}
      */
-    public function __construct(array $citrus_configure = [])
+    public function loadConfigures(array $configures = []): Configurable
     {
-        if (0 < count($citrus_configure))
-        {
-            $this->setupConfigure($citrus_configure);
-        }
-    }
-
-
-
-    /**
-     * 設定ファイルの設定とチェック
-     *
-     * @param array $citrus_configure
-     * @return void
-     * @throws CitrusException
-     */
-    public function setupConfigure(array $citrus_configure): void
-    {
-        // 設定値チェック
-        Configure::requireCheck($citrus_configure, [
-            'database',
-            'mode',
-            'owner',
-            'group',
-            'output_dir',
-            'namespace',
-        ]);
-        $this->configure = $citrus_configure;
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
 
         // 出力ファイル出力パスの設定
         self::setupOutputDirectory();
 
         // DSN情報
         $dsn = new DSN();
-        $dsn->bind($this->configure['database']);
+        $dsn->bind($this->configures['database']);
 
         // カタログマネージャ
         $this->catalogManager = new CatalogManager($dsn);
+
+        return $this;
     }
 
 
@@ -103,7 +75,7 @@ class Generate
         // 生成クラス名
         $class_name = $class_prefix;
         // 出力ディレクトリ
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
 
         // propertyファイル内容
         $file_string = <<<EOT
@@ -127,7 +99,7 @@ class {#class_name#}Condition extends {#class_name#}Property
 
 EOT;
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configures['namespace'], $file_string);
         $file_string = str_replace('{#table_name#}', $table_name, $file_string);
         $file_string = str_replace('{#class_name#}', $class_name, $file_string);
 
@@ -149,7 +121,7 @@ EOT;
         // 生成クラス名
         $class_name = $class_prefix;
         // 出力ディレクトリ
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
 
         // ファイル内容
         $file_string = <<<EOT
@@ -180,7 +152,7 @@ EOT;
         }, explode('_', $table_name)));
 
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configures['namespace'], $file_string);
         $file_string = str_replace('{#class_name#}', $class_name, $file_string);
         $file_string = str_replace('{#sqlmap_id#}', $sqlmap_id, $file_string);
         $file_string = str_replace('{#table_name#}', $table_name, $file_string);
@@ -203,7 +175,7 @@ EOT;
         // 生成クラス名
         $class_name = $class_prefix;
         // 出力ディレクトリ
-        $output_dir = $this->configure['output_dir'];
+        $output_dir = $this->configures['output_dir'];
         // カラム定義の取得
         $columns = $this->catalogManager->tableColumns($table_name);
         // コメント定義の取得
@@ -269,7 +241,7 @@ class {#class_name#}Property extends Column
 
 EOT;
         $file_string = str_replace('{#date#}', Citrus::$TIMESTAMP_FORMAT, $file_string);
-        $file_string = str_replace('{#namespace#}', $this->configure['namespace'], $file_string);
+        $file_string = str_replace('{#namespace#}', $this->configures['namespace'], $file_string);
         $file_string = str_replace('{#class_name#}', $class_name, $file_string);
         $file_string = str_replace('{#primary_keys#}', sprintf('\'%s\'', implode('\', \'', $primary_keys)), $file_string);
 
@@ -372,7 +344,7 @@ EOT;
     private function setupOutputDirectory(): void
     {
         // 出力ディレクトリ
-        $parent_dir = $this->configure['output_dir'];
+        $parent_dir = $this->configures['output_dir'];
 
         // 各ディレクトリ
         $dirs = [
@@ -390,10 +362,51 @@ EOT;
             if (false === file_exists($output_dir))
             {
                 mkdir($output_dir);
-                chmod($output_dir, $this->configure['mode']);
-                chown($output_dir, $this->configure['owner']);
-                chgrp($output_dir, $this->configure['group']);
+                chmod($output_dir, $this->configures['mode']);
+                chown($output_dir, $this->configures['owner']);
+                chgrp($output_dir, $this->configures['group']);
             }
         }
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'integration';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'mode' => 0755,
+            'owner' => posix_getpwuid(posix_geteuid())['name'],
+            'group' => posix_getgrgid(posix_getegid())['name'],
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+            'namespace',
+        ];
     }
 }
