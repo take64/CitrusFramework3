@@ -15,8 +15,8 @@ use Citrus\Configure\ConfigureException;
 use Citrus\Logger\Cloudwatch;
 use Citrus\Logger\File;
 use Citrus\Logger\Level;
-use Citrus\Logger\Syslog;
 use Citrus\Logger\LogType;
+use Citrus\Logger\Syslog;
 use Citrus\Variable\Singleton;
 
 /**
