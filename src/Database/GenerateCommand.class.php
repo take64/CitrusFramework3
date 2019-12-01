@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -8,6 +11,7 @@
 namespace Citrus\Database;
 
 use Citrus\Command;
+use Citrus\Configure\ConfigureException;
 
 /**
  * データベースエンティティ生成コマンド
@@ -25,6 +29,7 @@ class GenerateCommand extends Command
 
     /**
      * {@inheritDoc}
+     * @throws ConfigureException
      */
     public function execute(): void
     {
@@ -34,7 +39,7 @@ class GenerateCommand extends Command
         $table_name = $this->parameter('table_name');
         $class_prefix = $this->parameter('class_prefix');
 
-        $generate = new Generate($this->configures);
+        $generate = Generate::getInstance()->loadConfigures($this->configures);
 
         // 実行
         switch ($type)
