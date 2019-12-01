@@ -34,7 +34,7 @@ class GenerateCommand extends Command
         $table_name = $this->parameter('table_name');
         $class_prefix = $this->parameter('class_prefix');
 
-        $generate = new Generate($this->configure);
+        $generate = new Generate($this->configures);
 
         // 実行
         switch ($type)

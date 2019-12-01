@@ -19,7 +19,7 @@ class Command extends Struct
     public $script = '';
 
     /** @var array configure */
-    public $configure = [];
+    public $configures = [];
 
     /** @var array command options */
     protected $options = [];
@@ -100,13 +100,13 @@ class Command extends Struct
     /**
      * コマンドランナー
      *
-     * @param array $configure 設定情報
+     * @param array $configures 設定情報
      * @return void
      */
-    public static function runner(array $configure): void
+    public static function runner(array $configures): void
     {
         $command = new static();
-        $command->configure = $configure;
+        $command->configures = $configures;
         $command->options();
         $command->before();
         $command->execute();

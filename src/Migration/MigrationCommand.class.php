@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -38,8 +41,7 @@ class MigrationCommand extends Command
         $name = $this->parameter('name');
         $version = $this->parameter('version');
 
-        $migration = Migration::getInstance()
-            ->loadConfigures($this->configure);
+        $migration = Migration::getInstance()->loadConfigures($this->configures);
 
         switch ($action)
         {
