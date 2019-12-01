@@ -17,7 +17,6 @@ use Citrus\Logger;
  */
 trait Structs
 {
-
     /**
      * compare object
      *

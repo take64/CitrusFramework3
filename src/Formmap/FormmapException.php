@@ -17,5 +17,4 @@ use Citrus\CitrusException;
  */
 class FormmapException extends CitrusException
 {
-
 }

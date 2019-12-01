@@ -80,7 +80,7 @@ class Executor
     }
 
 
-    
+
     /**
      * begin transaction
      *
