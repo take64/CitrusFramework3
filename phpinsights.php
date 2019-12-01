@@ -33,7 +33,24 @@ return [
         //  ],
         ObjectCalisthenics\Sniffs\NamingConventions\ElementNameMinimalLengthSniff::class => [
             'minLength' => 3,
-            'allowedShortNames' => ['i', 'id', 'to', 'up', 'ky', 'vl'],
+            'allowedShortNames' => ['i', 'id', 'to', 'up', 'ky', 'vl', 'e'],
+        ],
+        PhpCsFixer\Fixer\CastNotation\CastSpacesFixer::class => [
+            'space' => 'none',
+        ],
+        PhpCsFixer\Fixer\Basic\BracesFixer::class => [
+            'allow_single_line_closure' => false,
+            'position_after_anonymous_constructs' => 'next',
+            'position_after_control_structures' => 'next',
+            'position_after_functions_and_oop_constructs' => 'next',
+        ],
+        SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff::class => [
+            'linesCountBeforeFirstContent' => 0,
+            'linesCountBetweenDescriptionAndAnnotations' => 1,
+            'linesCountBetweenDifferentAnnotationsTypes' => 0,
+            'linesCountBetweenAnnotationsGroups' => 0,
+            'linesCountAfterLastContent' => 0,
+            'annotationsGroups' => [],
         ],
     ],
 ];
