@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,10 +10,18 @@
 
 namespace Citrus\Database;
 
-use Citrus\Struct;
+use Citrus\Configure\Configurable;
+use Citrus\Singleton;
+use Citrus\Variable\Structs;
 
-class DSN extends Struct
+/**
+ * DSN定義
+ */
+class DSN extends Configurable
 {
+    use Singleton;
+    use Structs;
+
     /** @var string[] PostgreSQL */
     public const TYPES_POSTGRESQL = [
         'pgsql',
@@ -43,6 +54,23 @@ class DSN extends Struct
 
     /** @var string */
     public $password;
+
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return self
+     */
+    public function loadConfigures(array $configures = []): Configurable
+    {
+        parent::loadConfigures($configures);
+
+        // bind
+        $this->bindArray($this->configures);
+
+        return $this;
+    }
 
 
 
@@ -130,5 +158,39 @@ class DSN extends Struct
     public function isSQLite()
     {
         return in_array($this->type, self::TYPES_SQLITE, true);
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'database';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'type',
+            'hostname',
+            'database',
+        ];
     }
 }
