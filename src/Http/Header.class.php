@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,6 +10,9 @@
 
 namespace Citrus\Http;
 
+/**
+ * HTTPヘッダー処理
+ */
 class Header
 {
     /**
@@ -15,6 +21,6 @@ class Header
      */
     public static function status404()
     {
-        header("HTTP/1.0 404 Not Found");
+        header('HTTP/1.0 404 Not Found');
     }
 }
