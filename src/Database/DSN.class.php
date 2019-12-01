@@ -190,7 +190,6 @@ class DSN extends Configurable
         return [
             'type',
             'hostname',
-            'database',
         ];
     }
 }

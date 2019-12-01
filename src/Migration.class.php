@@ -52,8 +52,7 @@ class Migration extends Configurable
         self::setupOutputDirectory();
 
         // DSN情報
-        $dsn = new DSN();
-        $dsn->bind($this->configures['database']);
+        $dsn = DSN::getInstance()->loadConfigures($this->configures);
 
         // バージョンマネージャー
         $this->versionManager = new VersionManager($dsn);
