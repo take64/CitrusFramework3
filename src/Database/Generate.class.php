@@ -14,7 +14,7 @@ use Citrus\Citrus;
 use Citrus\Command\Console;
 use Citrus\Configure\Configurable;
 use Citrus\Database\Catalog\CatalogManager;
-use Citrus\Singleton;
+use Citrus\Variable\Singleton;
 
 /**
  * データベースオブジェクト生成処理

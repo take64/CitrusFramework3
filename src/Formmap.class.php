@@ -14,6 +14,7 @@ use Citrus\Configure\Configurable;
 use Citrus\Formmap\Element;
 use Citrus\Formmap\ElementType;
 use Citrus\Formmap\FormmapException;
+use Citrus\Variable\Singleton;
 use Exception;
 
 /**

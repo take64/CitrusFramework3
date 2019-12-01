@@ -17,6 +17,7 @@ use Citrus\Logger\File;
 use Citrus\Logger\Level;
 use Citrus\Logger\Syslog;
 use Citrus\Logger\LogType;
+use Citrus\Variable\Singleton;
 
 /**
  * ログ処理

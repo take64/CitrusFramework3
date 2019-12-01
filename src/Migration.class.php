@@ -14,6 +14,7 @@ use Citrus\Configure\Configurable;
 use Citrus\Database\DSN;
 use Citrus\Migration\Item;
 use Citrus\Migration\VersionManager;
+use Citrus\Variable\Singleton;
 
 /**
  * マイグレーション処理

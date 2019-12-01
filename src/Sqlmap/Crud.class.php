@@ -9,7 +9,7 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Logger;
 use Citrus\Message;
-use Citrus\Singleton;
+use Citrus\Variable\Singleton;
 use Citrus\Database\Column;
 use Citrus\Database\Result;
 

@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Citrus\Database;
 
 use Citrus\Configure\Configurable;
-use Citrus\Singleton;
+use Citrus\Variable\Instance;
 use Citrus\Variable\Structs;
 
 /**
@@ -19,7 +19,7 @@ use Citrus\Variable\Structs;
  */
 class DSN extends Configurable
 {
-    use Singleton;
+    use Instance;
     use Structs;
 
     /** @var string[] PostgreSQL */
