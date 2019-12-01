@@ -334,7 +334,7 @@ class Message extends Accessor
     }
 
 
-    
+
     /**
      * add error
      *
