@@ -8,19 +8,20 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Http;
+namespace Citrus\Variable;
 
 /**
- * HTTPヘッダー処理
+ * インスタンス生成
  */
-class Header
+trait Instance
 {
     /**
-     * status code 404
-     * 404 Not Found を返す
+     * call singleton instance
+     *
+     * @return self
      */
-    public static function status404()
+    public static function getInstance(): self
     {
-        header('HTTP/1.0 404 Not Found');
+        return new static();
     }
 }

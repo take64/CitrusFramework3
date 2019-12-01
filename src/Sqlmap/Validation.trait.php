@@ -7,8 +7,8 @@
 
 namespace Citrus\Sqlmap;
 
-use Citrus\Message;
 use Citrus\Database\Column;
+use Citrus\Message;
 
 trait Validation
 {

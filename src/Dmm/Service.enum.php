@@ -53,7 +53,7 @@ class Service
 
     /** @var string service dmm.r18 電子書籍 */
     const R18_EBOOK = 'ebook';
-    
+
     /** @var array service dmm.r18の一覧 */
     public static $SERVICE_R18_NAMES = [
         self::R18_DIGITAL   => '動画',

@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Citrus\Configure;
 
-use Citrus\Singleton;
+use Citrus\Variable\Singleton;
 use Citrus\Variable\Structs;
 
 /**

@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Citrus\Configure;
 
-use Citrus\NVL;
 use Citrus\Database\DSN;
+use Citrus\NVL;
 
 /**
  * 設定アイテム

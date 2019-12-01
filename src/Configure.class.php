@@ -271,43 +271,4 @@ class Configure
         $configure = array_merge($configure, NVL::ArrayVL($configure_default, $configure_key, []));
         return array_merge($configure, NVL::ArrayVL($configure_addition, $configure_key, []));
     }
-
-
-
-    /**
-     * 設定配列から指定キーで取得
-     *
-     * @param array       $configure 設定配列
-     * @param string      $key       設定キー
-     * @param string|null $domain    ドメイン指定
-     * @return array 指定キーの設定配列
-     */
-    public static function call(array $configure, string $key, string $domain = null): array
-    {
-        $default = $configure['default'][$key] ?? [];
-        $override = $configure[$domain][$key] ?? [];
-
-        return array_merge($default, $override);
-    }
-
-
-
-    /**
-     * 必須チェック
-     *
-     * @param array    $configure    設定ファイル
-     * @param string[] $require_keys 必須キー配列
-     * @return void
-     * @throws CitrusException
-     */
-    public static function requireCheck(array $configure, array $require_keys): void
-    {
-        foreach ($require_keys as $key)
-        {
-            if (false === array_key_exists($key, $configure))
-            {
-                throw new ConfigureException(sprintf('設定ファイルに %s の設定が存在しません', $key));
-            }
-        }
-    }
 }

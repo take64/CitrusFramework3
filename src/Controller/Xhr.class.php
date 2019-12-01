@@ -94,7 +94,7 @@ class Xhr
         try
         {
             $actionName = Session::$router->action;
-            
+
             $result = new Element();
             $this->initialize();
             $result->results = $this->$actionName();
@@ -337,7 +337,7 @@ class Xhr
             $condition->orderby = $this->default_orderby;
         }
         $condition->pageLimit();
-        
+
         // call list
         $list = $this->callService()->facesSelections($condition);
         $count = 0;
@@ -381,7 +381,7 @@ class Xhr
         // get form data
         $this->callFormmap()->load($this->formmap_namespace.'.php');
         $this->callFormmap()->bind();
-        
+
         // call
         /** @var Column|Condition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_suggest_id);

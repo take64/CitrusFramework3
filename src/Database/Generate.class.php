@@ -14,7 +14,7 @@ use Citrus\Citrus;
 use Citrus\Command\Console;
 use Citrus\Configure\Configurable;
 use Citrus\Database\Catalog\CatalogManager;
-use Citrus\Singleton;
+use Citrus\Variable\Singleton;
 
 /**
  * データベースオブジェクト生成処理
@@ -53,8 +53,7 @@ class Generate extends Configurable
         self::setupOutputDirectory();
 
         // DSN情報
-        $dsn = new DSN();
-        $dsn->bind($this->configures['database']);
+        $dsn = DSN::getInstance()->loadConfigures($this->configures);
 
         // カタログマネージャ
         $this->catalogManager = new CatalogManager($dsn);

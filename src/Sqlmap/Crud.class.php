@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,18 +10,18 @@
 
 namespace Citrus\Sqlmap;
 
-use Citrus\Logger;
-use Citrus\Message;
-use Citrus\Singleton;
 use Citrus\Database\Column;
 use Citrus\Database\Result;
+use Citrus\Logger;
+use Citrus\Message;
+use Citrus\Variable\Singleton;
 
+/**
+ * sqlmap CRUD
+ */
 class Crud extends Client
 {
-    use Singleton
-    {
-        callSingleton as public sharedDao;
-    }
+    use Singleton;
     use Validation;
 
     /** id summary */

@@ -120,8 +120,7 @@ class MigrationTest extends TestCase
         // インスタンスの生成
         $migration = Migration::getInstance()->loadConfigures($this->configures);
         /** @var DSN $dsn */
-        $dsn = new DSN();
-        $dsn->bind($migration->configures['database']);
+        $dsn = DSN::getInstance()->loadConfigures($migration->configures);
         // 検算用PDO
         $pdo = new \PDO($dsn->toString());
         // バージョンマネージャー
@@ -149,16 +148,9 @@ class MigrationTest extends TestCase
 
     /**
      * @test
-     * @throws CitrusException
      */
     public function バージョン情報が取れる()
     {
-        // インスタンスの生成
-        $migration = Migration::getInstance()->loadConfigures($this->configures);
-        /** @var DSN $dsn */
-        $dsn = new DSN();
-        $dsn->bind($migration->configures['database']);
-
         // マイグレーションアイテムの生成
         $item = new Citrus_20190101000000_CreateTableUsers();
         // 検算

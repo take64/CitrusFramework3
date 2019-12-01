@@ -12,13 +12,11 @@ use Citrus\Database\Result;
 use Citrus\Sqlmap\Client;
 use Citrus\Sqlmap\Crud;
 use Citrus\Sqlmap\SqlmapException;
+use Citrus\Variable\Singleton;
 
 class Service
 {
-    use Singleton
-    {
-        callSingleton as public sharedService;
-    }
+    use Singleton;
 
     /** @var Crud citrus object */
     protected $dao = null;
@@ -189,7 +187,7 @@ class Service
     }
 
 
-    
+
     /**
      * modify record
      *

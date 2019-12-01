@@ -14,8 +14,8 @@ use Citrus\Configure;
 use Citrus\Database\Column;
 use DOMDocument;
 use DOMElement;
-use DOMXPath;
 use DOMNodeList;
+use DOMXPath;
 
 /**
  * Sqlmapパーサー
@@ -70,7 +70,7 @@ class Parser
         $this->dom = new DOMDocument();
         $this->dom->load(realpath($path));
         $this->xpath = new DOMXPath($this->dom);
-        $nodeList = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']");
+        $nodeList = $this->xpath->query('/sqlMap/'.$transaction."[@id='".$id."']");
         if ($nodeList->length == 0)
         {
             trigger_error(sprintf('Warning: Undefined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
@@ -79,7 +79,7 @@ class Parser
         {
             trigger_error(sprintf('Warning: Duplicate defined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
         }
-        $element = $this->xpath->query("/sqlMap/".$transaction."[@id='".$id."']")->item(0);
+        $element = $this->xpath->query('/sqlMap/'.$transaction."[@id='".$id."']")->item(0);
 
         // statement
         $this->statement = new Statement($element->attributes);
