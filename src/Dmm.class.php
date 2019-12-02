@@ -112,7 +112,6 @@ class Dmm
         }
         $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ITEM_RANK);
 
-
         // パラメータの順序を昇順に並び替え
         ksort($params);
 
@@ -247,7 +246,6 @@ class Dmm
             $item->prices['price'] = str_replace('~', '', $item->prices['price']);
         }
 
-
         $volume = 0;
         $volume_key = 'volume';
         if (isset($data[$volume_key]) === true)
@@ -326,7 +324,6 @@ class Dmm
         $item->prefectures  = $data['prefectures'];
         $item->imageURL     = NVL::ArrayVL($data, 'imageURL', null);
         $item->listURL      = NVL::ArrayVL($data, 'listURL', null);
-
 
         // SSL対応
         if (self::$SSL === true)
