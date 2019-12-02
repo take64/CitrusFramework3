@@ -129,48 +129,6 @@ class Xhr
 
 
     /**
-     * initialize method
-     *
-     * @return string|null
-     */
-    protected function initialize()
-    {
-        return null;
-    }
-
-
-
-    /**
-     * release method
-     *
-     * @return string|null
-     */
-    protected function release()
-    {
-        return null;
-    }
-
-
-
-    /**
-     * call formmap element
-     *
-     * @return Formmap
-     * @throws ConfigureException
-     */
-    protected function callFormmap() : Formmap
-    {
-        if (is_null($this->formmap) === true)
-        {
-            $this->formmap = Formmap::getInstance()
-                ->loadConfigures(Configure::$CONFIGURES);
-        }
-        return $this->formmap;
-    }
-
-
-
-    /**
      * call faces summary list
      * サマリリストの取得
      *
@@ -482,5 +440,47 @@ class Xhr
             $this->service = new Service();
         }
         return $this->service;
+    }
+
+
+
+    /**
+     * initialize method
+     *
+     * @return string|null
+     */
+    protected function initialize()
+    {
+        return null;
+    }
+
+
+
+    /**
+     * release method
+     *
+     * @return string|null
+     */
+    protected function release()
+    {
+        return null;
+    }
+
+
+
+    /**
+     * call formmap element
+     *
+     * @return Formmap
+     * @throws ConfigureException
+     */
+    protected function callFormmap() : Formmap
+    {
+        if (is_null($this->formmap) === true)
+        {
+            $this->formmap = Formmap::getInstance()
+                ->loadConfigures(Configure::$CONFIGURES);
+        }
+        return $this->formmap;
     }
 }

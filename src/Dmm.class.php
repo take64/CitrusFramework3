@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -11,6 +14,9 @@ use Citrus\Dmm\Actress;
 use Citrus\Dmm\Condition;
 use Citrus\Dmm\Item;
 
+/**
+ * DMMのAPI通信処理
+ */
 class Dmm
 {
     /** API_IDのキー */
@@ -139,6 +145,74 @@ class Dmm
 
 
     /**
+     * search dmm actorss
+     *
+     * @param Condition $condition
+     * @return Item[]
+     */
+    public static function searchActresses(Condition $condition) : array
+    {
+        // initialize
+        self::initialize();
+
+        $baseurl = 'https://api.dmm.com/affiliate/v3/ActressSearch';
+        $params = [
+            'api_id'        => self::$API_ID,
+            'affiliate_id'  => self::$AFFILIATE_ID,
+            'hits'          => $condition->hits,
+            'sort'          => $condition->sort,
+            'offset'        => $condition->offset,
+            'output'        => 'json',
+        ];
+        if (is_null($condition->keyword) === false)
+        {
+            $params['keyword'] = mb_convert_encoding($condition->keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
+        }
+        if (is_null($condition->actress_id) === false)
+        {
+            $params['actress_id'] = $condition->actress_id;
+        }
+        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ACTORERSS_ID_ASC);
+
+        // パラメータの順序を昇順に並び替え
+        ksort($params);
+
+        // query を作成します
+        $http_query = http_build_query($params);
+
+        // URL を作成します
+        $url = $baseurl . '?' . $http_query;
+
+        // url request
+        $data = file_get_contents($url);
+
+        if (empty($data) === true)
+        {
+            return null;
+        }
+
+        $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
+        if (isset($data['result']['actress']) === true)
+        {
+            $items = $data['result']['actress'];
+        }
+        else
+        {
+            $items = [];
+        }
+
+        $results = [];
+        foreach ($items as $one)
+        {
+            $results[] = self::convertActress($one);
+        }
+
+        return $results;
+    }
+
+
+
+    /**
      * convert dmm item
      *
      * @param array $data
@@ -224,74 +298,6 @@ class Dmm
         }
 
         return $item;
-    }
-
-
-
-    /**
-     * search dmm actorss
-     *
-     * @param Condition $condition
-     * @return Item[]
-     */
-    public static function searchActresses(Condition $condition) : array
-    {
-        // initialize
-        self::initialize();
-
-        $baseurl = 'https://api.dmm.com/affiliate/v3/ActressSearch';
-        $params = [
-            'api_id'        => self::$API_ID,
-            'affiliate_id'  => self::$AFFILIATE_ID,
-            'hits'          => $condition->hits,
-            'sort'          => $condition->sort,
-            'offset'        => $condition->offset,
-            'output'        => 'json',
-        ];
-        if (is_null($condition->keyword) === false)
-        {
-            $params['keyword'] = mb_convert_encoding($condition->keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
-        }
-        if (is_null($condition->actress_id) === false)
-        {
-            $params['actress_id'] = $condition->actress_id;
-        }
-        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ACTORERSS_ID_ASC);
-
-        // パラメータの順序を昇順に並び替え
-        ksort($params);
-
-        // query を作成します
-        $http_query = http_build_query($params);
-
-        // URL を作成します
-        $url = $baseurl . '?' . $http_query;
-
-        // url request
-        $data = file_get_contents($url);
-
-        if (empty($data) === true)
-        {
-            return null;
-        }
-
-        $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
-        if (isset($data['result']['actress']) === true)
-        {
-            $items = $data['result']['actress'];
-        }
-        else
-        {
-            $items = [];
-        }
-
-        $results = [];
-        foreach ($items as $one)
-        {
-            $results[] = self::convertActress($one);
-        }
-
-        return $results;
     }
 
 

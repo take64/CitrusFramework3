@@ -302,6 +302,47 @@ EOT;
 
 
     /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'integration';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'mode' => 0755,
+            'owner' => posix_getpwuid(posix_geteuid())['name'],
+            'group' => posix_getgrgid(posix_getegid())['name'],
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+            'namespace',
+        ];
+    }
+
+
+
+    /**
      * テーブルカラムの型からPHPの型に変換
      *
      * @param string $data_type カラムデータタイプ
@@ -366,46 +407,5 @@ EOT;
                 chgrp($output_dir, $this->configures['group']);
             }
         }
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureKey(): string
-    {
-        return 'integration';
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureDefaults(): array
-    {
-        return [
-            'mode' => 0755,
-            'owner' => posix_getpwuid(posix_geteuid())['name'],
-            'group' => posix_getgrgid(posix_getegid())['name'],
-        ];
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureRequires(): array
-    {
-        return [
-            'database',
-            'mode',
-            'owner',
-            'group',
-            'output_dir',
-            'namespace',
-        ];
     }
 }

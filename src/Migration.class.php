@@ -203,6 +203,46 @@ EOT;
 
 
     /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'migration';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'mode' => 0755,
+            'owner' => posix_getpwuid(posix_geteuid())['name'],
+            'group' => posix_getgrgid(posix_getegid())['name'],
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'database',
+            'mode',
+            'owner',
+            'group',
+            'output_dir',
+        ];
+    }
+
+
+
+    /**
      * 出力ファイル格納ディレクトリパスの設定
      *
      * @return void
@@ -277,45 +317,5 @@ EOT;
         // ファイルであれば読み込み
         include_once($class_path);
         return new $class_name();
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureKey(): string
-    {
-        return 'migration';
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureDefaults(): array
-    {
-        return [
-            'mode' => 0755,
-            'owner' => posix_getpwuid(posix_geteuid())['name'],
-            'group' => posix_getgrgid(posix_getegid())['name'],
-        ];
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureRequires(): array
-    {
-        return [
-            'database',
-            'mode',
-            'owner',
-            'group',
-            'output_dir',
-        ];
     }
 }

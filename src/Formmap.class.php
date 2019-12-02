@@ -27,6 +27,9 @@ class Formmap extends Configurable
     /** @var string message tag */
     const MESSAGE_TAG = 'formmap';
 
+    /** @var bool validate null is require safe */
+    public $validate_null_safe = false;
+
     /** @var array(string::'form id' => CitrusFormElement) */
     private $elements = [];
 
@@ -36,14 +39,24 @@ class Formmap extends Configurable
     /** @var array(string::'namespace' => array(string::'form id' => string::'class name')) map array */
     private $classes = [];
 
-    /** @var bool validate null is require safe */
-    public $validate_null_safe = false;
-
     /** @var string[] ファイル読み込みリスト */
     private $loaded_files = [];
 
     /** @var bool bind済みかどうか */
     private $is_bound = false;
+
+
+
+    /**
+     * エレメント取得のマジックメソッド
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->elements[$name];
+    }
 
 
 
@@ -296,20 +309,6 @@ class Formmap extends Configurable
 
         return $object;
     }
-
-
-
-    /**
-     * エレメント取得のマジックメソッド
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->elements[$name];
-    }
-
 
 
     /**

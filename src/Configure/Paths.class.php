@@ -171,20 +171,6 @@ class Paths extends Configurable
 
 
     /**
-     * domain など置換用
-     *
-     * @param string      $search
-     * @param string|null $append_path
-     * @return string
-     */
-    private function replace(string $search, string $append_path = null): string
-    {
-        return str_replace('{#domain#}', $this->domain, $search) . $append_path;
-    }
-
-
-
-    /**
      * {@inheritDoc}
      */
     protected function configureKey(): string
@@ -210,5 +196,19 @@ class Paths extends Configurable
     protected function configureRequires(): array
     {
         return [];
+    }
+
+
+
+    /**
+     * domain など置換用
+     *
+     * @param string      $search
+     * @param string|null $append_path
+     * @return string
+     */
+    private function replace(string $search, string $append_path = null): string
+    {
+        return str_replace('{#domain#}', $this->domain, $search) . $append_path;
     }
 }

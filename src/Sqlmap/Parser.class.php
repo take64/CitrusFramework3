@@ -168,6 +168,24 @@ class Parser
 
 
     /**
+     * generate sqlmap xml parser
+     *
+     * @param string                    $path
+     * @param string                    $transaction
+     * @param string                    $id
+     * @param Column|null $parameter
+     * @return Parser
+     */
+    public static function generateParser(string $path, string $transaction, string $id, Column $parameter = null) : Parser
+    {
+        $parser = new static();
+        $parser->parse($path, $transaction, $id, $parameter);
+        return $parser;
+    }
+
+
+
+    /**
      * text node parser
      * テキストノード処理
      *
@@ -625,23 +643,5 @@ class Parser
             $result = $result->$one;
         }
         return $result;
-    }
-
-
-
-    /**
-     * generate sqlmap xml parser
-     *
-     * @param string                    $path
-     * @param string                    $transaction
-     * @param string                    $id
-     * @param Column|null $parameter
-     * @return Parser
-     */
-    public static function generateParser(string $path, string $transaction, string $id, Column $parameter = null) : Parser
-    {
-        $parser = new static();
-        $parser->parse($path, $transaction, $id, $parameter);
-        return $parser;
     }
 }
