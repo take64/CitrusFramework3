@@ -7,7 +7,6 @@
 
 namespace Citrus\Cache;
 
-
 use Closure;
 
 interface Engine

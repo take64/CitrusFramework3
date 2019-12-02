@@ -7,7 +7,6 @@
 
 namespace Citrus\Aws;
 
-
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Citrus\Aws;
 use Citrus\Configure;
