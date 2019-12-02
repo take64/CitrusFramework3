@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Test;
+namespace Test\Configure;
 
 use Citrus\Configure\Application;
 use Citrus\Configure\ConfigureException;
@@ -26,7 +26,7 @@ class ApplicationTest extends TestCase
     public function 設定を読み込んで適用できる()
     {
         // 設定ファイル
-        $configures = require(dirname(__DIR__). '/tests/citrus-configure.php');
+        $configures = require(dirname(__DIR__) . '/citrus-configure.php');
 
         // 生成
         /** @var Application $application */
