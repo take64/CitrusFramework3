@@ -52,5 +52,8 @@ return [
             'linesCountAfterLastContent' => 0,
             'annotationsGroups' => [],
         ],
+        PhpCsFixer\Fixer\Whitespace\NoExtraBlankLinesFixer::class => [
+            'tokens' => [], // possibles values ['break', 'case', 'continue', 'curly_brace_block', 'default', 'extra', 'parenthesis_brace_block', 'return', 'square_brace_block', 'switch', 'throw', 'use', 'use_trait']
+        ]
     ],
 ];
