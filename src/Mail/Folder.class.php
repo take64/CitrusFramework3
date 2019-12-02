@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2018, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,6 +10,9 @@
 
 namespace Citrus\Mail;
 
+/**
+ * メールフォルダー
+ */
 class Folder
 {
     /**
@@ -17,7 +23,7 @@ class Folder
      */
     public static function purePath(string $folder_path)
     {
-        return preg_replace_callback('/{.*\}(.*)/', function($matches){
+        return preg_replace_callback('/{.*\}(.*)/', function ($matches) {
             return $matches[1];
         }, $folder_path);
     }

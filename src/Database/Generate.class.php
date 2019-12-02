@@ -146,7 +146,7 @@ class {#class_name#}Dao extends Crud
 }
 
 EOT;
-        $sqlmap_id = implode('', array_map(function($key) {
+        $sqlmap_id = implode('', array_map(function ($key) {
             return ucfirst($key);
         }, explode('_', $table_name)));
 
