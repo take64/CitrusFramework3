@@ -69,13 +69,13 @@ class Cache
         switch ($engine)
         {
             // redis
-            case self::ENGINE_REDIS :
+            case self::ENGINE_REDIS:
                 self::$INSTANCE = new Redis($prefix, $expire);
                 self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;
 
             // redis
-            case self::ENGINE_MEMCACHED :
+            case self::ENGINE_MEMCACHED:
                 self::$INSTANCE = new Memcached($prefix, $expire);
                 self::$INSTANCE->connect($configure['host'], $configure['port']);
                 break;

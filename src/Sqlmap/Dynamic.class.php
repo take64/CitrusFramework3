@@ -49,12 +49,24 @@ class Dynamic
             {
                 switch ($name)
                 {
-                    case 'id'               :$this->id              = $value; break;
-                    case 'refid'            :$this->refid           = $value; break;
-                    case 'prepend'          :$this->prepend         = $value; break;
-                    case 'property'         :$this->property        = $value; break;
-                    case 'compareProperty'  :$this->compare_property= $value; break;
-                    case 'compareValue'     :$this->compare_value   = $value; break;
+                    case 'id':
+                        $this->id = $value;
+                        break;
+                    case 'refid':
+                        $this->refid = $value;
+                        break;
+                    case 'prepend':
+                        $this->prepend = $value;
+                        break;
+                    case 'property':
+                        $this->property = $value;
+                        break;
+                    case 'compareProperty':
+                        $this->compare_property = $value;
+                        break;
+                    case 'compareValue':
+                        $this->compare_value = $value;
+                        break;
                     default:
                 }
             }
