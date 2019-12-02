@@ -146,8 +146,7 @@ class Collection
     {
         foreach ($array2 as $ky => $vl)
         {
-            $array1[$ky] = (
-            true === is_array($vl)
+            $array1[$ky] = (true === is_array($vl)
                 ? self::betterMergeRecursive($array1[$ky], $array2[$ky]) // 配列の場合
                 : $array2[$ky]                                           // 配列以外の場合
             );
