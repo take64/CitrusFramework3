@@ -176,7 +176,7 @@ class Parser
      * @param Column|null $parameter
      * @return Parser
      */
-    public static function generateParser(string $path, string $transaction, string $id, Column $parameter = null) : Parser
+    public static function generateParser(string $path, string $transaction, string $id, Column $parameter = null): Parser
     {
         $parser = new static();
         $parser->parse($path, $transaction, $id, $parameter);
@@ -192,7 +192,7 @@ class Parser
      * @param string $text
      * @return Dynamic
      */
-    protected static function _text(string $text) : Dynamic
+    protected static function _text(string $text): Dynamic
     {
         $dynamic = new Dynamic();
         $dynamic->query = ' '.trim($text);
@@ -209,7 +209,7 @@ class Parser
      * @param string $cdata
      * @return Dynamic
      */
-    protected static function _cdata(string $cdata) : Dynamic
+    protected static function _cdata(string $cdata): Dynamic
     {
         $dynamic = new Dynamic();
         $dynamic->query = ' '.trim($cdata);
@@ -226,7 +226,7 @@ class Parser
      * @param string $text
      * @return string
      */
-    protected static function _textQuery(string $text) : string
+    protected static function _textQuery(string $text): string
     {
         return ' '. trim($text);
     }
@@ -240,7 +240,7 @@ class Parser
      * @param string $cdata
      * @return string
      */
-    protected static function _cdataQuery(string $cdata) : string
+    protected static function _cdataQuery(string $cdata): string
     {
         return ' '. trim($cdata);
     }
@@ -254,7 +254,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _dynamic(DOMElement $element) : Dynamic
+    protected function _dynamic(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
         $this->_nodes($element->childNodes, $dynamic);
@@ -271,7 +271,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isNull(DOMElement $element) : Dynamic
+    protected function _isNull(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -292,7 +292,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isNotNull(DOMElement $element) : Dynamic
+    protected function _isNotNull(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -324,7 +324,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isEmpty(DOMElement $element) : Dynamic
+    protected function _isEmpty(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -368,7 +368,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isEqual(DOMElement $element) : Dynamic
+    protected function _isEqual(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -391,7 +391,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isNotEqual(DOMElement $element) : Dynamic
+    protected function _isNotEqual(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -412,7 +412,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isGreaterThan(DOMElement $element) : Dynamic
+    protected function _isGreaterThan(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -434,7 +434,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isGreaterEqual(DOMElement $element) : Dynamic
+    protected function _isGreaterEqual(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -456,7 +456,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isLessThan(DOMElement $element) : Dynamic
+    protected function _isLessThan(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -501,7 +501,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isNumeric(DOMElement $element) : Dynamic
+    protected function _isNumeric(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -523,7 +523,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isDatetime(DOMElement $element) : Dynamic
+    protected function _isDatetime(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -545,7 +545,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _isTrue(DOMElement $element) : Dynamic
+    protected function _isTrue(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
 
@@ -613,7 +613,7 @@ class Parser
      * @param DOMElement $element
      * @return Dynamic
      */
-    protected function _include(DOMElement $element) : Dynamic
+    protected function _include(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
         $include = new Parser();

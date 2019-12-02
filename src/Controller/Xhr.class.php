@@ -135,7 +135,7 @@ class Xhr
      * @return Result
      * @throws CitrusException
      */
-    public function facesSummaries() : Result
+    public function facesSummaries(): Result
     {
         // get form data
         $this->callFormmap()->load($this->formmap_namespace . '.php');
@@ -192,7 +192,7 @@ class Xhr
      * @return Result
      * @throws SqlmapException
      */
-    public function facesDetail() : Result
+    public function facesDetail(): Result
     {
         // condition
         $this->callFormmap()->load($this->formmap_namespace.'.php');
@@ -474,7 +474,7 @@ class Xhr
      * @return Formmap
      * @throws ConfigureException
      */
-    protected function callFormmap() : Formmap
+    protected function callFormmap(): Formmap
     {
         if (is_null($this->formmap) === true)
         {

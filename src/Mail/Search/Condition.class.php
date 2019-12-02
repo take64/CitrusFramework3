@@ -34,7 +34,7 @@ class Condition extends Struct
      * @param string $folder_path フォルダパス
      * @return Condition
      */
-    public static function generateCondition(string $folder_path = self::FOLDER_INBOX) : Condition
+    public static function generateCondition(string $folder_path = self::FOLDER_INBOX): Condition
     {
         $condition = new static();
         $condition->folder_path = $folder_path;
@@ -50,7 +50,7 @@ class Condition extends Struct
      * @param string $folder_path フォルダパス
      * @return Condition
      */
-    public static function generateUids(array $uids, string $folder_path = self::FOLDER_INBOX) : Condition
+    public static function generateUids(array $uids, string $folder_path = self::FOLDER_INBOX): Condition
     {
         $condition = self::generateCondition($folder_path);
         $condition->uids = $uids;
@@ -66,7 +66,7 @@ class Condition extends Struct
      * @param string $folder_path フォルダパス
      * @return Condition
      */
-    public static function generateMsgnos(array $msgnos, string $folder_path = self::FOLDER_INBOX) : Condition
+    public static function generateMsgnos(array $msgnos, string $folder_path = self::FOLDER_INBOX): Condition
     {
         $condition = self::generateCondition($folder_path);
         $condition->msgnos = $msgnos;

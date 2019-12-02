@@ -229,7 +229,7 @@ class Formmap extends Configurable
      * @param string|null $form_id
      * @return int
      */
-    public function validate(string $form_id = null) : int
+    public function validate(string $form_id = null): int
     {
         try
         {

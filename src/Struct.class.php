@@ -33,7 +33,7 @@ class Struct
      *
      * @return array
      */
-    public function properties() : array
+    public function properties(): array
     {
         return get_object_vars($this);
     }
@@ -45,7 +45,7 @@ class Struct
      *
      * @return string
      */
-    public function serialize() : string
+    public function serialize(): string
     {
         return serialize($this);
     }
@@ -57,7 +57,7 @@ class Struct
      *
      * @return string
      */
-    public function getClass() : string
+    public function getClass(): string
     {
         return get_class($this);
     }

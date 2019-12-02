@@ -78,7 +78,7 @@ class Dmm
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchItems(Condition $condition) : array
+    public static function searchItems(Condition $condition): array
     {
         // initialize
         self::initialize();
@@ -149,7 +149,7 @@ class Dmm
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchActresses(Condition $condition) : array
+    public static function searchActresses(Condition $condition): array
     {
         // initialize
         self::initialize();
@@ -217,7 +217,7 @@ class Dmm
      * @param array $data
      * @return Item
      */
-    private static function convertItem(array $data) : Item
+    private static function convertItem(array $data): Item
     {
         $item = new Item();
 
@@ -306,7 +306,7 @@ class Dmm
      * @param array $data
      * @return Actress
      */
-    private static function convertActress(array $data) : Actress
+    private static function convertActress(array $data): Actress
     {
         $item = new Actress();
 

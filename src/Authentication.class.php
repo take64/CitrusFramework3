@@ -96,7 +96,7 @@ class Authentication
      *
      * @return bool ture:認証成功, false:認証失敗
      */
-    public static function deauthorize() : bool
+    public static function deauthorize(): bool
     {
         if (is_null(self::$INSTANCE) === true)
         {

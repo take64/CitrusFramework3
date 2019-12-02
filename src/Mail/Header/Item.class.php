@@ -133,7 +133,7 @@ class Item extends Struct
      * @param string $mimeString MIME文字列
      * @return string
      */
-    public static function decodeMIME(string $mimeString = null) : string
+    public static function decodeMIME(string $mimeString = null): string
     {
         if (is_null($mimeString) === true)
         {

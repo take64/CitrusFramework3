@@ -39,7 +39,7 @@ interface Engine
      * @param mixed $key
      * @return bool
      */
-    public function exists($key) : bool;
+    public function exists($key): bool;
 
 
 

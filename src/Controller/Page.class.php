@@ -187,7 +187,7 @@ class Page extends Struct
      *
      * @return Pagecode
      */
-    protected function callPagecode() : Pagecode
+    protected function callPagecode(): Pagecode
     {
         if (is_null($this->pagecode) === true)
         {
@@ -210,7 +210,7 @@ class Page extends Struct
      * @return Formmap
      * @throws ConfigureException
      */
-    protected function callFormmap() : Formmap
+    protected function callFormmap(): Formmap
     {
         if (true === is_null($this->formmap))
         {
@@ -227,7 +227,7 @@ class Page extends Struct
      *
      * @return Smarty3
      */
-    protected function callSmarty() : Smarty3
+    protected function callSmarty(): Smarty3
     {
         if (is_null($this->smarty) === true)
         {

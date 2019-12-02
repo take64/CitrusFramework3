@@ -94,7 +94,7 @@ class Item extends Struct
      *
      * @return mixed[]
      */
-    public function properties() : array
+    public function properties(): array
     {
         $result = [];
         $property_keys = array_keys(parent::properties());

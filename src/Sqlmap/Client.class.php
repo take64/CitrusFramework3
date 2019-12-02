@@ -76,7 +76,7 @@ class Client
      * @return bool
      * @throws SqlmapException
      */
-    public function insert(string $id, Column $parameter) : bool
+    public function insert(string $id, Column $parameter): bool
     {
         $parser = Parser::generateParser($this->sqlmap_path, 'insert', $id, $parameter);
         return Executor::insert($parser->statement, $parser->parameter_list);
@@ -92,7 +92,7 @@ class Client
      * @return bool
      * @throws SqlmapException
      */
-    public function update(string $id, Column $parameter) : bool
+    public function update(string $id, Column $parameter): bool
     {
         $parser = Parser::generateParser($this->sqlmap_path, 'update', $id, $parameter);
         return Executor::update($parser->statement, $parser->parameter_list);
@@ -108,7 +108,7 @@ class Client
      * @return bool
      * @throws SqlmapException
      */
-    public function delete(string $id, Column $parameter) : bool
+    public function delete(string $id, Column $parameter): bool
     {
         $parser = Parser::generateParser($this->sqlmap_path, 'delete', $id, $parameter);
         return Executor::delete($parser->statement, $parser->parameter_list);
@@ -125,7 +125,7 @@ class Client
      * @return array|Column[]
      * @throws SqlmapException
      */
-    public function queryForList(string $id, Column $parameter, Parser $parser = null) : array
+    public function queryForList(string $id, Column $parameter, Parser $parser = null): array
     {
         $parser = $parser ?: Parser::generateParser($this->sqlmap_path, 'select', $id, $parameter);
         return Executor::select($parser->statement, $parser->parameter_list);
@@ -145,7 +145,7 @@ class Client
     public function queryForObject(string $id, Column $_parameter = null, Parser $parser = null)
     {
         /** @var Condition $parameter */
-        $parameter = (is_null($_parameter) === true ? new Column() : clone $_parameter);
+        $parameter = (is_null($_parameter) === true ? new Column(): clone $_parameter);
         if (is_null($parameter->limit) === true)
         {
             $parameter->limit = 1;
@@ -222,7 +222,7 @@ class Client
      *
      * @return bool
      */
-    public function isValidate() : bool
+    public function isValidate(): bool
     {
         return $this->flg_validate;
     }
@@ -254,7 +254,7 @@ class Client
      *
      * @return bool
      */
-    public function isMessage() : bool
+    public function isMessage(): bool
     {
         return $this->flg_message;
     }

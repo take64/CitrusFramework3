@@ -129,7 +129,7 @@ trait Condition
      * @param string|null $property
      * @return string
      */
-    public static function like(string $property = null) : string
+    public static function like(string $property = null): string
     {
         if (is_string($property) === true)
         {
@@ -150,7 +150,7 @@ trait Condition
      * @param string|null $property
      * @return string
      */
-    public static function likePrefix(string $property = null) : string
+    public static function likePrefix(string $property = null): string
     {
         if (is_string($property) === true)
         {
@@ -171,7 +171,7 @@ trait Condition
      * @param string|null $property
      * @return string
      */
-    public static function likeSuffix(string $property = null) : string
+    public static function likeSuffix(string $property = null): string
     {
         if (is_string($property) === true)
         {
