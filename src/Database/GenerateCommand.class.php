@@ -29,6 +29,7 @@ class GenerateCommand extends Command
 
     /**
      * {@inheritDoc}
+     * 
      * @throws ConfigureException
      */
     public function execute(): void
