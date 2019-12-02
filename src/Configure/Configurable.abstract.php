@@ -27,33 +27,6 @@ abstract class Configurable
 
 
     /**
-     * 設定ルートキー
-     *
-     * @return string
-     */
-    abstract protected function configureKey(): string;
-
-
-
-    /**
-     * デフォルト設定値
-     *
-     * @return array [['設定キー' => '設定値', ...]]
-     */
-    abstract protected function configureDefaults(): array;
-
-
-
-    /**
-     * 必須設定値
-     *
-     * @return string[]
-     */
-    abstract protected function configureRequires(): array;
-
-
-
-    /**
      * 設定値配列の読み込み
      *
      * @param array $configures 設定値配列(全て)
@@ -91,6 +64,33 @@ abstract class Configurable
 
         return $this;
     }
+
+
+
+    /**
+     * 設定ルートキー
+     *
+     * @return string
+     */
+    abstract protected function configureKey(): string;
+
+
+
+    /**
+     * デフォルト設定値
+     *
+     * @return array [['設定キー' => '設定値', ...]]
+     */
+    abstract protected function configureDefaults(): array;
+
+
+
+    /**
+     * 必須設定値
+     *
+     * @return string[]
+     */
+    abstract protected function configureRequires(): array;
 
 
 

@@ -133,7 +133,7 @@ class Executor
      * @return Column[]
      * @throws SqlmapException
      */
-    public static function select(Statement $statement, array $parameters = null) : array
+    public static function select(Statement $statement, array $parameters = null): array
     {
         // 結果クラス
         $instance = self::generateResultInstance($statement);
@@ -209,7 +209,7 @@ class Executor
      * @return int
      * @throws SqlmapException
      */
-    public static function insert(Statement $statement, array $parameters = null) : int
+    public static function insert(Statement $statement, array $parameters = null): int
     {
         // クエリ実行
         try
@@ -250,7 +250,7 @@ class Executor
      * @return int
      * @throws SqlmapException
      */
-    public static function update(Statement $statement, array $parameters = null) : int
+    public static function update(Statement $statement, array $parameters = null): int
     {
         // クエリ実行
         try
@@ -291,7 +291,7 @@ class Executor
      * @return int
      * @throws SqlmapException
      */
-    public static function delete(Statement $statement, array $parameters = null) : int
+    public static function delete(Statement $statement, array $parameters = null): int
     {
         // クエリ実行
         try
@@ -338,7 +338,7 @@ class Executor
      * @return bool
      * @throws SqlmapException
      */
-    public static function statement(Statement $statement, array $parameters = null) : bool
+    public static function statement(Statement $statement, array $parameters = null): bool
     {
         // クエリ実行
         try

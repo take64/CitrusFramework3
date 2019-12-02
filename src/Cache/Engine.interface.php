@@ -7,7 +7,6 @@
 
 namespace Citrus\Cache;
 
-
 use Closure;
 
 interface Engine
@@ -39,7 +38,7 @@ interface Engine
      * @param mixed $key
      * @return bool
      */
-    public function exists($key) : bool;
+    public function exists($key): bool;
 
 
 

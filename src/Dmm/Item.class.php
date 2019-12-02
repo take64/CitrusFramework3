@@ -47,7 +47,7 @@ class Item
     public $prices = [
         'price' => null,
         'deliveries' => [
-            'delivery' => []
+            'delivery' => [],
         ],
     ];
     public $date = null;

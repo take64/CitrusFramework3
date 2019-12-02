@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2018, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -10,6 +13,9 @@ namespace Citrus\Mail\Header;
 use Citrus\Struct;
 use stdClass;
 
+/**
+ * メールヘッダーアイテム
+ */
 class Item extends Struct
 {
     /** @var string メッセージの題名(subject) */
@@ -127,7 +133,7 @@ class Item extends Struct
      * @param string $mimeString MIME文字列
      * @return string
      */
-    public static function decodeMIME(string $mimeString = null) : string
+    public static function decodeMIME(string $mimeString = null): string
     {
         if (is_null($mimeString) === true)
         {
@@ -138,7 +144,7 @@ class Item extends Struct
         $subject = str_replace('?= =?', '?==?', $mimeString);
 
         // mimeエンコード文字列とタブ文字を見つけて置換する
-        return preg_replace_callback('/(=\?(.*)\?=|\t)/', function($matches){
+        return preg_replace_callback('/(=\?(.*)\?=|\t)/', function ($matches) {
             $match = $matches[0];
             // 内容がタブ文字、もしくは不明mimeの場合
             if ($match === "\t" || stripos($match, '=?x-unknown?B?') === 0)

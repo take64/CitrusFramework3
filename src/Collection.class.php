@@ -72,29 +72,6 @@ class Collection
 
 
     /**
-     * 両方の要素を残したいい感じの配列マージ
-     *
-     * @param array $array1
-     * @param array $array2
-     * @return array
-     */
-    private static function betterMergeRecursive(array $array1, array $array2): array
-    {
-        foreach ($array2 as $ky => $vl)
-        {
-            $array1[$ky] = (
-            true === is_array($vl)
-                ? self::betterMergeRecursive($array1[$ky], $array2[$ky]) // 配列の場合
-                : $array2[$ky]                                           // 配列以外の場合
-            );
-        }
-
-        return $array1;
-    }
-
-
-
-    /**
      * callable無名関数がtrueの場合に配列要素を残す
      *
      * @param callable $callable
@@ -154,5 +131,27 @@ class Collection
         }
         $this->source = $results;
         return $this;
+    }
+
+
+
+    /**
+     * 両方の要素を残したいい感じの配列マージ
+     *
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+    private static function betterMergeRecursive(array $array1, array $array2): array
+    {
+        foreach ($array2 as $ky => $vl)
+        {
+            $array1[$ky] = (true === is_array($vl)
+                ? self::betterMergeRecursive($array1[$ky], $array2[$ky]) // 配列の場合
+                : $array2[$ky]                                           // 配列以外の場合
+            );
+        }
+
+        return $array1;
     }
 }

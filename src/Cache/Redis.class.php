@@ -7,7 +7,6 @@
 
 namespace Citrus\Cache;
 
-
 use Citrus\CitrusException;
 use Closure;
 use RedisException;

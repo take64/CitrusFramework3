@@ -35,7 +35,7 @@ trait Structs
      *
      * @return array
      */
-    public function properties() : array
+    public function properties(): array
     {
         return get_object_vars($this);
     }
@@ -47,7 +47,7 @@ trait Structs
      *
      * @return string
      */
-    public function serialize() : string
+    public function serialize(): string
     {
         return serialize($this);
     }
@@ -59,7 +59,7 @@ trait Structs
      *
      * @return string
      */
-    public function getClass() : string
+    public function getClass(): string
     {
         return get_class($this);
     }

@@ -24,7 +24,7 @@ class Http
      * @param array  $parameters
      * @return string
      */
-    public static function get(string $url, array $parameters = []) : string
+    public static function get(string $url, array $parameters = []): string
     {
         return self::request($url, self::METHOD_GET, $parameters);
     }
@@ -38,7 +38,7 @@ class Http
      * @param mixed  $parameters
      * @return string
      */
-    public static function post(string $url, $parameters = []) : string
+    public static function post(string $url, $parameters = []): string
     {
         return self::request($url, self::METHOD_POST, $parameters);
     }
@@ -53,7 +53,7 @@ class Http
      * @param mixed  $parameters
      * @return string
      */
-    private static function request(string $url, string $method, $parameters) : string
+    private static function request(string $url, string $method, $parameters): string
     {
         // 接続開始
         $handle = curl_init();

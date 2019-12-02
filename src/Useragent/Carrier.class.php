@@ -34,7 +34,7 @@ class Carrier
      *
      * @return array
      */
-    public static function callCarrierList() : array
+    public static function callCarrierList(): array
     {
         return [
             self::DOCOMO,

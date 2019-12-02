@@ -55,7 +55,7 @@ class Builder
      * @param array|null                $columns
      * @return Builder
      */
-    public function select(string $table_name, Column $condition = null, array $columns = null) : Builder
+    public function select(string $table_name, Column $condition = null, array $columns = null): Builder
     {
         // クエリタイプ
         $this->query_type = self::QUERY_TYPE_SELECT;
@@ -138,7 +138,7 @@ class Builder
      * @param Column $value
      * @return Builder
      */
-    public function insert(string $table_name, Column $value) : Builder
+    public function insert(string $table_name, Column $value): Builder
     {
         // クエリタイプ
         $this->query_type = self::QUERY_TYPE_INSERT;
@@ -189,7 +189,7 @@ class Builder
      * @param Column $condition
      * @return Builder
      */
-    public function update(string $table_name, Column $value, Column $condition) : Builder
+    public function update(string $table_name, Column $value, Column $condition): Builder
     {
         // クエリタイプ
         $this->query_type = self::QUERY_TYPE_UPDATE;
@@ -253,7 +253,7 @@ class Builder
      * @param Column $condition
      * @return Builder
      */
-    public function delete(string $table_name, Column $condition) : Builder
+    public function delete(string $table_name, Column $condition): Builder
     {
         // クエリタイプ
         $this->query_type = self::QUERY_TYPE_UPDATE;

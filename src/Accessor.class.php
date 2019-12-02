@@ -20,7 +20,7 @@ class Accessor
      *
      * @return array
      */
-    public function properties() : array
+    public function properties(): array
     {
         return get_object_vars($this);
     }

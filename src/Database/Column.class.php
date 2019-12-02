@@ -46,7 +46,7 @@ class Column extends Struct
     /**
      * {@inheritdoc}
      */
-    public function properties() : array
+    public function properties(): array
     {
         $properties = get_object_vars($this);
         unset($properties['schema']);
@@ -69,7 +69,7 @@ class Column extends Struct
      *
      * @return string[]
      */
-    public function callPrimaryKeys() : array
+    public function callPrimaryKeys(): array
     {
         return [];
     }

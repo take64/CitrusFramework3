@@ -105,6 +105,18 @@ class Element extends Struct
 
 
     /**
+     * to string accesser
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+
+
+    /**
      * generate id and value
      *
      * @param string $id
@@ -117,35 +129,6 @@ class Element extends Struct
             'id' => $id,
             'value' => $value,
         ]);
-    }
-
-
-
-    /**
-     * option appends
-     *
-     * @param array $elements
-     * @param array $appends
-     * @return array
-     */
-    protected static function appendOption(array $elements, array $appends)
-    {
-        foreach ($appends as $ky => $append)
-        {
-            if (isset($elements[$ky]) === true)
-            {
-                if (is_string($elements[$ky]) === true)
-                {
-                    $elements[$ky] = [ $elements[$ky] ];
-                }
-                $elements[$ky][] = $append;
-            }
-            else
-            {
-                $elements[$ky] = [ $append ];
-            }
-        }
-        return $elements;
     }
 
 
@@ -218,48 +201,6 @@ class Element extends Struct
 
 
     /**
-     * フォーム要素を補完する
-     *
-     * @param array|null $elements
-     * @return array
-     */
-    private static function generateTagElement(array $elements = null)
-    {
-        // 要素フォーマット
-        $element_format = '%s="%s"';
-
-        $form_element = [];
-        foreach ($elements as $ky => $vl)
-        {
-            // 基本初期値はnullだが、例外的に空配列[]を利用している為
-            // 0も通したい
-            if (is_null($vl) === true
-                || (is_string($vl) === true && $vl === '')
-                || (is_array($vl) === true && $vl === []))
-            {
-                continue;
-            }
-
-            if (is_array($vl) === true && $ky === 'class')
-            {
-                $form_element[$ky] = sprintf($element_format, $ky, implode(' ', $vl));
-            }
-            else if (is_array($vl) === true)
-            {
-                $form_element[$ky] = sprintf($element_format, $ky, implode(', ', $vl));
-            }
-            else
-            {
-                $form_element[$ky] = sprintf($element_format, $ky, $vl);
-            }
-        }
-
-        return $form_element;
-    }
-
-
-
-    /**
      * call value
      *
      * @return mixed|string
@@ -303,18 +244,6 @@ class Element extends Struct
             return $this->id;
         }
         return sprintf('%s%s', $this->prefix, $this->id);
-    }
-
-
-
-    /**
-     * to string accesser
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
 
@@ -495,5 +424,76 @@ class Element extends Struct
     public function filterLike($value)
     {
         return sprintf('%%%s%%', $value);
+    }
+
+
+
+    /**
+     * option appends
+     *
+     * @param array $elements
+     * @param array $appends
+     * @return array
+     */
+    protected static function appendOption(array $elements, array $appends)
+    {
+        foreach ($appends as $ky => $append)
+        {
+            if (isset($elements[$ky]) === true)
+            {
+                if (is_string($elements[$ky]) === true)
+                {
+                    $elements[$ky] = [ $elements[$ky] ];
+                }
+                $elements[$ky][] = $append;
+            }
+            else
+            {
+                $elements[$ky] = [ $append ];
+            }
+        }
+        return $elements;
+    }
+
+
+
+    /**
+     * フォーム要素を補完する
+     *
+     * @param array|null $elements
+     * @return array
+     */
+    private static function generateTagElement(array $elements = null)
+    {
+        // 要素フォーマット
+        $element_format = '%s="%s"';
+
+        $form_element = [];
+        foreach ($elements as $ky => $vl)
+        {
+            // 基本初期値はnullだが、例外的に空配列[]を利用している為
+            // 0も通したい
+            if (is_null($vl) === true
+                || (is_string($vl) === true && $vl === '')
+                || (is_array($vl) === true && $vl === []))
+            {
+                continue;
+            }
+
+            if (is_array($vl) === true && $ky === 'class')
+            {
+                $form_element[$ky] = sprintf($element_format, $ky, implode(' ', $vl));
+            }
+            else if (is_array($vl) === true)
+            {
+                $form_element[$ky] = sprintf($element_format, $ky, implode(', ', $vl));
+            }
+            else
+            {
+                $form_element[$ky] = sprintf($element_format, $ky, $vl);
+            }
+        }
+
+        return $form_element;
     }
 }

@@ -44,7 +44,7 @@ class Database extends Protocol
      * @param Item $item
      * @return bool ture:認証成功, false:認証失敗
      */
-    public function authorize(Item $item) : bool
+    public function authorize(Item $item): bool
     {
         // ログインID、パスワード のどちらかが null もしくは 空文字 だった場合は認証失敗
         if (empty($item->user_id) === true || empty($item->password) === true)
@@ -93,7 +93,7 @@ class Database extends Protocol
      *
      * @return bool ture:認証成功, false:認証失敗
      */
-    public function deauthorize() : bool
+    public function deauthorize(): bool
     {
         Session::$session->remove(Authentication::SESSION_KEY);
         Session::commit();
@@ -110,7 +110,7 @@ class Database extends Protocol
      * @param Item|null $item
      * @return bool true:チェック成功, false:チェック失敗
      */
-    public function isAuthenticated(Item $item = null) : bool
+    public function isAuthenticated(Item $item = null): bool
     {
         // 指定されない場合はsessionから取得
         if (is_null($item) === true)

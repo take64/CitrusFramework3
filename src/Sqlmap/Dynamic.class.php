@@ -49,12 +49,24 @@ class Dynamic
             {
                 switch ($name)
                 {
-                    case 'id'               :$this->id              = $value; break;
-                    case 'refid'            :$this->refid           = $value; break;
-                    case 'prepend'          :$this->prepend         = $value; break;
-                    case 'property'         :$this->property        = $value; break;
-                    case 'compareProperty'  :$this->compare_property= $value; break;
-                    case 'compareValue'     :$this->compare_value   = $value; break;
+                    case 'id':
+                        $this->id = $value;
+                        break;
+                    case 'refid':
+                        $this->refid = $value;
+                        break;
+                    case 'prepend':
+                        $this->prepend = $value;
+                        break;
+                    case 'property':
+                        $this->property = $value;
+                        break;
+                    case 'compareProperty':
+                        $this->compare_property = $value;
+                        break;
+                    case 'compareValue':
+                        $this->compare_value = $value;
+                        break;
                     default:
                 }
             }
@@ -120,7 +132,7 @@ class Dynamic
      * @param Dynamic $var
      * @return string
      */
-    public static function combine(Dynamic $dynamic, Dynamic $var) : string
+    public static function combine(Dynamic $dynamic, Dynamic $var): string
     {
         if (trim($dynamic->query) && trim($var->query))
         {
@@ -140,7 +152,7 @@ class Dynamic
      *
      * @return string
      */
-    public function getPrepend() : string
+    public function getPrepend(): string
     {
         if (isset($this->prepend) === true)
         {
@@ -156,7 +168,7 @@ class Dynamic
      *
      * @return string
      */
-    public function getQuery() : string
+    public function getQuery(): string
     {
         if (isset($this->query) === true)
         {

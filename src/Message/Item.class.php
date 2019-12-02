@@ -85,10 +85,18 @@ class Item
         {
             switch($type)
             {
-                case self::TYPE_MESSAGE : $name = 'メッセージ'; break;
-                case self::TYPE_WARNING : $name = '注意';      break;
-                case self::TYPE_SUCCESS : $name = '成功';      break;
-                case self::TYPE_ERROR   : $name = 'エラー';    break;
+                case self::TYPE_MESSAGE:
+                    $name = 'メッセージ';
+                    break;
+                case self::TYPE_WARNING:
+                    $name = '注意';
+                    break;
+                case self::TYPE_SUCCESS:
+                    $name = '成功';
+                    break;
+                case self::TYPE_ERROR:
+                    $name = 'エラー';
+                    break;
                 default:
             }
         }

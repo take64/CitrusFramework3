@@ -26,6 +26,9 @@ return [
         PhpCsFixer\Fixer\Operator\TernaryOperatorSpacesFixer::class,
         PhpCsFixer\Fixer\Phpdoc\PhpdocInlineTagFixer::class,
         PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer::class,
+        PhpCsFixer\Fixer\Phpdoc\AlignMultilineCommentFixer::class,
+        PHP_CodeSniffer\Standards\PSR2\Sniffs\ControlStructures\ElseIfDeclarationSniff::class,
+        PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterCastSniff::class,
     ],
     'config' => [
         //  ExampleInsight::class => [

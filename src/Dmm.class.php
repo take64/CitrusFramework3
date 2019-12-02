@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -11,6 +14,9 @@ use Citrus\Dmm\Actress;
 use Citrus\Dmm\Condition;
 use Citrus\Dmm\Item;
 
+/**
+ * DMMのAPI通信処理
+ */
 class Dmm
 {
     /** API_IDのキー */
@@ -72,7 +78,7 @@ class Dmm
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchItems(Condition $condition) : array
+    public static function searchItems(Condition $condition): array
     {
         // initialize
         self::initialize();
@@ -106,7 +112,6 @@ class Dmm
         }
         $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ITEM_RANK);
 
-
         // パラメータの順序を昇順に並び替え
         ksort($params);
 
@@ -139,102 +144,12 @@ class Dmm
 
 
     /**
-     * convert dmm item
-     *
-     * @param array $data
-     * @return Item
-     */
-    private static function convertItem(array $data) : Item
-    {
-        $item = new Item();
-
-        $item->service_code     = $data['service_code'];
-        $item->service_name     = $data['service_name'];
-        $item->floor_code       = $data['floor_code'];
-        $item->floor_name       = $data['floor_name'];
-        $item->category_name    = $data['category_name'];
-        $item->content_id       = $data['content_id'];
-        $item->product_id       = $data['product_id'];
-        $item->title            = $data['title'];
-        $item->URL              = $data['URL'];
-        $item->URLsp            = NVL::ArrayVL($data, 'URLsp', '');
-        $item->affiliateURL     = $data['affiliateURL'];
-        $item->affiliateURLsp   = NVL::ArrayVL($data, 'affiliateURLsp', '');
-        $item->date             = $data['date'];
-        $item->imageURL         = NVL::ArrayVL($data, 'imageURL', null);
-        $item->sampleImageURL   = NVL::ArrayVL($data, 'sampleImageURL', null);
-        $item->sampleMovieURL   = NVL::ArrayVL($data, 'sampleMovieURL', null);
-        $item->iteminfo         = NVL::ArrayVL($data, 'iteminfo', null);
-        $item->review           = NVL::ArrayVL($data, 'review', null);
-
-        if (isset($data['prices']) === true)
-        {
-            $item->prices = $data['prices'];
-            $item->prices['price'] = str_replace('~', '', $item->prices['price']);
-        }
-
-
-        $volume = 0;
-        $volume_key = 'volume';
-        if (isset($data[$volume_key]) === true)
-        {
-            if (strpos((string)$data[$volume_key], ':') !== false)
-            {
-                $volumes = explode(':', substr($data[$volume_key], 0, -3));   // 1:54:00対応
-                rsort($volumes);
-                foreach ($volumes as $ky => $vl)
-                {
-                    if ($ky == 0)
-                    {
-                        $volume += $vl;
-                    }
-                    else
-                    {
-                        $volume += ($vl * 60);
-                    }
-                }
-            }
-            else
-            {
-                $volume = (string)$data['volume'];
-            }
-        }
-        $item->volume = $volume;
-
-        // SSL対応
-        if (self::$SSL === true)
-        {
-            $ssl_columns = [
-                'URL',
-                'URLsp',
-                'affiliateURL',
-                'affiliateURLsp',
-                'imageURL',
-                'sampleImageURL',
-                'sampleMovieURL',
-            ];
-            foreach ($ssl_columns as $ssl_column)
-            {
-                if (empty($item->$ssl_column) === true)
-                {
-                    continue;
-                }
-                $item->$ssl_column = str_replace('http://', 'https://', $item->$ssl_column);
-            }
-        }
-
-        return $item;
-    }
-
-
-
-    /**
      * search dmm actorss
      *
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchActresses(Condition $condition) : array
+    public static function searchActresses(Condition $condition): array
     {
         // initialize
         self::initialize();
@@ -297,12 +212,101 @@ class Dmm
 
 
     /**
+     * convert dmm item
+     *
+     * @param array $data
+     * @return Item
+     */
+    private static function convertItem(array $data): Item
+    {
+        $item = new Item();
+
+        $item->service_code     = $data['service_code'];
+        $item->service_name     = $data['service_name'];
+        $item->floor_code       = $data['floor_code'];
+        $item->floor_name       = $data['floor_name'];
+        $item->category_name    = $data['category_name'];
+        $item->content_id       = $data['content_id'];
+        $item->product_id       = $data['product_id'];
+        $item->title            = $data['title'];
+        $item->URL              = $data['URL'];
+        $item->URLsp            = NVL::ArrayVL($data, 'URLsp', '');
+        $item->affiliateURL     = $data['affiliateURL'];
+        $item->affiliateURLsp   = NVL::ArrayVL($data, 'affiliateURLsp', '');
+        $item->date             = $data['date'];
+        $item->imageURL         = NVL::ArrayVL($data, 'imageURL', null);
+        $item->sampleImageURL   = NVL::ArrayVL($data, 'sampleImageURL', null);
+        $item->sampleMovieURL   = NVL::ArrayVL($data, 'sampleMovieURL', null);
+        $item->iteminfo         = NVL::ArrayVL($data, 'iteminfo', null);
+        $item->review           = NVL::ArrayVL($data, 'review', null);
+
+        if (isset($data['prices']) === true)
+        {
+            $item->prices = $data['prices'];
+            $item->prices['price'] = str_replace('~', '', $item->prices['price']);
+        }
+
+        $volume = 0;
+        $volume_key = 'volume';
+        if (isset($data[$volume_key]) === true)
+        {
+            if (strpos((string)$data[$volume_key], ':') !== false)
+            {
+                $volumes = explode(':', substr($data[$volume_key], 0, -3));   // 1:54:00対応
+                rsort($volumes);
+                foreach ($volumes as $ky => $vl)
+                {
+                    if ($ky == 0)
+                    {
+                        $volume += $vl;
+                    }
+                    else
+                    {
+                        $volume += ($vl * 60);
+                    }
+                }
+            }
+            else
+            {
+                $volume = (string)$data['volume'];
+            }
+        }
+        $item->volume = $volume;
+
+        // SSL対応
+        if (self::$SSL === true)
+        {
+            $ssl_columns = [
+                'URL',
+                'URLsp',
+                'affiliateURL',
+                'affiliateURLsp',
+                'imageURL',
+                'sampleImageURL',
+                'sampleMovieURL',
+            ];
+            foreach ($ssl_columns as $ssl_column)
+            {
+                if (empty($item->$ssl_column) === true)
+                {
+                    continue;
+                }
+                $item->$ssl_column = str_replace('http://', 'https://', $item->$ssl_column);
+            }
+        }
+
+        return $item;
+    }
+
+
+
+    /**
      * convert dmm actress
      *
      * @param array $data
      * @return Actress
      */
-    private static function convertActress(array $data) : Actress
+    private static function convertActress(array $data): Actress
     {
         $item = new Actress();
 
@@ -320,7 +324,6 @@ class Dmm
         $item->prefectures  = $data['prefectures'];
         $item->imageURL     = NVL::ArrayVL($data, 'imageURL', null);
         $item->listURL      = NVL::ArrayVL($data, 'listURL', null);
-
 
         // SSL対応
         if (self::$SSL === true)

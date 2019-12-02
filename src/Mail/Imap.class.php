@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2018, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -13,6 +16,9 @@ use Citrus\Mail\Imap\Box;
 use Citrus\Mail\Imap\Quota;
 use Citrus\Mail\Search\Condition;
 
+/**
+ * IMAP処理
+ */
 class Imap
 {
     /** サーバーパスフォーマット */

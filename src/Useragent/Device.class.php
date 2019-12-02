@@ -52,7 +52,7 @@ class Device
      *
      * @return array
      */
-    public static function callDeviceList() : array
+    public static function callDeviceList(): array
     {
         return [
             self::DEFAULT,
