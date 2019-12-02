@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,10 +10,17 @@
 
 namespace Citrus\Configure;
 
-use Citrus\Struct;
+use Citrus\Variable\Singleton;
+use Citrus\Variable\Structs;
 
-class Paths extends Struct
+/**
+ * パス定義
+ */
+class Paths extends Configurable
 {
+    use Singleton;
+    use Structs;
+
     /** @var string */
     public $domain = '';
 
@@ -41,12 +51,28 @@ class Paths extends Struct
 
 
     /**
+     * {@inheritDoc}
+     */
+    public function loadConfigures(array $configures = []): Configurable
+    {
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
+
+        // 設定のbind
+        $this->bindArray($this->configures);
+
+        return $this;
+    }
+
+
+
+    /**
      * call cache
      *
      * @param string|null $append_path
      * @return string
      */
-    public function callCache(string $append_path = null)
+    public function callCache(string $append_path = null): string
     {
         return $this->replace($this->cache, $append_path);
     }
@@ -59,7 +85,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callCompile(string $append_path = null)
+    public function callCompile(string $append_path = null): string
     {
         return $this->replace($this->compile, $append_path);
     }
@@ -72,7 +98,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callTemplate(string $append_path = null)
+    public function callTemplate(string $append_path = null): string
     {
         return $this->replace($this->template, $append_path);
     }
@@ -85,7 +111,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callJavascript(string $append_path = null)
+    public function callJavascript(string $append_path = null): string
     {
         return $this->replace($this->javascript, $append_path);
     }
@@ -98,7 +124,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callJavascriptLibrary(string $append_path = null)
+    public function callJavascriptLibrary(string $append_path = null): string
     {
         return $this->replace($this->javascript_library, $append_path);
     }
@@ -111,7 +137,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callStylesheet(string $append_path = null)
+    public function callStylesheet(string $append_path = null): string
     {
         return $this->replace($this->stylesheet, $append_path);
     }
@@ -124,7 +150,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callStylesheetLibrary(string $append_path = null)
+    public function callStylesheetLibrary(string $append_path = null): string
     {
         return $this->replace($this->stylesheet_library, $append_path);
     }
@@ -137,7 +163,7 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    public function callSmartyplugin(string $append_path = null)
+    public function callSmartyplugin(string $append_path = null): string
     {
         return $this->replace($this->smartyplugin, $append_path);
     }
@@ -151,8 +177,38 @@ class Paths extends Struct
      * @param string|null $append_path
      * @return string
      */
-    private function replace(string $search, string $append_path = null)
+    private function replace(string $search, string $append_path = null): string
     {
         return str_replace('{#domain#}', $this->domain, $search) . $append_path;
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'paths';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [];
     }
 }
