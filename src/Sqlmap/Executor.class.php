@@ -52,9 +52,9 @@ class Executor
                 $dsn->toString(),
                 $dsn->username,
                 $dsn->password,
-                array(
+                [
                     PDO::ATTR_PERSISTENT => true
-                )
+                ]
             );
             self::$IS_CONNECTION = true;
         }

@@ -54,7 +54,6 @@ class Command extends Struct
      */
     public function execute(): void
     {
-
     }
 
 
@@ -66,7 +65,6 @@ class Command extends Struct
      */
     public function before(): void
     {
-
     }
 
 
@@ -78,7 +76,6 @@ class Command extends Struct
      */
     public function after(): void
     {
-
     }
 
 

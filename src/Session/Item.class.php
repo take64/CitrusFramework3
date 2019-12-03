@@ -33,13 +33,13 @@ class Item extends Struct
         if ($session instanceof Item)
         {
             $this->bind($session->properties());
+            return;
         }
-        else if (true === is_array($session))
+
+        // ループできれば設定していく
+        foreach ($session as $ky => $vl)
         {
-            foreach ($session as $ky => $vl)
-            {
-                $this->$ky = serialize($vl);
-            }
+            $this->$ky = serialize($vl);
         }
     }
 

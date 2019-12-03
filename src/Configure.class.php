@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Citrus;
 
-use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Item;
 use Citrus\Document\Router;
 

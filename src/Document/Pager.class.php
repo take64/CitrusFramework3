@@ -121,7 +121,7 @@ class Pager
         $this->prev = ($_current <= 1 ? null : $_current - 1);
 
         // view
-        $this->view = array();
+        $this->view = [];
         for ($i = $range_from; $i <= $range_to; $i++)
         {
             $this->view[] = $i;
