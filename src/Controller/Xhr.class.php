@@ -354,7 +354,7 @@ class Xhr
         $result = [];
         foreach ($list as $one)
         {
-            $result[] = array('label' => $one->name, 'value' => $one->id);
+            $result[] = ['label' => $one->name, 'value' => $one->id];
         }
 
         return new Result($result);
