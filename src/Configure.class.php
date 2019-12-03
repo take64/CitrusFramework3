@@ -240,14 +240,16 @@ class Configure
         // ルーティング処理初期化
         Router::initialize($default_configure, $configures[$domain]);
 
+        $configures = include($path_configure);
+
         // 認証処理初期化
-        Authentication::initialize($default_configure, $configures[$domain]);
+        Authentication::getInstance()->loadConfigures($configures);
 
         // メッセージ処理初期化
         Message::initialize($default_configure, $configures[$domain]);
 
         // ロガー処理
-        Logger::initialize(include($path_configure));
+        Logger::initialize($configures);
     }
 
 

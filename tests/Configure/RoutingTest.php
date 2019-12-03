@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Test;
+namespace Test\Configure;
 
 use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Routing;
