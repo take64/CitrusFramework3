@@ -49,7 +49,7 @@ return [
             'smartphone'=> 'sp',
             'mobile'    => 'mb',
         ],
-        'routing' => [
+        'rule' => [
             'default'   => 'home/index',
             'login'     => 'home/login',
             'error404'  => 'page/error404',

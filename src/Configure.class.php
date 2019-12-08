@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Item;
-use Citrus\Document\Router;
 
 /**
  * 設定
@@ -170,6 +170,7 @@ class Configure
      *
      * @param string $path_configure
      * @return void
+     * @throws ConfigureException
      */
     public static function configure(string $path_configure): void
     {
@@ -237,17 +238,20 @@ class Configure
             self::$CONFIGURE_PLAIN_DOMAIN = $configures[$first_key];
         }
 
+
+        $configures = include($path_configure);
+
         // ルーティング処理初期化
-        Router::initialize($default_configure, $configures[$domain]);
+        Router::getInstance()->loadConfigures($configures);
 
         // 認証処理初期化
-        Authentication::initialize($default_configure, $configures[$domain]);
+        Authentication::getInstance()->loadConfigures($configures);
 
         // メッセージ処理初期化
         Message::initialize($default_configure, $configures[$domain]);
 
         // ロガー処理
-        Logger::initialize(include($path_configure));
+        Logger::initialize($configures);
     }
 
 

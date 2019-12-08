@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Citrus;
 
-use Citrus\Document\Router;
 use Citrus\Session\Item;
 
 /**
@@ -36,7 +35,7 @@ class Session extends Struct
     /** @var Item $_POST + $_GET values */
     public static $request;
 
-    /** @var Router routing element */
+    /** @var \Citrus\Router\Item routing element */
     public static $router;
 
     /** @var string session id */
@@ -106,7 +105,7 @@ class Session extends Struct
         self::$filedata = new Item($_FILES);
         self::$server   = new Item($_SERVER);
         self::$request  = new Item($_REQUEST);
-        self::$router   = Router::factory($_REQUEST);
+        self::$router   = Router::getInstance()->factory($_REQUEST);
 
         session_regenerate_id(true);
     }

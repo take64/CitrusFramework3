@@ -8,15 +8,16 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Configure;
+namespace Citrus\Router;
 
+use Citrus\Configure\Configurable;
 use Citrus\Variable\Singleton;
 use Citrus\Variable\Structs;
 
 /**
- * 特殊ルーティング
+ * ルーティングルール
  */
-class Routing extends Configurable
+class Rule extends Configurable
 {
     use Singleton;
     use Structs;
@@ -56,7 +57,7 @@ class Routing extends Configurable
      */
     protected function configureKey(): string
     {
-        return 'routing';
+        return 'rule';
     }
 
 

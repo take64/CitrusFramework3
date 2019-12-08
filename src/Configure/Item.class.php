@@ -12,6 +12,7 @@ namespace Citrus\Configure;
 
 use Citrus\Database\DSN;
 use Citrus\NVL;
+use Citrus\Router\Rule;
 
 /**
  * 設定アイテム
@@ -30,7 +31,7 @@ class Item
     /** @var Paths */
     public $paths;
 
-    /** @var Routing */
+    /** @var Rule */
     public $routing;
 
 
@@ -66,7 +67,7 @@ class Item
         // routing
         // TODO: 新しいConfigureへの頭からの修正が必要
         $key = 'routing';
-        $this->routing = new Routing();
+        $this->routing = new Rule();
         $this->routing->bind(NVL::ArrayVL($default_configure, $key, []));
         $this->routing->bind(NVL::ArrayVL($configure, $key, []));
     }

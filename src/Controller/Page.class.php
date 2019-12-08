@@ -14,11 +14,11 @@ use Citrus\CitrusException;
 use Citrus\Configure;
 use Citrus\Configure\ConfigureException;
 use Citrus\Document\Pagecode;
-use Citrus\Document\Router;
 use Citrus\Formmap;
 use Citrus\Http\Header;
 use Citrus\Library\Smarty3;
 use Citrus\Message;
+use Citrus\Router\Item;
 use Citrus\Session;
 use Citrus\Struct;
 use Exception;
@@ -59,7 +59,7 @@ class Page extends Struct
                 $router->action = $actionName;
                 if (method_exists($this, $actionName) === false)
                 {
-                    $router404 = Router::parseURL(Configure::$CONFIGURE_ITEM->routing->error404);
+                    $router404 = $router->parse(Configure::$CONFIGURE_ITEM->routing->error404);
                     $actionName = $router404->action;
                     $router->document = $router404->document;
                     $router->action = $actionName;
@@ -116,20 +116,20 @@ class Page extends Struct
      * テンプレート読み込んで表示
      *
      * @param Smarty_Internal_Template|Smarty3|null $template
-     * @param Router|null     $router
+     * @param Item|null                             $router_item
      * @throws CitrusException|\SmartyException
      */
-    public static function displayTemplate($template, Router $router = null)
+    public static function displayTemplate($template, Item $router_item = null)
     {
-        $router = $router ?: Session::$router;
+        $router_item = $router_item ?: Session::$router;
 
-        $templateDocumentArray = explode('_', str_replace('-', '_', $router->document));
-        $templateArray = [$router->device];
+        $templateDocumentArray = explode('_', str_replace('-', '_', $router_item->document));
+        $templateArray = [$router_item->device];
         foreach ($templateDocumentArray as $templateDocument)
         {
             $templateArray[] = $templateDocument;
         }
-        $templateArray[] = $router->action;
+        $templateArray[] = $router_item->action;
 
         foreach ($templateArray as $ky => $vl)
         {
@@ -150,7 +150,7 @@ class Page extends Struct
     /**
      * initialize method
      *
-     * @return Router|null
+     * @return Item|null
      */
     protected function initialize()
     {
@@ -162,7 +162,7 @@ class Page extends Struct
     /**
      * release method
      *
-     * @return Router|null
+     * @return Item|null
      */
     protected function release()
     {
@@ -173,7 +173,7 @@ class Page extends Struct
     /**
      * 404 method
      *
-     * @return Router|null
+     * @return Item|null
      */
     protected function error404()
     {
@@ -241,20 +241,20 @@ class Page extends Struct
     /**
      * リソース読み込み
      *
-     * @param Router|null $router
+     * @param Item|null $router_item
      */
-    private function loadResource(Router $router = null)
+    private function loadResource(Item $router_item = null)
     {
-        $router = $router ?: Session::$router;
+        $router_item = $router_item ?: Session::$router;
 
         // リソース配列用パス
-        $resourceDocumentList = explode('_', str_replace('-', '_', $router->document));
-        $resourceList = [$router->device];
+        $resourceDocumentList = explode('_', str_replace('-', '_', $router_item->document));
+        $resourceList = [$router_item->device];
         foreach ($resourceDocumentList as $ky => $vl)
         {
             $resourceList[] = $vl;
         }
-        $resourceList[] = $router->action;
+        $resourceList[] = $router_item->action;
         foreach ($resourceList as $ky => $vl)
         {
             $resourceList[$ky] = ucfirst(strtolower($vl));
@@ -279,13 +279,13 @@ class Page extends Struct
     /**
      * テンプレート読み込み
      *
-     * @param Router|null $router
+     * @param Item|null $router_item
      * @throws CitrusException|\SmartyException
      */
-    private function loadTemplate(Router $router = null)
+    private function loadTemplate(Item $router_item = null)
     {
-        $router = $router ?: Session::$router;
+        $router_item = $router_item ?: Session::$router;
 
-        self::displayTemplate($this->callSmarty(), $router);
+        self::displayTemplate($this->callSmarty(), $router_item);
     }
 }

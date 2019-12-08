@@ -19,7 +19,7 @@ use Test\TestFile;
 /**
  * データベースオブジェクト生成処理のテスト
  */
-class DatabasenTest extends TestCase
+class GenerateTest extends TestCase
 {
     use TestFile;
 

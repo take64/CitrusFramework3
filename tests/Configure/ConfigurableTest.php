@@ -18,7 +18,13 @@ use PHPUnit\Framework\TestCase;
  */
 class ConfigurableTest extends TestCase
 {
-
+    /**
+     * @test
+     */
+    public function test_todo()
+    {
+        $this->assertTrue(true);
+    }
 }
 
 /**

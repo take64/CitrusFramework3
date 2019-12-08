@@ -19,8 +19,9 @@ use PHPUnit\Framework\TestCase;
  */
 class PathsTest extends TestCase
 {
-    /**s
+    /**
      * @test
+     *
      * @throws ConfigureException
      */
     public function 設定を読み込んで適用できる()

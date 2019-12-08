@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -10,20 +13,22 @@ namespace Citrus;
 use Citrus\Authentication\Database;
 use Citrus\Authentication\Item;
 use Citrus\Authentication\Protocol;
+use Citrus\Configure\Configurable;
 use Citrus\Session\SessionException;
+use Citrus\Variable\Singleton;
 
-class Authentication
+/**
+ * 認証処理
+ */
+class Authentication extends Configurable
 {
+    use Singleton;
+
     /** @var string 認証タイプ(データベース) */
     const TYPE_DATABASE = 'database';
 
     /** @var string セッション保存キー */
     const SESSION_KEY = 'authentication';
-
-    /** @var string CitrusConfigureキー */
-    const CONFIGURE_KEY = 'authentication';
-
-
 
     /** @var string 認証テーブル名 */
     public static $AUTHORIZE_TABLE_NAME = 'users';
@@ -35,40 +40,25 @@ class Authentication
     public static $KEEP_SECOND = (60 * 60 * 24);
 
     /** @var Protocol 認証タイプインスタンス */
-    public static $INSTANCE = null;
-
-    /** @var bool 初期化済み */
-    public static $IS_INITIALIZED = false;
+    public $protocol = null;
 
 
 
     /**
-     * initialize authentication
-     *
-     * @param array $default_configure
-     * @param array $configure_domain
-     * @return void
+     * {@inheritDoc}
      */
-    public static function initialize(array $default_configure = [], array $configure_domain = []): void
+    public function loadConfigures(array $configures = []): Configurable
     {
-        // is initialized
-        if (self::$IS_INITIALIZED === true)
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
+
+        // 認証プロバイダ
+        if (self::TYPE_DATABASE === $this->configures['type'])
         {
-            return;
+            $this->protocol = new Database();
         }
 
-        // 認証設定
-        $configure = Configure::configureMerge(self::CONFIGURE_KEY, $default_configure, $configure_domain);
-
-        // 認証設定はないが初期化する可能性がある
-        // 複数設定できるまでifで処理
-        if (empty($configure) === false && $configure['type'] === self::TYPE_DATABASE)
-        {
-            self::$INSTANCE = new Database();
-        }
-
-        // initialized
-        self::$IS_INITIALIZED = true;
+        return $this;
     }
 
 
@@ -79,14 +69,14 @@ class Authentication
      * @param Item $item
      * @return bool ture:認証成功, false:認証失敗
      */
-    public static function authorize(Item $item): bool
+    public function authorize(Item $item): bool
     {
-        if (is_null(self::$INSTANCE) === true)
+        if (true === is_null($this->protocol))
         {
             return false;
         }
 
-        return self::$INSTANCE->authorize($item);
+        return $this->protocol->authorize($item);
     }
 
 
@@ -96,14 +86,14 @@ class Authentication
      *
      * @return bool ture:認証成功, false:認証失敗
      */
-    public static function deauthorize(): bool
+    public function deauthorize(): bool
     {
-        if (is_null(self::$INSTANCE) === true)
+        if (true === is_null($this->protocol))
         {
             return false;
         }
 
-        return self::$INSTANCE->deauthorize();
+        return $this->protocol->deauthorize();
     }
 
 
@@ -115,14 +105,14 @@ class Authentication
      * @param Item|null $item
      * @return bool true:チェック成功, false:チェック失敗
      */
-    public static function isAuthenticated(Item $item = null): bool
+    public function isAuthenticated(Item $item = null): bool
     {
-        if (is_null(self::$INSTANCE) === true)
+        if (true === is_null($this->protocol))
         {
             return false;
         }
 
-        return self::$INSTANCE->isAuthenticated($item);
+        return $this->protocol->isAuthenticated($item);
     }
 
 
@@ -166,5 +156,39 @@ class Authentication
     public static function generateKeepAt(): string
     {
         return date('Y-m-d H:i:s', Citrus::$TIMESTAMP_INT + self::$KEEP_SECOND);
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'authentication';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'type' => 'database',
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'type',
+        ];
     }
 }
