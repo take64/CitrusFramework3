@@ -12,6 +12,7 @@ namespace Citrus\Controller;
 
 use Citrus\CitrusException;
 use Citrus\Configure;
+use Citrus\Configure\Application;
 use Citrus\Configure\ConfigureException;
 use Citrus\Document\Pagecode;
 use Citrus\Formmap;
@@ -183,21 +184,21 @@ class Page extends Struct
 
 
     /**
-     * call pagecode
+     * Pagecodeを生成して取得
      *
      * @return Pagecode
      */
     protected function callPagecode(): Pagecode
     {
-        if (is_null($this->pagecode) === true)
+        if (true === is_null($this->pagecode))
         {
-            $application = Configure::$CONFIGURE_ITEM->application;
-            $_pagecode = new Pagecode();
-            $_pagecode->site_id     = $application->id;
-            $_pagecode->site_title  = $application->name;
-            $_pagecode->copyright   = $application->copyright;
+            $app = Application::getInstance();
+            $pagecode = new Pagecode();
+            $pagecode->site_id = $app->id;
+            $pagecode->site_title = $app->name;
+            $pagecode->copyright = $app->copyright;
 
-            $this->pagecode = $_pagecode;
+            $this->pagecode = $pagecode;
         }
         return $this->pagecode;
     }

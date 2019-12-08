@@ -12,6 +12,8 @@ namespace Citrus;
 
 /**
  * 共通オブジェクト
+ *
+ * @deprecated
  */
 class Struct
 {

@@ -22,9 +22,6 @@ class Paths extends Configurable
     use Structs;
 
     /** @var string */
-    public $domain = '';
-
-    /** @var string */
     public $cache = '';
 
     /** @var string */
@@ -209,6 +206,7 @@ class Paths extends Configurable
      */
     private function replace(string $search, string $append_path = null): string
     {
-        return str_replace('{#domain#}', $this->domain, $search) . $append_path;
+        $domain = Application::getInstance()->domain;
+        return str_replace('{#domain#}', $domain, $search) . $append_path;
     }
 }

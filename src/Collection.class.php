@@ -58,6 +58,30 @@ class Collection
 
 
     /**
+     * 出力(値だけ)
+     *
+     * @return array
+     */
+    public function toValues(): array
+    {
+        return array_values($this->source);
+    }
+
+
+
+    /**
+     * 出力(キーだけ)
+     *
+     * @return array
+     */
+    public function toKeys(): array
+    {
+        return array_keys($this->source);
+    }
+
+
+
+    /**
      * 両方の要素を残したいい感じの配列マージ
      *
      * @param array $values
@@ -127,7 +151,7 @@ class Collection
         $results = [];
         foreach ($this->source as $ky => $vl)
         {
-            $results[] = $callable($ky, $vl);
+            $results[$ky] = $callable($ky, $vl);
         }
         $this->source = $results;
         return $this;

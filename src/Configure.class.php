@@ -10,8 +10,10 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Configure\Application;
 use Citrus\Configure\ConfigureException;
 use Citrus\Configure\Item;
+use Citrus\Configure\Paths;
 
 /**
  * 設定
@@ -252,6 +254,12 @@ class Configure
 
         // ロガー処理
         Logger::initialize($configures);
+
+        // アプリケーション
+        Application::getInstance()->loadConfigures($configures);
+
+        // パス
+        Paths::getInstance()->loadConfigures($configures);
     }
 
 

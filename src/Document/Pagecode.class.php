@@ -11,18 +11,28 @@ declare(strict_types=1);
 namespace Citrus\Document;
 
 use Citrus\Citrus;
-use Citrus\Configure;
-use Citrus\Struct;
+use Citrus\Collection;
+use Citrus\Configure\Application;
+use Citrus\Configure\Paths;
+use Citrus\Variable\Structs;
 
 /**
  * ページコード処理
  */
-class Pagecode extends Struct
+class Pagecode
 {
-    /** @var string html title */
+    use Structs;
+
+    /**
+     * @var string html title
+     * @deprecated これなんだっけ
+     */
     public $page_title = '';
 
-    /** @var string html sub title */
+    /**
+     * @var string html sub title
+     * @deprecated これなんだっけ
+     */
     public $page_subtitle = '';
 
     /** @var string site title */
@@ -31,19 +41,25 @@ class Pagecode extends Struct
     /** @var string internal site id */
     public $site_id = '';
 
-    /** @var string[] meta keywords */
+    /**
+     * @var string[] meta keywords
+     * @deprecated これなんだっけ
+     */
     public $meta_keywords = [];
 
-    /** @var string[] meta descriptions */
+    /**
+     * @var string[] meta descriptions
+     * @deprecated これなんだっけ
+     */
     public $meta_descriptions = [];
 
-    /** @var string[] breadcrumbs */
+    /** @var string[] パンくずリストの配列 */
     public $breadcrumbs = [];
 
-    /** @var string[] javascripts */
+    /** @var string[] Javascript配列 */
     public $javascripts = [];
 
-    /** @var string[] stylesheets */
+    /** @var string[] Stylesheet配列 */
     public $stylesheets = [];
 
     /** @var string stylesheet plaintext */
@@ -52,7 +68,10 @@ class Pagecode extends Struct
     /** @var string copyright */
     public $copyright;
 
-    /** @var string template id */
+    /**
+     * @var string template id
+     * @deprecated これなんだっけ
+     */
     public $template_id;
 
     /** @var string stylesheet, javascript suffix */
@@ -61,7 +80,7 @@ class Pagecode extends Struct
 
 
     /**
-     * constructor
+     * constructor.
      */
     public function __construct()
     {
@@ -71,12 +90,12 @@ class Pagecode extends Struct
 
 
     /**
-     * add javascript
+     * Javascriptの追加
      *
      * @param string|string[] $javascript
-     * @return void
+     * @return self
      */
-    public function addJavascript($javascript): void
+    public function addJavascript($javascript): self
     {
         // 配列の場合は再起する
         if (true === is_array($javascript))
@@ -85,55 +104,66 @@ class Pagecode extends Struct
             {
                 $this->addJavascript($path);
             }
-            return;
+            return $this;
         }
+
+        // アプリケーションパス
+        $app_path = Application::getInstance()->path;
+        // パス定義
+        $paths = Paths::getInstance();
 
         // パスが絶対パスの場合
         if (true === file_exists($javascript))
         {
-            $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $javascript);
-            $this->add('javascripts', $path);
-            return;
+            $path = str_replace($app_path, '', $javascript);
+            $this->javascripts[] = $path;
+            return $this;
         }
+
         // パスがベースディレクトリ以下指定の場合
-        $path = Configure::$CONFIGURE_ITEM->application->path . $javascript;
+        $path = ($app_path . $javascript);
         if (true === file_exists($path))
         {
-            $this->add('javascripts', $javascript);
-            return;
+            $this->javascripts[] = $path;
+            return $this;
         }
+
         // パスがライブラリの可能性
-        $path = Configure::$CONFIGURE_ITEM->paths->callJavascriptLibrary($javascript);
+        $path = $paths->callJavascriptLibrary($javascript);
         if (true === file_exists($path))
         {
             $this->addJavascript($path);
-            return;
+            return $this;
         }
+
         // パスが独自追加の場合
-        $path = Configure::$CONFIGURE_ITEM->paths->callJavascript($javascript);
+        $path = $paths->callJavascript($javascript);
         if (true === file_exists($path))
         {
             $this->addJavascript($path);
-            return;
+            return $this;
         }
+
         // ページ用リソースの場合
-        $path = Configure::$CONFIGURE_ITEM->paths->callJavascript('/Page' . $javascript);
+        $path = $paths->callJavascript('/Page' . $javascript);
         if (true === file_exists($path))
         {
             $this->addJavascript($path);
-            return;
+            return $this;
         }
+
+        return $this;
     }
 
 
 
     /**
-     * add stylesheet
+     * Stylesheetの追加
      *
      * @param string|string[] $stylesheet
-     * @return void
+     * @return self
      */
-    public function addStylesheet($stylesheet): void
+    public function addStylesheet($stylesheet): self
     {
         // 配列の場合は再起する
         if (true === is_array($stylesheet))
@@ -142,56 +172,69 @@ class Pagecode extends Struct
             {
                 $this->addStylesheet($path);
             }
-            return;
+            return $this;
         }
+
+        // アプリケーションパス
+        $app_path = Application::getInstance()->path;
+        // パス定義
+        $paths = Paths::getInstance();
 
         // パスが絶対パスの場合
         if (true === file_exists($stylesheet))
         {
-            $path = str_replace(Configure::$CONFIGURE_ITEM->application->path, '', $stylesheet);
-            $this->add('stylesheets', $path);
-            return;
+            $path = str_replace($app_path, '', $stylesheet);
+            $this->stylesheets[] = $path;
+            return $this;
         }
+
         // パスがベースディレクトリ以下指定の場合
-        $path = Configure::$CONFIGURE_ITEM->application->path . $stylesheet;
+        $path = ($app_path . $stylesheet);
         if (true === file_exists($path))
         {
-            $this->add('stylesheets', $stylesheet);
-            return;
+            $this->stylesheets[] = $path;
+            return $this;
         }
+
         // パスがライブラリの可能性
-        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheetLibrary($stylesheet);
+        $path = $paths->callStylesheetLibrary($stylesheet);
         if (true === file_exists($path))
         {
             $this->addStylesheet($path);
-            return;
+            return $this;
         }
+
         // パスが独自追加の場合
-        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet($stylesheet);
+        $path = $paths->callStylesheet($stylesheet);
         if (true === file_exists($path))
         {
             $this->addStylesheet($path);
-            return;
+            return $this;
         }
+
         // ページ用リソースの場合
-        $path = Configure::$CONFIGURE_ITEM->paths->callStylesheet('/Page' . $stylesheet);
+        $path = $paths->callStylesheet('/Page' . $stylesheet);
         if (true === file_exists($path))
         {
             $this->addStylesheet($path);
-            return;
+            return $this;
         }
+
+        return $this;
     }
 
 
 
     /**
-     * add stylesheet plaintext
+     * ファイルのStylesheetをプレーンなStylesheetにして追加
      *
      * @param string $stylesheet
+     * @return void
+     * @deprecated これなんだっけ？
      */
-    public function addStylesheetPlaintext($stylesheet)
+    public function addStylesheetPlaintext($stylesheet): void
     {
-        if (file_exists($stylesheet) === true)
+        if (true === file_exists($stylesheet))
         {
             $content = str_replace("\r\n", "\n", file_get_contents($stylesheet));
             $this->stylesheet_plaintext .= preg_replace('#/\*/?(\n|[^/]|[^*]/)*\*/#', '', $content);
@@ -201,14 +244,17 @@ class Pagecode extends Struct
 
 
     /**
-     * add breadcrumbs
+     * パンくずリストの追加
      *
-     * @param string $name
-     * @param string $url
+     * @param string      $name 名称
+     * @param string|null $url  URL
+     * @return self
      */
-    public function addCrumbs($name, $url = '')
+    public function addBreadcrumbs(string $name,  string $url = ''): self
     {
-        $this->add('crumbs', [$name => $url]);
+        $this->breadcrumbs[] = [$name => $url];
+
+        return $this;
     }
 
 
@@ -216,55 +262,68 @@ class Pagecode extends Struct
     /**
      * minimize javascript
      * 同じファイルパスにミニマイズ版があれば置き換える
+     *
+     * @return self
      */
-    public function minimizeJavascript()
+    public function replaceMinJavascript(): self
     {
-        // server path
-        $server_path_base = Configure::$CONFIGURE_ITEM->application->path;
+        // アプリケーションパス
+        $app_path = Application::getInstance()->path;
 
-        // file list
-        $files = $this->javascripts;
-        foreach ($files as $ky => $vl)
-        {
-            // ファイル名内に.min.jsが含まれない
-            if (strpos($vl, '.min.js') === false && strpos($vl, '.js') > 0)
+        // ファイルリストを生成して反映
+        $this->javascripts = Collection::stream($this->javascripts)->map(function ($ky, $vl) use ($app_path) {
+            // ファイル名にmin.jsが含まれる
+            if (false !== strpos($vl, '.min.js'))
             {
-                $file_min_path = str_replace('.js', '.min.js', $vl);
-                if (file_exists($server_path_base . $file_min_path) === true)
-                {
-                    $files[$ky] = $file_min_path;
-                }
+                return $vl;
             }
-        }
 
-        $this->javascript = $files;
+            // 含まれない場合は、ファイルを探す
+            $min_path = str_replace('.js', '.min.js', $vl);
+            if (true === file_exists($app_path . $min_path))
+            {
+                return $min_path;
+            }
+
+            // 見つからなければそのまま
+            return $vl;
+        })->toList();
+
+        return $this;
     }
+
+
 
     /**
      * minimize stylesheet
      * 同じファイルパスにミニマイズ版があれば置き換える
+     *
+     * @return self
      */
-    public function minimizeStylesheet()
+    public function replaceMinStylesheet(): self
     {
-        // server path
-        $server_path_base = Configure::$CONFIGURE_ITEM->application->path;
+        // アプリケーションパス
+        $app_path = Application::getInstance()->path;
 
-        // file list
-        $files = $this->stylesheets;
-
-        foreach ($files as $ky => $vl)
-        {
-            // ファイル名内に.min.cssが含まれない
-            if (strpos($vl, '.min.css') === false && strpos($vl, '.css') > 0)
+        // ファイルリストを生成して反映
+        $this->stylesheets = Collection::stream($this->stylesheets)->map(function ($ky, $vl) use ($app_path) {
+            // ファイル名にmin.cssが含まれる
+            if (false !== strpos($vl, '.min.css'))
             {
-                $file_min_path = str_replace('.css', '.min.css', $vl);
-                if (file_exists($server_path_base . $file_min_path) === true)
-                {
-                    $files[$ky] = $file_min_path;
-                }
+                return $vl;
             }
-        }
 
-        $this->stylesheet = $files;
+            // 含まれない場合は、ファイルを探す
+            $min_path = str_replace('.css', '.min.css', $vl);
+            if (true === file_exists($app_path . $min_path))
+            {
+                return $min_path;
+            }
+
+            // 見つからなければそのまま
+            return $vl;
+        })->toList();
+
+        return $this;
     }
 }

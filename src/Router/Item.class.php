@@ -66,10 +66,7 @@ class Item
         $parts = Collection::stream($parts)->filter(function ($ky, $vl) {
             // 空の要素を排除
             return ('' !== $vl);
-        })->toList();
-
-        // 添え字振り直し
-        $parts = array_merge($parts);
+        })->toValues();
 
         // prefix が device 設定にある場合
         if (true === in_array($parts[0], $this->router_device->device_routes))
