@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Router\Device;
 use Citrus\Useragent\Carrier;
-use Citrus\Useragent\Device;
 use Citrus\Useragent\Element;
 
 /**
