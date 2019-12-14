@@ -84,6 +84,8 @@ class Collection
     /**
      * 両方の要素を残したいい感じの配列マージ
      *
+     * 同じ要素がある場合はあとが優先
+     *
      * @param array $values
      * @return self
      */

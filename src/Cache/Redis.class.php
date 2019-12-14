@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -8,30 +11,30 @@
 namespace Citrus\Cache;
 
 use Citrus\CitrusException;
-use Closure;
 use RedisException;
 
+/**
+ * Redis接続
+ *
+ * @property \Redis $handler
+ */
 class Redis extends Deamon
 {
     /**
-     * connection
-     *
-     * @param string $host
-     * @param int $port
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function connect(string $host, int $port = 6379)
+    public function connect(): void
     {
         $this->handler = new \Redis();
-        $this->handler->connect($host, $port);
+        $this->handler->connect($this->host, $this->port);
     }
 
 
 
     /**
-     * disconection
+     * {@inheritDoc}
      */
-    public function disconnect()
+    public function disconnect(): void
     {
         if (is_null($this->handler) === false)
         {
@@ -43,10 +46,7 @@ class Redis extends Deamon
 
 
     /**
-     * 値の取得
-     *
-     * @param mixed $key
-     * @return mixed
+     * {@inheritDoc}
      */
     public function call($key)
     {
@@ -63,14 +63,10 @@ class Redis extends Deamon
 
 
     /**
-     * 値の設定
-     *
-     * @param mixed $key
-     * @param mixed $value
-     * @param int   $expire
-     * @throws CacheException|CitrusException
+     * {@inheritDoc}
+     * @throws CitrusException
      */
-    public function bind($key, $value, int $expire = 0)
+    public function bind(string $key, $value, int $expire = 0)
     {
         try
         {
@@ -82,15 +78,15 @@ class Redis extends Deamon
 
             // set value
             $result = $this->handler->set($cache_key, $serialized_value);
-            if ($result === false)
+            if (false === $result)
             {
                 throw new CacheException(sprintf('Redis::set に失敗しました。 message=%s', $this->handler->getLastError()));
             }
 
             // set exprire
-            if ($expire > 0)
+            if (0 < $expire)
             {
-                $this->handler->setTimeout($cache_key, $expire);
+                $this->handler->expire($cache_key, $expire);
             }
         }
         catch (RedisException $e)
@@ -104,11 +100,9 @@ class Redis extends Deamon
     }
 
 
+
     /**
-     * 値の存在確認
-     *
-     * @param mixed $key
-     * @return bool
+     * {@inheritDoc}
      */
     public function exists($key): bool
     {
@@ -121,28 +115,21 @@ class Redis extends Deamon
 
 
     /**
-     * 値の取得
-     * 存在しない場合は値の設定ロジックを実行し、返却する
-     *
-     * @param mixed   $key
-     * @param Closure $valueFunction
-     * @param int     $expire
-     * @return mixed
-     * @throws CitrusException
+     * {@inheritDoc}
      * @throws CitrusException
      */
-    public function callWithBind($key, Closure $valueFunction, int $expire = 0)
+    public function callWithBind($key, callable $valueFunction, int $expire = 0)
     {
         // あれば返却
         $exists = $this->exists($key);
-        if ($exists === true)
+        if (true === $exists)
         {
             return $this->call($key);
         }
 
         // 無ければ、ロジックを実行し、保存しておく
         $value = $valueFunction();
-        if (is_null($value) === false)
+        if (false === is_null($value))
         {
             $this->bind($key, $value, $expire);
         }

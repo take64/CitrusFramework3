@@ -55,8 +55,8 @@ abstract class Configurable
 
         // デフォルトに、ドメイン設定、デフォルト設定をマージする
         $this->configures = Collection::stream($defaults)
-            ->betterMerge($domains)
             ->betterMerge($this->configureDefaults())
+            ->betterMerge($domains)
             ->toList();
 
         // 設定値チェック
