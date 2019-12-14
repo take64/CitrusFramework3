@@ -162,6 +162,22 @@ class Collection
 
 
     /**
+     * callable関数がtrueを返したものを削除する
+     *
+     * @param callable $callable
+     * @return self
+     */
+    public function remove(callable $callable): self
+    {
+        // false の場合に残せば良いので filter の逆
+        return $this->filter(function ($ky, $vl) use ($callable) {
+            return (false === $callable($ky, $vl));
+        });
+    }
+
+
+
+    /**
      * 両方の要素を残したいい感じの配列マージ
      *
      * @param array $array1
