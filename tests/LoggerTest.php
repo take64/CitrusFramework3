@@ -28,7 +28,6 @@ class LoggerTest extends TestCase
 
     /**
      * {@inheritDoc}
-     * @throws ConfigureException
      */
     public function setUp(): void
     {

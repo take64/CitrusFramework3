@@ -84,6 +84,8 @@ class Collection
     /**
      * 両方の要素を残したいい感じの配列マージ
      *
+     * 同じ要素がある場合はあとが優先
+     *
      * @param array $values
      * @return self
      */
@@ -155,6 +157,22 @@ class Collection
         }
         $this->source = $results;
         return $this;
+    }
+
+
+
+    /**
+     * callable関数がtrueを返したものを削除する
+     *
+     * @param callable $callable
+     * @return self
+     */
+    public function remove(callable $callable): self
+    {
+        // false の場合に残せば良いので filter の逆
+        return $this->filter(function ($ky, $vl) use ($callable) {
+            return (false === $callable($ky, $vl));
+        });
     }
 
 

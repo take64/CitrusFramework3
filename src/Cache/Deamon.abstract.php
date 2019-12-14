@@ -12,13 +12,11 @@ namespace Citrus\Cache;
 
 /**
  * サーバーデーモンタイプのキャッシュ
- *
- * @package Citrus\Cache
  */
 abstract class Deamon implements Engine
 {
     /** @var \Redis|\Memcached handler */
-    public $handler;
+    protected $handler;
 
     /** @var string host */
     public $host;
@@ -61,17 +59,18 @@ abstract class Deamon implements Engine
     /**
      * 接続
      *
-     * @param string $host ホスト
-     * @param int    $port ポート
+     * @return void
      */
-    abstract public function connect(string $host, int $port);
+    abstract public function connect(): void;
 
 
 
     /**
-     * disconection
+     * 切断
+     *
+     * @return void
      */
-    abstract public function disconnect();
+    abstract public function disconnect(): void;
 
 
 
@@ -84,18 +83,18 @@ abstract class Deamon implements Engine
      *
      * ドメインがない場合は :productSummaries となるが、ドメインなしを明示的にしたいので : は捨てない
      *
-     * @param mixed $key
-     * @prama bool  $with_hash
+     * @param string    $key
+     * @param bool|null $with_hash
      * @return string
      */
-    public function callPrefixedKey($key, $with_hash = false)
+    public function callPrefixedKey(string $key, bool $with_hash = false): string
     {
-        if (is_string($key) === false)
+        if (false === is_string($key))
         {
             $key = serialize($key);
         }
 
-        if ($with_hash === true)
+        if (true === $with_hash)
         {
             $key = md5($key);
         }

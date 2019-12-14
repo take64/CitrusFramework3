@@ -250,7 +250,7 @@ class Configure
         Authentication::getInstance()->loadConfigures($configures);
 
         // メッセージ処理初期化
-        Message::initialize($default_configure, $configures[$domain]);
+        Message::getInstance()->loadConfigures($configures);
 
         // ロガー処理
         Logger::initialize($configures);

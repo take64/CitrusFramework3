@@ -100,6 +100,40 @@ class CollectionTest extends TestCase
     /**
      * @test
      */
+    public function remove_指定データのみ削除した配列生成()
+    {
+        $values = [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            'd' => 4,
+        ];
+
+        // キー「c」以外を削除
+        $expected1 = [
+            'c' => 3,
+        ];
+        // 検算
+        $this->assertSame($expected1, Collection::stream($values)->remove(function ($ky, $vl) {
+            return ('c' !== $ky);
+        })->toList());
+
+        // 値「2」を超えるものだけ削除
+        $expected2 = [
+            'a' => 1,
+            'b' => 2,
+        ];
+        // 検算
+        $this->assertSame($expected2, Collection::stream($values)->remove(function ($ky, $vl) {
+            return (2 < $vl);
+        })->toList());
+    }
+
+
+
+    /**
+     * @test
+     */
     public function append_データ生成できたものだけで配列生成()
     {
         $values = [

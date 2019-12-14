@@ -83,12 +83,13 @@ class Page extends Struct
             $this->callFormmap()->bind();
 
             // テンプレート当て込み
+            $message = Message::getInstance();
             $this->callSmarty()->assign('router', Session::$router);
             $this->callSmarty()->assign('pagecode', $this->callPagecode());
             $this->callSmarty()->assign('formmap', $this->callFormmap());
-            $this->callSmarty()->assign('errors', Message::popErrors());
-            $this->callSmarty()->assign('messages', Message::popMessages());
-            $this->callSmarty()->assign('successes', Message::popSuccesses());
+            $this->callSmarty()->assign('errors', $message->popErrors());
+            $this->callSmarty()->assign('messages', $message->popMessages());
+            $this->callSmarty()->assign('successes', $message->popSuccesses());
 
             // セッションのコミット
             Session::commit();

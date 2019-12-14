@@ -93,7 +93,6 @@ class FormmapTest extends TestCase
         $value = 'aaa';
 
         // REQUESTに設定
-        Session::factory();
         Session::$request->regist('user_id', $value);
 
         // 反映

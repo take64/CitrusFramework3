@@ -11,21 +11,22 @@ declare(strict_types=1);
 namespace Citrus\Cache;
 
 use Citrus\CitrusException;
-use Closure;
 use MemcachedException;
 
 /**
  * Memcached接続
+ *
+ * @property \Memcached $handler
  */
 class Memcached extends Deamon
 {
     /**
      * {@inheritDoc}
      */
-    public function connect(string $host, int $port = 11211)
+    public function connect(): void
     {
         $this->handler = new \Memcached();
-        $this->handler->addServer($host, $port);
+        $this->handler->addServer($this->host, $this->port);
     }
 
 
@@ -33,9 +34,9 @@ class Memcached extends Deamon
     /**
      * {@inheritDoc}
      */
-    public function disconnect()
+    public function disconnect(): void
     {
-        if (is_null($this->handler) === false)
+        if (false === is_null($this->handler))
         {
             $this->handler->quit();
         }
@@ -45,10 +46,7 @@ class Memcached extends Deamon
 
 
     /**
-     * 値の取得
-     *
-     * @param mixed $key
-     * @return mixed
+     * {@inheritDoc}
      */
     public function call($key)
     {
@@ -65,14 +63,10 @@ class Memcached extends Deamon
 
 
     /**
-     * 値の設定
-     *
-     * @param mixed $key
-     * @param mixed $value
-     * @param int   $expire
-     * @throws CacheException|CitrusException
+     * {@inheritDoc}
+     * @throws CitrusException
      */
-    public function bind($key, $value, int $expire = 0)
+    public function bind(string $key, $value, int $expire = 0)
     {
         try
         {
@@ -83,7 +77,7 @@ class Memcached extends Deamon
             $serialized_value = serialize($value);
 
             // expire
-            if ($expire === 0)
+            if (0 === $expire)
             {
                 $expire = $this->expire;
             }
@@ -91,7 +85,7 @@ class Memcached extends Deamon
 
             // set value
             $result = $this->handler->set($cache_key, $serialized_value, $expire);
-            if ($result === false)
+            if (false === $result)
             {
                 throw new CacheException(sprintf('Memcached::set に失敗しました。 message=%s', $this->handler->getResultMessage()), $this->handler->getResultCode());
             }
@@ -107,44 +101,37 @@ class Memcached extends Deamon
     }
 
 
+
     /**
-     * 値の存在確認
-     *
-     * @param mixed $key
-     * @return bool
+     * {@inheritDoc}
      */
     public function exists($key): bool
     {
         // 一旦キー取得(キーがあるかどうかで判断、取得するとステータスが発生する)
         $this->call($key);
 
-        return \Memcached::RES_NOTFOUND !== $this->handler->getResultCode();
+        return (\Memcached::RES_NOTFOUND !== $this->handler->getResultCode());
     }
 
 
 
     /**
-     * 値の取得
-     * 存在しない場合は値の設定ロジックを実行し、返却する
-     *
-     * @param mixed   $key
-     * @param Closure $valueFunction
-     * @param int     $expire
-     * @return mixed
+     * {@inheritDoc}
+     * @throws CitrusException
      */
-    public function callWithBind($key, Closure $valueFunction, int $expire = 0)
+    public function callWithBind($key, callable $valueFunction, int $expire = 0)
     {
         $exists = $this->exists($key);
 
         // あれば返却
-        if ($exists === true)
+        if (true === $exists)
         {
             return $this->call($key);
         }
 
         // 無ければ、ロジックを実行し、保存しておく
         $value = $valueFunction();
-        if (is_null($value) === false)
+        if (false === is_null($value))
         {
             $this->bind($key, $value, $expire);
         }

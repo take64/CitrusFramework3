@@ -22,32 +22,6 @@ use PHPUnit\Framework\TestCase;
 class ValidationTest extends TestCase
 {
     /**
-     * {@inheritDoc}
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        // セッションデータ生成
-        Session::factory();
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function tearDown(): void
-    {
-        parent::tearDown();
-
-        // セッション終了
-        Session::commit();
-    }
-
-
-
-    /**
      * @test
      * @throws FormmapException
      */
