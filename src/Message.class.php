@@ -36,9 +36,9 @@ class Message extends Configurable
      *
      * @return bool
      */
-    public function exists(): bool
+    public static function exists(): bool
     {
-        return (0 < count($this->callItems()));
+        return (0 < count(self::getInstance()->callItems()));
     }
 
 
@@ -48,13 +48,13 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function callItems(): array
+    public static function callItems(): array
     {
-        if (true === $this->isSession())
+        if (true === self::getInstance()->isSession())
         {
             return (Session::$session->call(self::SESSION_KEY) ?? []);
         }
-        return $this->items;
+        return self::getInstance()->items;
     }
 
 
@@ -65,13 +65,13 @@ class Message extends Configurable
      * @param Item[] $items アイテム配列
      * @return void
      */
-    public function registItems(array $items): void
+    public static function registItems(array $items): void
     {
-        if (true === $this->isSession())
+        if (true === self::getInstance()->isSession())
         {
             Session::$session->regist(self::SESSION_KEY, $items);
         }
-        $this->items = $items;
+        self::getInstance()->items = $items;
     }
 
 
@@ -82,9 +82,9 @@ class Message extends Configurable
      * @param string $tag
      * @return Item[]
      */
-    public function callItemsOfTag(string $tag): array
+    public static function callItemsOfTag(string $tag): array
     {
-        return Collection::stream($this->callItems())->filter(function ($ky, $vl) use ($tag) {
+        return Collection::stream(self::getInstance()->callItems())->filter(function ($ky, $vl) use ($tag) {
             // タグが一致しているかどうか
             /** @var Item $vl */
             return ($vl->tag === $tag);
@@ -99,9 +99,9 @@ class Message extends Configurable
      * @param string $type
      * @return Item[]
      */
-    public function callItemsOfType(string $type): array
+    public static function callItemsOfType(string $type): array
     {
-        return Collection::stream($this->callItems())->filter(function ($ky, $vl) use ($type) {
+        return Collection::stream(self::getInstance()->callItems())->filter(function ($ky, $vl) use ($type) {
             // タイプが一致しているかどうか
             /** @var Item $vl */
             return ($vl->type === $type);
@@ -115,9 +115,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function callMessages(): array
+    public static function callMessages(): array
     {
-        return $this->callItemsOfType(Item::TYPE_MESSAGE);
+        return self::getInstance()->callItemsOfType(Item::TYPE_MESSAGE);
     }
 
 
@@ -127,9 +127,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function callErrors(): array
+    public static function callErrors(): array
     {
-        return $this->callItemsOfType(Item::TYPE_ERROR);
+        return self::getInstance()->callItemsOfType(Item::TYPE_ERROR);
     }
 
 
@@ -139,9 +139,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function callSuccesses(): array
+    public static function callSuccesses(): array
     {
-        return $this->callItemsOfType(Item::TYPE_SUCCESS);
+        return self::getInstance()->callItemsOfType(Item::TYPE_SUCCESS);
     }
 
 
@@ -151,9 +151,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function callWarnings(): array
+    public static function callWarnings(): array
     {
-        return $this->callItemsOfType(Item::TYPE_WARNING);
+        return self::getInstance()->callItemsOfType(Item::TYPE_WARNING);
     }
 
 
@@ -164,13 +164,13 @@ class Message extends Configurable
      * @param string $type
      * @return Item[]
      */
-    public function popItemsForType(string $type): array
+    public static function popItemsForType(string $type): array
     {
         // 結果
         $results = [];
 
         // 走査
-        $items = $this->callItems();
+        $items = self::getInstance()->callItems();
         foreach ($items as $ky => $vl)
         {
             // タイプの合うものだけ取得して削除
@@ -182,7 +182,7 @@ class Message extends Configurable
         }
 
         // 再設定
-        $this->registItems($items);
+        self::getInstance()->registItems($items);
 
         return $results;
     }
@@ -194,9 +194,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function popMessages(): array
+    public static function popMessages(): array
     {
-        return $this->popItemsForType(Item::TYPE_MESSAGE);
+        return self::getInstance()->popItemsForType(Item::TYPE_MESSAGE);
     }
 
 
@@ -206,9 +206,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function popErrors(): array
+    public static function popErrors(): array
     {
-        return $this->popItemsForType(Item::TYPE_ERROR);
+        return self::getInstance()->popItemsForType(Item::TYPE_ERROR);
     }
 
 
@@ -218,9 +218,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function popSuccesses(): array
+    public static function popSuccesses(): array
     {
-        return $this->popItemsForType(Item::TYPE_SUCCESS);
+        return self::getInstance()->popItemsForType(Item::TYPE_SUCCESS);
     }
 
 
@@ -230,9 +230,9 @@ class Message extends Configurable
      *
      * @return Item[]
      */
-    public function popWarnings(): array
+    public static function popWarnings(): array
     {
-        return $this->popItemsForType(Item::TYPE_WARNING);
+        return self::getInstance()->popItemsForType(Item::TYPE_WARNING);
     }
 
 
@@ -243,16 +243,16 @@ class Message extends Configurable
      * @param Item $item
      * @return void
      */
-    public function addItem(Item $item): void
+    public static function addItem(Item $item): void
     {
         // 取得
-        $items = $this->callItems();
+        $items = self::getInstance()->callItems();
 
         // 追加
         $items[] = $item;
 
         // 再設定
-        $this->registItems($items);
+        self::getInstance()->registItems($items);
     }
 
 
@@ -265,9 +265,9 @@ class Message extends Configurable
      * @param string|null $tag         タグ
      * @return void
      */
-    public function addMessage(string $description, string $name = null, string $tag = null): void
+    public static function addMessage(string $description, string $name = null, string $tag = null): void
     {
-        $this->addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
+        self::getInstance()->addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
     }
 
 
@@ -280,9 +280,9 @@ class Message extends Configurable
      * @param string|null $tag         タグ
      * @return void
      */
-    public function addError(string $description, string $name = null, string $tag = null): void
+    public static function addError(string $description, string $name = null, string $tag = null): void
     {
-        $this->addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
+        self::getInstance()->addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
     }
 
 
@@ -295,9 +295,9 @@ class Message extends Configurable
      * @param string|null $tag         タグ
      * @return void
      */
-    public function addSuccess(string $description, string $name = null, string $tag = null): void
+    public static function addSuccess(string $description, string $name = null, string $tag = null): void
     {
-        $this->addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
+        self::getInstance()->addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
     }
 
 
@@ -310,9 +310,9 @@ class Message extends Configurable
      * @param string|null $tag         タグ
      * @return void
      */
-    public function addWarning(string $description, string $name = null, string $tag = null): void
+    public static function addWarning(string $description, string $name = null, string $tag = null): void
     {
-        $this->addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
+        self::getInstance()->addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
     }
 
 
@@ -322,13 +322,13 @@ class Message extends Configurable
      *
      * @return void
      */
-    public function removeAll(): void
+    public static function removeAll(): void
     {
         // プロパティから削除
-        $this->items = [];
+        self::getInstance()->items = [];
 
         // セッションから削除
-        if (true === $this->isSession())
+        if (true === self::getInstance()->isSession())
         {
             Session::$session->remove(self::SESSION_KEY);
         }
@@ -342,17 +342,17 @@ class Message extends Configurable
      * @param string|null $tag
      * @return void
      */
-    public function removeOfTag(string $tag = null): void
+    public static function removeOfTag(string $tag = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream($this->callItems())->remove(function ($ky, $vl) use ($tag) {
+        $items = Collection::stream(self::getInstance()->callItems())->remove(function ($ky, $vl) use ($tag) {
             // タグが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $tag);
         })->toList();
 
         // 再設定
-        $this->registItems($items);
+        self::getInstance()->registItems($items);
     }
 
 
@@ -363,17 +363,17 @@ class Message extends Configurable
      * @param string|null $type
      * @return void
      */
-    public function removeOftype(string $type = null): void
+    public static function removeOftype(string $type = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream($this->callItems())->remove(function ($ky, $vl) use ($type) {
+        $items = Collection::stream(self::getInstance()->callItems())->remove(function ($ky, $vl) use ($type) {
             // タイプが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $type);
         })->toList();
 
         // 再設定
-        $this->registItems($items);
+        self::getInstance()->registItems($items);
     }
 
 
@@ -383,9 +383,9 @@ class Message extends Configurable
      *
      * @return bool true:セッションを使う
      */
-    public function isSession(): bool
+    public static function isSession(): bool
     {
-        return $this->configures['enable_session'];
+        return self::getInstance()->configures['enable_session'];
     }
 
 

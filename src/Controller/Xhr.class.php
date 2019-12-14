@@ -99,12 +99,12 @@ class Xhr
             $this->initialize();
             $result->results = $this->$actionName();
             $this->release();
-            $result->messages = Message::getInstance()->callItems();
+            $result->messages = Message::callItems();
             $response = $result;
         }
         catch (CitrusException $e)
         {
-            Message::getInstance()->addError($e->getMessage());
+            Message::addError($e->getMessage());
             $result = new Element();
             $message = '実行時エラーが検出されました。';
             $result->exceptions = [new CitrusException($message)];
@@ -112,7 +112,7 @@ class Xhr
             $result->results = new Result();
             Logger::error($result);
             $response = $result;
-            Message::getInstance()->removeAll();
+            Message::removeAll();
         }
 
         $response_json = json_encode($response);

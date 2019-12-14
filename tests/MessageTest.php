@@ -52,7 +52,7 @@ class MessageTest extends TestCase
         Message::getInstance()->addSuccess($description);
 
         // メッセージ取得
-        $items = Message::getInstance()->callItems();
+        $items = Message::callItems();
         $this->assertCount(1, $items);
         $item = $items[0];
 

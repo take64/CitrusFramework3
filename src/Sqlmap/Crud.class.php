@@ -381,7 +381,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addMessage('正常に登録されました。');
+                Message::addMessage('正常に登録されました。');
             }
 
             return true;
@@ -394,7 +394,7 @@ class Crud extends Client
             //message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addError($e->getMessage());
+                Message::addError($e->getMessage());
             }
 
             throw new SqlmapException('登録に失敗しました。');
@@ -432,7 +432,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addMessage('正常に編集されました。');
+                Message::addMessage('正常に編集されました。');
             }
 
             return true;
@@ -445,7 +445,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addError($e->getMessage());
+                Message::addError($e->getMessage());
             }
 
             throw new SqlmapException('編集に失敗しました。');
@@ -469,7 +469,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addWarning('削除の条件が足りません。');
+                Message::addWarning('削除の条件が足りません。');
             }
             return false;
         }
@@ -487,7 +487,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addMessage('正常に削除されました。');
+                Message::addMessage('正常に削除されました。');
             }
 
             return true;
@@ -497,7 +497,7 @@ class Crud extends Client
             // message
             if ($this->isMessage() === true)
             {
-                Message::getInstance()->addError($e->getMessage());
+                Message::addError($e->getMessage());
             }
 
             throw new SqlmapException('削除に失敗しました。');
