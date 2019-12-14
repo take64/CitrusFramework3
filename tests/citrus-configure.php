@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright   Copyright 2018, CitronIssue All Rights Reserved.
+ * @copyright   Copyright 2018, Citrus All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.besidesplus.net/
  */
@@ -87,7 +87,15 @@ return [
             'owner' => posix_getpwuid(posix_geteuid())['name'],
             'group' => posix_getgrgid(posix_getegid())['name'],
             'output_dir' => __DIR__ . '/src/Integration',
-            'namespace' => 'CitronIssue',
+            'namespace' => 'Citrus',
+        ],
+        'slack' => [
+            'hogehoge' => [
+                'webhook_url' => 'https://hooks.slack.com/services/XXXXXXXXXXX',
+            ],
+            'fugafuga' => [
+                'webhook_url' => 'https://hooks.slack.com/services/YYYYYYYYYYY',
+            ],
         ],
     ],
     'example.com' => [

@@ -22,13 +22,19 @@ class Item
     /** @var string */
     public $domain;
 
-    /** @var Application */
+    /**
+     * @var Application
+     * @deprecated
+     */
     public $application;
 
     /** @var DSN */
     public $database;
 
-    /** @var Paths */
+    /**
+     * @var Paths
+     * @deprecated
+     */
     public $paths;
 
     /** @var Rule */
@@ -42,6 +48,7 @@ class Item
      *
      * @param array $default_configure
      * @param array $configure
+     * @deprecated
      */
     public function __construct(array $default_configure, array $configure)
     {
