@@ -33,24 +33,11 @@ class PagecodeTest extends TestCase
 
         // コントローラーのセットアップ
         Configure::initialize(dirname(__DIR__). '/citrus-configure.php');
-        Session::factory();
         Session::$router->set('document', 'home');
         Session::$router->set('action', 'index');
         $controller = new HomeController();
         $controller->run();
         $this->pagecode = $controller->get('pagecode');
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function tearDown(): void
-    {
-        parent::tearDown();
-
-        Session::clear();
     }
 
 

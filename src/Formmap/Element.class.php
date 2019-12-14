@@ -315,7 +315,7 @@ class Element extends Struct
         }
         catch (FormmapException $e)
         {
-            Message::addError($e->getMessage(), null, Formmap::MESSAGE_TAG);
+            Message::getInstance()->addError($e->getMessage(), null, Formmap::MESSAGE_TAG);
             return 1;
         }
         return 0;

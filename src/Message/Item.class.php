@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,24 +12,25 @@ namespace Citrus\Message;
 
 use Citrus\Citrus;
 
+/**
+ * メッセージアイテム
+ */
 class Item
 {
-    /** message type */
-    const TYPE_MESSAGE  = 'message';
+    /** @var string message type */
+    const TYPE_MESSAGE = 'message';
 
-    /** message type */
-    const TYPE_SUCCESS  = 'success';
+    /** @var string message type */
+    const TYPE_SUCCESS = 'success';
 
-    /** message type */
-    const TYPE_WARNING  = 'warning';
+    /** @var string message type */
+    const TYPE_WARNING = 'warning';
 
-    /** message type */
-    const TYPE_ERROR    = 'error';
+    /* @var string* message type */
+    const TYPE_ERROR = 'error';
 
-    /** message type */
-    const TAG_COMMON    = 'common';
-
-
+    /** @var string message type */
+    const TAG_COMMON = 'common';
 
     /** @var string date */
     public $date;
@@ -57,50 +61,32 @@ class Item
     public function __construct($description = null, $type = null, $name = null, $date = null, $tag = null)
     {
         // 内容がなければ無効
-        if (is_null($description) === true)
+        if (true === is_null($description))
         {
             return;
         }
 
-        // date
-        if (is_null($date) === true)
-        {
-            $date = Citrus::$TIMESTAMP_FORMAT;
-        }
+        // 日時
+        $date = ($date ?: Citrus::$TIMESTAMP_FORMAT);
 
-        // type
-        if (is_null($type) === true)
-        {
-            $type = self::TYPE_MESSAGE;
-        }
+        // タイプ
+        $type = ($type ?: self::TYPE_MESSAGE);
 
-        // tag
-        if (is_null($tag) === true)
-        {
-            $tag = self::TAG_COMMON;
-        }
+        // タグ
+        $tag = ($tag ?: self::TAG_COMMON);
 
-        // name
-        if (is_null($name) === true)
+        // 名称
+        if (true === is_null($name))
         {
-            switch($type)
-            {
-                case self::TYPE_MESSAGE:
-                    $name = 'メッセージ';
-                    break;
-                case self::TYPE_WARNING:
-                    $name = '注意';
-                    break;
-                case self::TYPE_SUCCESS:
-                    $name = '成功';
-                    break;
-                case self::TYPE_ERROR:
-                    $name = 'エラー';
-                    break;
-                default:
-            }
+            $names = [
+                self::TYPE_MESSAGE => 'メッセージ',
+                self::TYPE_WARNING => '注意',
+                self::TYPE_SUCCESS => '成功',
+                self::TYPE_ERROR => 'エラー',
+            ];
+            $name = $names[$type];
         }
-        if (is_array($description) === true)
+        if (true === is_array($description))
         {
             $result = '';
             foreach ($description as $row)
@@ -110,11 +96,11 @@ class Item
             $description = $result;
         }
 
-        $this->description  = $description;
-        $this->type         = $type;
-        $this->name         = $name;
-        $this->date         = $date;
-        $this->tag          = $tag;
-        $this->date         = Citrus::$TIMESTAMP_FORMAT;
+        $this->description = $description;
+        $this->type = $type;
+        $this->name = $name;
+        $this->date = $date;
+        $this->tag = $tag;
+        $this->date = Citrus::$TIMESTAMP_FORMAT;
     }
 }

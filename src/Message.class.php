@@ -10,444 +10,415 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Configure\Configurable;
 use Citrus\Message\Item;
+use Citrus\Variable\Singleton;
+use Citrus\Variable\Structs;
 
 /**
  * メッセージ処理
  */
-class Message extends Accessor
+class Message extends Configurable
 {
-    /** messages key */
-    const KEY_MESSAGES = 'messages';
+    use Singleton;
+    use Structs;
 
+    /** セッションキー */
+    const SESSION_KEY = 'messages';
 
-
-    /** @var Item[] messages */
-    public static $items = [];
-
-    /** @var bool is initialized */
-    public static $IS_INITIALIZED = false;
-
-    /** @var bool enable session */
-    public static $enable_session = false;
+    /** @var Item[] メッセージ配列 */
+    private $items = [];
 
 
 
     /**
-     * initialize message
+     * メッセージが1件でもあるかどうか
      *
-     * @param array $default_configure
-     * @param array $configure_domain
+     * @return bool
      */
-    public static function initialize(array $default_configure = [], array $configure_domain = [])
+    public function exists(): bool
     {
-        // is initialized
-        if (self::$IS_INITIALIZED === true)
-        {
-            return;
-        }
-
-        // メッセージ設定
-        $configure = Configure::configureMerge('message', $default_configure, $configure_domain);
-
-        self::$enable_session = $configure['enable_session'];
-
-        // initialized
-        self::$IS_INITIALIZED = true;
+        return (0 < count($this->callItems()));
     }
 
 
 
     /**
-     * exists message
-     *
-     * @return  bool
-     */
-    public static function exists()
-    {
-        $items = self::callItems();
-        if (is_array($items) === false)
-        {
-            return false;
-        }
-        return (count($items) > 0);
-    }
-
-
-
-    /**
-     * call message
+     * メッセージの取得
      *
      * @return Item[]
      */
-    public static function callItems()
+    public function callItems(): array
     {
-        // init
-        self::initialize();
-
-        // セッションが正の場合
-        if (self::isSession() === true)
+        if (true === $this->isSession())
         {
-            self::$items = Session::$session->call(self::KEY_MESSAGES);
+            return (Session::$session->call(self::SESSION_KEY) ?? []);
         }
-
-        return self::$items;
+        return $this->items;
     }
 
 
 
     /**
-     * call message for tag
+     * メッセージの登録
+     *
+     * @param Item[] $items アイテム配列
+     * @return void
+     */
+    public function registItems(array $items): void
+    {
+        if (true === $this->isSession())
+        {
+            Session::$session->regist(self::SESSION_KEY, $items);
+        }
+        $this->items = $items;
+    }
+
+
+
+    /**
+     * タグでフィルタリングしてメッセージを取得する
      *
      * @param string $tag
      * @return Item[]
      */
-    public static function callItemsForTag($tag = null)
+    public function callItemsOfTag(string $tag): array
     {
-        // 結果
-        $result = [];
-
-        // 引数なし
-        if (empty($tag) === true)
-        {
-            return $result;
-        }
-
-        // エイリアス
-        $items = self::$items;
-
-        // 走査
-        foreach ($items as $item)
-        {
-            if ($item->tag === $tag)
-            {
-                $result[] = $item;
-            }
-        }
-
-        return $result;
+        return Collection::stream($this->callItems())->filter(function ($ky, $vl) use ($tag) {
+            // タグが一致しているかどうか
+            /** @var Item $vl */
+            return ($vl->tag === $tag);
+        })->toList();
     }
 
 
 
     /**
-     * call message for type
+     * タイプでフィルタリングしてメッセージを取得する
      *
      * @param string $type
      * @return Item[]
      */
-    public static function callItemsForType($type = null)
+    public function callItemsOfType(string $type): array
     {
-        // 結果
-        $result = [];
-
-        // 引数なし
-        if (is_null($type) === true)
-        {
-            return $result;
-        }
-
-        // 走査
-        foreach (self::$items as $item)
-        {
-            if ($item->type === $type)
-            {
-                $result[] = $item;
-            }
-        }
-
-        return $result;
+        return Collection::stream($this->callItems())->filter(function ($ky, $vl) use ($type) {
+            // タイプが一致しているかどうか
+            /** @var Item $vl */
+            return ($vl->type === $type);
+        })->toList();
     }
 
 
 
     /**
-     * call message
+     * メッセージを取得
      *
      * @return Item[]
      */
-    public static function callMessages()
+    public function callMessages(): array
     {
-        return self::callItemsForType(Item::TYPE_MESSAGE);
+        return $this->callItemsOfType(Item::TYPE_MESSAGE);
     }
 
 
 
     /**
-     * call error
+     * エラーメッセージを取得
      *
      * @return Item[]
      */
-    public static function callErrors()
+    public function callErrors(): array
     {
-        return self::callItemsForType(Item::TYPE_ERROR);
+        return $this->callItemsOfType(Item::TYPE_ERROR);
     }
 
 
 
     /**
-     * call success
+     * 成功メッセージを取得
      *
      * @return Item[]
      */
-    public static function callSuccesses()
+    public function callSuccesses(): array
     {
-        return self::callItemsForType(Item::TYPE_SUCCESS);
+        return $this->callItemsOfType(Item::TYPE_SUCCESS);
     }
 
 
 
     /**
-     * call warning
+     * 警告メッセージを取得
      *
      * @return Item[]
      */
-    public static function callWarnings()
+    public function callWarnings(): array
     {
-        return self::callItemsForType(Item::TYPE_WARNING);
+        return $this->callItemsOfType(Item::TYPE_WARNING);
     }
 
 
 
     /**
-     * pop message for type
+     * メッセージをポップする
      *
      * @param string $type
      * @return Item[]
      */
-    public static function popItemsForType(string $type = null)
+    public function popItemsForType(string $type): array
     {
         // 結果
-        $result = [];
-
-        // 引数なし
-        if (is_null($type) === true)
-        {
-            return $result;
-        }
+        $results = [];
 
         // 走査
-        foreach (self::$items as $ky => $item)
+        $items = $this->callItems();
+        foreach ($items as $ky => $vl)
         {
-            if ($item->type === $type)
+            // タイプの合うものだけ取得して削除
+            if ($vl->type === $type)
             {
-                $result[] = $item;
-                unset(self::$items[$ky]);
-            }
-        }
-
-        // セッション利用
-        if (self::isSession() === true)
-        {
-            Session::$session->regist(self::KEY_MESSAGES, self::$items);
-        }
-
-        return $result;
-    }
-
-
-
-    /**
-     * pop message
-     *
-     * @return Item[]
-     */
-    public static function popMessages()
-    {
-        return self::popItemsForType(Item::TYPE_MESSAGE);
-    }
-
-
-
-    /**
-     * pop error
-     *
-     * @return Item[]
-     */
-    public static function popErrors()
-    {
-        return self::popItemsForType(Item::TYPE_ERROR);
-    }
-
-
-
-    /**
-     * pop success
-     *
-     * @return Item[]
-     */
-    public static function popSuccesses()
-    {
-        return self::popItemsForType(Item::TYPE_SUCCESS);
-    }
-
-
-
-    /**
-     * pop warning
-     *
-     * @return Item[]
-     */
-    public static function popWarnings()
-    {
-        return self::popItemsForType(Item::TYPE_WARNING);
-    }
-
-
-
-    /**
-     * regist message element
-     *
-     * @param Item $item
-     */
-    public static function addItem($item)
-    {
-        // init
-        self::initialize();
-
-        // 既に配列の場合は追加
-        if (is_array(self::$items) === false)
-        {
-            self::$items = [];
-        }
-        self::$items[] = $item;
-
-        // セッション利用
-        if (self::isSession() === true)
-        {
-            Session::$session->regist(self::KEY_MESSAGES, self::$items);
-        }
-    }
-
-
-
-    /**
-     * add message
-     *
-     * @param string      $description
-     * @param string|null $name
-     * @param string|null $tag
-     */
-    public static function addMessage(string $description, string $name = null, $tag = null)
-    {
-        self::addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
-    }
-
-
-
-    /**
-     * add error
-     *
-     * @param string      $description
-     * @param string|null $name
-     * @param string|null $tag
-     */
-    public static function addError(string $description, string $name = null, $tag = null)
-    {
-        self::addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
-    }
-
-
-
-    /**
-     * add success
-     *
-     * @param string      $description
-     * @param string|null $name
-     * @param string|null $tag
-     */
-    public static function addSuccess(string $description, string $name = null, $tag = null)
-    {
-        self::addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
-    }
-
-
-
-    /**
-     * add warning
-     *
-     * @param string      $description
-     * @param string|null $name
-     * @param string|null $tag
-     */
-    public static function addWarning(string $description, string $name = null, $tag = null)
-    {
-        self::addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
-    }
-
-
-
-    /**
-     * remove message
-     */
-    public static function removeAll()
-    {
-        // init
-        self::initialize();
-
-        // クラス変数から削除
-        self::$items = [];
-
-        // セッションから削除
-        if (self::isSession() === true)
-        {
-            Session::$session->remove(self::KEY_MESSAGES);
-        }
-    }
-
-
-
-    /**
-     * delete message
-     *
-     * @param string|null $tag
-     */
-    public static function removeForTag(string $tag = null)
-    {
-        // タグ指定がない場合は戻る
-        if (empty($tag) === true)
-        {
-            return;
-        }
-
-        // init
-        self::initialize();
-
-        // メッセージがない場合。
-        if (empty(self::$items) === true)
-        {
-            return;
-        }
-
-        // エイリアス
-        $items = self::$items;
-
-        // タグにマッチするメッセージの削除
-        foreach ($items as $ky => $item)
-        {
-            if ($item->tag === $tag)
-            {
+                $results[] = $vl;
                 unset($items[$ky]);
             }
         }
-        self::$items = $items;
 
-        // セッション利用の場合はセッションに登録
-        if (self::isSession() === true)
+        // 再設定
+        $this->registItems($items);
+
+        return $results;
+    }
+
+
+
+    /**
+     * メッセージを取得して削除
+     *
+     * @return Item[]
+     */
+    public function popMessages(): array
+    {
+        return $this->popItemsForType(Item::TYPE_MESSAGE);
+    }
+
+
+
+    /**
+     * エラーメッセージを取得して削除
+     *
+     * @return Item[]
+     */
+    public function popErrors(): array
+    {
+        return $this->popItemsForType(Item::TYPE_ERROR);
+    }
+
+
+
+    /**
+     * 成功メッセージを取得して削除
+     *
+     * @return Item[]
+     */
+    public function popSuccesses(): array
+    {
+        return $this->popItemsForType(Item::TYPE_SUCCESS);
+    }
+
+
+
+    /**
+     * 警告メッセージを取得して削除
+     *
+     * @return Item[]
+     */
+    public function popWarnings(): array
+    {
+        return $this->popItemsForType(Item::TYPE_WARNING);
+    }
+
+
+
+    /**
+     * メッセージアイテムの設定
+     *
+     * @param Item $item
+     * @return void
+     */
+    public function addItem(Item $item): void
+    {
+        // 取得
+        $items = $this->callItems();
+
+        // 追加
+        $items[] = $item;
+
+        // 再設定
+        $this->registItems($items);
+    }
+
+
+
+    /**
+     * メッセージ追加
+     *
+     * @param string      $description 内容
+     * @param string|null $name        名称
+     * @param string|null $tag         タグ
+     * @return void
+     */
+    public function addMessage(string $description, string $name = null, string $tag = null): void
+    {
+        $this->addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
+    }
+
+
+
+    /**
+     * エラーメッセージの追加
+     *
+     * @param string      $description 内容
+     * @param string|null $name        名称
+     * @param string|null $tag         タグ
+     * @return void
+     */
+    public function addError(string $description, string $name = null, string $tag = null): void
+    {
+        $this->addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
+    }
+
+
+
+    /**
+     * 成功メッセージの追加
+     *
+     * @param string      $description 内容
+     * @param string|null $name        名称
+     * @param string|null $tag         タグ
+     * @return void
+     */
+    public function addSuccess(string $description, string $name = null, string $tag = null): void
+    {
+        $this->addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
+    }
+
+
+
+    /**
+     * 警告メッセージの追加
+     *
+     * @param string      $description 内容
+     * @param string|null $name        名称
+     * @param string|null $tag         タグ
+     * @return void
+     */
+    public function addWarning(string $description, string $name = null, string $tag = null): void
+    {
+        $this->addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
+    }
+
+
+
+    /**
+     * メッセージの全削除
+     *
+     * @return void
+     */
+    public function removeAll(): void
+    {
+        // プロパティから削除
+        $this->items = [];
+
+        // セッションから削除
+        if (true === $this->isSession())
         {
-            Session::$session->regist(self::KEY_MESSAGES, self::$items);
+            Session::$session->remove(self::SESSION_KEY);
         }
     }
 
 
 
     /**
-     * using session ?
+     * メッセージのタグごと削除
      *
-     * @return  bool
+     * @param string|null $tag
+     * @return void
      */
-    public static function isSession()
+    public function removeOfTag(string $tag = null): void
     {
-        return self::$enable_session;
+        // 削除後メッセージを取得
+        $items = Collection::stream($this->callItems())->remove(function ($ky, $vl) use ($tag) {
+            // タグが一致しているかどうか(一致しているものが削除対象)
+            /** @var Item $vl */
+            return ($vl->tag === $tag);
+        })->toList();
+
+        // 再設定
+        $this->registItems($items);
+    }
+
+
+
+    /**
+     * メッセージのタイプごと削除
+     *
+     * @param string|null $type
+     * @return void
+     */
+    public function removeOftype(string $type = null): void
+    {
+        // 削除後メッセージを取得
+        $items = Collection::stream($this->callItems())->remove(function ($ky, $vl) use ($type) {
+            // タイプが一致しているかどうか(一致しているものが削除対象)
+            /** @var Item $vl */
+            return ($vl->tag === $type);
+        })->toList();
+
+        // 再設定
+        $this->registItems($items);
+    }
+
+
+
+    /**
+     * セッションを使うかどうか
+     *
+     * @return bool true:セッションを使う
+     */
+    public function isSession(): bool
+    {
+        return $this->configures['enable_session'];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'message';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'enable_session' => true,
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'enable_session',
+        ];
     }
 }

@@ -66,7 +66,7 @@ return [
             'smartyplugin'      => $dir_base . '/Template/{#domain#}/Plug',
         ],
         'message' => [
-            'enable_session'    => true,
+            'enable_session' => true,
         ],
         'formmap' => [
             'cache' => false,

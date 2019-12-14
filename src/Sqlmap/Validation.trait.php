@@ -28,7 +28,7 @@ trait Validation
             /** @var Crud $this */
             if ($this->isMessage() === true)
             {
-                Message::addWarning($this->callTarget().'変更の条件が足りません。');
+                Message::getInstance()->addWarning($this->callTarget().'変更の条件が足りません。');
             }
             return false;
         }

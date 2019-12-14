@@ -141,4 +141,14 @@ class Session extends Struct
     {
         return session_status();
     }
+
+
+
+    /**
+     * destroy
+     */
+    public static function destroy()
+    {
+        return session_destroy();
+    }
 }
