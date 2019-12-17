@@ -8,66 +8,47 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus;
+namespace Citrus\Integration;
 
-use Citrus\Dmm\Actress;
-use Citrus\Dmm\Condition;
-use Citrus\Dmm\Item;
+use Citrus\Collection;
+use Citrus\Configure\Configurable;
+use Citrus\Integration\Dmm\Actress;
+use Citrus\Integration\Dmm\Condition;
+use Citrus\Integration\Dmm\Item;
+use Citrus\Variable\Singleton;
+use Citrus\Variable\Structs;
 
 /**
  * DMMのAPI通信処理
  */
-class Dmm
+class Dmm extends Configurable
 {
-    /** API_IDのキー */
-    const API_ID_KEY = 'api_id';
-
-    /** AFFILIATE_IDのキー */
-    const AFFILIATE_ID_KEY = 'affiliate_id';
-
-    /** SSLのキー */
-    const SSL_KEY = 'ssl';
-
-    /** CitrusConfigureキー */
-    const CONFIGURE_KEY = 'dmm';
-
-
+    use Singleton;
+    use Structs;
 
     /** @var string dmm api id */
-    public static $API_ID = null;
+    public $api_id;
 
     /** @var string dmm affiliate id */
-    public static $AFFILIATE_ID = null;
+    public $affiliate_id;
 
     /** @var bool dmm ssl */
-    public static $SSL = false;
-
-    /** @var bool */
-    private static $IS_INITIALIZED = false;
+    public $ssl = false;
 
 
 
     /**
-     * initialize
+     * {@inheritDoc}
      */
-    public static function initialize()
+    public function loadConfigures(array $configures = []): Configurable
     {
-        // is initialize
-        if (self::$IS_INITIALIZED === true)
-        {
-            return;
-        }
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
 
-        // configure
-        $configure = Configure::configureMerge(self::CONFIGURE_KEY);
+        // 設定のbind
+        $this->bindArray($this->configures);
 
-        // ids
-        self::$API_ID       = $configure[self::API_ID_KEY];
-        self::$AFFILIATE_ID = $configure[self::AFFILIATE_ID_KEY];
-        self::$SSL          = NVL::ArrayVL($configure, self::SSL_KEY, false);
-
-        // initialize
-        self::$IS_INITIALIZED = true;
+        return $this;
     }
 
 
@@ -78,27 +59,24 @@ class Dmm
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchItems(Condition $condition): array
+    public function searchItems(Condition $condition): array
     {
-        // initialize
-        self::initialize();
-
         $baseurl = 'https://api.dmm.com/affiliate/v3/ItemList';
         $params = [
-            self::API_ID_KEY        => self::$API_ID,
-            self::AFFILIATE_ID_KEY  => self::$AFFILIATE_ID,
-            'site'                  => $condition->site,
-            'service'               => $condition->service,
-            'hits'                  => $condition->hits,
-            'sort'                  => $condition->sort,
-            'offset'                => $condition->offset,
-            'output'                => 'json',
+            'api_id'        => $this->api_id,
+            'affiliate_id'  => $this->affiliate_id,
+            'site'          => $condition->site,
+            'service'       => $condition->service,
+            'hits'          => $condition->hits,
+            'sort'          => $condition->sort,
+            'offset'        => $condition->offset,
+            'output'        => 'json',
         ];
-        if (is_null($condition->floor) === false)
+        if (false === is_null($condition->floor))
         {
             $params['floor'] = $condition->floor;
         }
-        if (is_null($condition->keyword) === false)
+        if (false === is_null($condition->keyword))
         {
             $keyword = $condition->keyword;
             // DMMは「CLI」という単語を受け付けない
@@ -110,7 +88,7 @@ class Dmm
             $params['keyword'] = $keyword;
 
         }
-        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ITEM_RANK);
+        $params['sort'] = ($params['sort'] ?? Condition::SORT_ITEM_RANK);
 
         // パラメータの順序を昇順に並び替え
         ksort($params);
@@ -124,7 +102,7 @@ class Dmm
         // url request
         $data = file_get_contents($url);
 
-        if (empty($data) === true)
+        if (true === empty($data))
         {
             return null;
         }
@@ -132,11 +110,9 @@ class Dmm
         $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
         $items = $data['result']['items'];
 
-        $results = [];
-        foreach ($items as $one)
-        {
-            $results[] = self::convertItem($one);
-        }
+        $results = Collection::stream($items)->map(function ($ky, $vl) {
+            return $this->convertItem($vl);
+        })->toList();
 
         return $results;
     }
@@ -149,29 +125,26 @@ class Dmm
      * @param Condition $condition
      * @return Item[]
      */
-    public static function searchActresses(Condition $condition): array
+    public function searchActresses(Condition $condition): array
     {
-        // initialize
-        self::initialize();
-
         $baseurl = 'https://api.dmm.com/affiliate/v3/ActressSearch';
         $params = [
-            'api_id'        => self::$API_ID,
-            'affiliate_id'  => self::$AFFILIATE_ID,
+            'api_id'        => $this->api_id,
+            'affiliate_id'  => $this->affiliate_id,
             'hits'          => $condition->hits,
             'sort'          => $condition->sort,
             'offset'        => $condition->offset,
             'output'        => 'json',
         ];
-        if (is_null($condition->keyword) === false)
+        if (false === is_null($condition->keyword))
         {
             $params['keyword'] = mb_convert_encoding($condition->keyword, 'UTF-8', 'ASCII,JIS,UTF-8,eucjp-win,sjis-win');
         }
-        if (is_null($condition->actress_id) === false)
+        if (false === is_null($condition->actress_id))
         {
             $params['actress_id'] = $condition->actress_id;
         }
-        $params['sort'] = NVL::ArrayVL($params, 'sort', Condition::SORT_ACTORERSS_ID_ASC);
+        $params['sort'] = ($params['sort'] ?? Condition::SORT_ACTORERSS_ID_ASC);
 
         // パラメータの順序を昇順に並び替え
         ksort($params);
@@ -185,26 +158,17 @@ class Dmm
         // url request
         $data = file_get_contents($url);
 
-        if (empty($data) === true)
+        if (true === empty($data))
         {
             return null;
         }
 
         $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
-        if (isset($data['result']['actress']) === true)
-        {
-            $items = $data['result']['actress'];
-        }
-        else
-        {
-            $items = [];
-        }
+        $items = ($data['result']['actress'] ?? []);
 
-        $results = [];
-        foreach ($items as $one)
-        {
-            $results[] = self::convertActress($one);
-        }
+        $results = Collection::stream($items)->map(function ($ky, $vl) {
+            return $this->convertActress($vl);
+        })->toList();
 
         return $results;
     }
@@ -217,7 +181,7 @@ class Dmm
      * @param array $data
      * @return Item
      */
-    private static function convertItem(array $data): Item
+    private function convertItem(array $data): Item
     {
         $item = new Item();
 
@@ -230,17 +194,17 @@ class Dmm
         $item->product_id       = $data['product_id'];
         $item->title            = $data['title'];
         $item->URL              = $data['URL'];
-        $item->URLsp            = NVL::ArrayVL($data, 'URLsp', '');
+        $item->URLsp            = ($data['URLsp'] ?? '');
         $item->affiliateURL     = $data['affiliateURL'];
-        $item->affiliateURLsp   = NVL::ArrayVL($data, 'affiliateURLsp', '');
+        $item->affiliateURLsp   = ($data['affiliateURLsp'] ?? '');
         $item->date             = $data['date'];
-        $item->imageURL         = NVL::ArrayVL($data, 'imageURL', null);
-        $item->sampleImageURL   = NVL::ArrayVL($data, 'sampleImageURL', null);
-        $item->sampleMovieURL   = NVL::ArrayVL($data, 'sampleMovieURL', null);
-        $item->iteminfo         = NVL::ArrayVL($data, 'iteminfo', null);
-        $item->review           = NVL::ArrayVL($data, 'review', null);
+        $item->imageURL         = ($data['imageURL'] ?? null);
+        $item->sampleImageURL   = ($data['sampleImageURL'] ?? null);
+        $item->sampleMovieURL   = ($data['sampleMovieURL'] ?? null);
+        $item->iteminfo         = ($data['iteminfo'] ?? null);
+        $item->review           = ($data['review'] ?? null);
 
-        if (isset($data['prices']) === true)
+        if (true == isset($data['prices']))
         {
             $item->prices = $data['prices'];
             $item->prices['price'] = str_replace('~', '', $item->prices['price']);
@@ -248,9 +212,9 @@ class Dmm
 
         $volume = 0;
         $volume_key = 'volume';
-        if (isset($data[$volume_key]) === true)
+        if (true === isset($data[$volume_key]))
         {
-            if (strpos((string)$data[$volume_key], ':') !== false)
+            if (false !== strpos((string)$data[$volume_key], ':'))
             {
                 $volumes = explode(':', substr($data[$volume_key], 0, -3));   // 1:54:00対応
                 rsort($volumes);
@@ -274,7 +238,7 @@ class Dmm
         $item->volume = $volume;
 
         // SSL対応
-        if (self::$SSL === true)
+        if (true === $this->ssl)
         {
             $ssl_columns = [
                 'URL',
@@ -287,7 +251,7 @@ class Dmm
             ];
             foreach ($ssl_columns as $ssl_column)
             {
-                if (empty($item->$ssl_column) === true)
+                if (true === empty($item->$ssl_column))
                 {
                     continue;
                 }
@@ -306,7 +270,7 @@ class Dmm
      * @param array $data
      * @return Actress
      */
-    private static function convertActress(array $data): Actress
+    private function convertActress(array $data): Actress
     {
         $item = new Actress();
 
@@ -314,7 +278,7 @@ class Dmm
         $item->name         = $data['name'];
         $item->ruby         = $data['ruby'];
         $item->bust         = $data['bust'];
-        $item->cup          = NVL::ArrayVL($data, 'cup', null);   // cupは何故か有る場合とない場合が有る
+        $item->cup          = ($data['cup'] ?? null);   // cupは何故か有る場合とない場合が有る
         $item->waist        = $data['waist'];
         $item->hip          = $data['hip'];
         $item->height       = $data['height'];
@@ -322,11 +286,11 @@ class Dmm
         $item->blood_type   = $data['blood_type'];
         $item->hobby        = $data['hobby'];
         $item->prefectures  = $data['prefectures'];
-        $item->imageURL     = NVL::ArrayVL($data, 'imageURL', null);
-        $item->listURL      = NVL::ArrayVL($data, 'listURL', null);
+        $item->imageURL     = ($data['imageURL'] ?? null);
+        $item->listURL      = ($data['listURL'] ?? null);
 
         // SSL対応
-        if (self::$SSL === true)
+        if (true === $this->ssl)
         {
             $ssl_columns = [
                 'imageURL',
@@ -334,7 +298,7 @@ class Dmm
             ];
             foreach ($ssl_columns as $ssl_column)
             {
-                if (empty($item->$ssl_column) === true)
+                if (true === empty($item->$ssl_column))
                 {
                     continue;
                 }
@@ -343,5 +307,41 @@ class Dmm
         }
 
         return $item;
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'dmm';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [
+            'ssl' => true,
+        ];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'api_id',
+            'affiliate_id',
+            'ssl',
+        ];
     }
 }

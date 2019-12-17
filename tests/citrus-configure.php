@@ -107,6 +107,11 @@ return [
                 ],
             ],
         ],
+        'dmm' => [
+            'api_id' => 'hogehoge',
+            'affiliate_id' => 'fugafuga',
+            'ssl' => true,
+        ],
     ],
     'example.com' => [
         'application' => [
