@@ -8,34 +8,35 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Aws;
+namespace Citrus\Integration\Aws;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
-use Citrus\Aws;
-use Citrus\Configure;
-use Citrus\Struct;
+use Citrus\Configure\Configurable;
+use Citrus\Variable\Instance;
+use Citrus\Variable\Structs;
 
 /**
  * CloudWatch処理
  */
-class Cloudwatch extends Struct
+class CloudwatchLogs extends Configurable
 {
-    /** CloudWatchキー logGroupName */
+    use Structs;
+    use Instance;
+
+    /** @var string CloudWatchキー logGroupName */
     const LOG_GROUP_NAME = 'logGroupName';
 
-    /** CloudWatchキー logGroupNamePrefix */
+    /** @var string CloudWatchキー logGroupNamePrefix */
     const LOG_GROUP_NAME_PREFIX = 'logGroupNamePrefix';
 
-    /** CloudWatchキー logStreamName */
+    /** @var string CloudWatchキー logStreamName */
     const LOG_STREAM_NAME = 'logStreamName';
 
-    /** CloudWatchキー logStreamNamePrefix */
+    /** @var string CloudWatchキー logStreamNamePrefix */
     const LOG_STREAM_NAME_PREFIX = 'logStreamNamePrefix';
 
-
-
     /** @var array AWS接続用パラメーター */
-    protected $cloudwatch = [];
+    protected $cloudwatchlogs = [];
 
     /** @var CloudWatchLogsClient */
     protected $client;
@@ -49,20 +50,20 @@ class Cloudwatch extends Struct
 
 
     /**
-     * constructor
-     *
-     * @param array $configure
+     * {@inheritDoc}
      */
-    public function __construct(array $configure = [])
+    public function loadConfigures(array $configures = []): Configurable
     {
-        // AWSセットアップ
-        Aws::initialize();
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
 
-        $configure = Configure::configureMerge(Aws::CONFIGURE_KEY, $configure, $configure);
+        // 設定のbind
+        $this->bindArray($this->configures);
 
-        $this->bind($configure);
+        // クライアントの生成
+        $this->client = new CloudWatchLogsClient($this->cloudwatchlogs);
 
-        $this->client = new CloudWatchLogsClient($this->cloudwatch);
+        return $this;
     }
 
 
@@ -74,8 +75,9 @@ class Cloudwatch extends Struct
      * @param string   $log_stream_name ログストリーム
      * @param string[] $log_events      ログイベント
      * @param bool     $with_regist     ロググループ、ログストリームも一緒に作成する
+     * @return void
      */
-    public function flush(string $log_group_name, string $log_stream_name, array $log_events, bool $with_regist = false)
+    public function flush(string $log_group_name, string $log_stream_name, array $log_events, bool $with_regist = false): void
     {
         // ロググループ、ログストリームも一緒に作成する
         if (true === $with_regist)
@@ -124,7 +126,7 @@ class Cloudwatch extends Struct
     private function existLogGroup(string $log_group_name): bool
     {
         // 存在情報キャッシュがあれば利用
-        if (isset($this->exist_caches[$log_group_name]) === true)
+        if (true === isset($this->exist_caches[$log_group_name]))
         {
             return true;
         }
@@ -161,13 +163,13 @@ class Cloudwatch extends Struct
     {
         // 存在チェック
         $exist_group = $this->existLogGroup($log_group_name);
-        if ($exist_group === false)
+        if (false === $exist_group)
         {
             return false;
         }
 
         // 存在情報キャッシュがあれば利用
-        if (isset($this->exist_caches[$log_group_name][$log_stream_name]) === true)
+        if (true === isset($this->exist_caches[$log_group_name][$log_stream_name]))
         {
             return true;
         }
@@ -200,11 +202,12 @@ class Cloudwatch extends Struct
      * ロググループの作成
      *
      * @param string $log_group_name ロググループ名
+     * @return void
      */
-    private function registLogGroup(string $log_group_name)
+    private function registLogGroup(string $log_group_name): void
     {
         // すでにあれば作らない
-        if ($this->existLogGroup($log_group_name) === true)
+        if (true === $this->existLogGroup($log_group_name))
         {
             return;
         }
@@ -221,17 +224,18 @@ class Cloudwatch extends Struct
      * @param string $log_group_name  ロググループ名
      * @param string $log_stream_name ログストリーム名
      * @param bool   $with_group      ログストリームと一緒にロググループも作る
+     * @return void
      */
-    private function registLogStream(string $log_group_name, string $log_stream_name, bool $with_group = false)
+    private function registLogStream(string $log_group_name, string $log_stream_name, bool $with_group = false): void
     {
         // ログストリームと一緒にロググループも作る
-        if ($with_group === true)
+        if (true === $with_group)
         {
             $this->registLogGroup($log_group_name);
         }
 
         // すでにあれば作らない
-        if ($this->existLogStream($log_group_name, $log_stream_name) === true)
+        if (true === $this->existLogStream($log_group_name, $log_stream_name))
         {
             return;
         }
@@ -250,9 +254,9 @@ class Cloudwatch extends Struct
      *
      * @param string $log_group_name  ロググループ名
      * @param string $log_stream_name ログストリーム名
-     * @return null
+     * @return string|null
      */
-    private function callSequenceToken(string $log_group_name, string $log_stream_name)
+    private function callSequenceToken(string $log_group_name, string $log_stream_name): ?string
     {
         // シーケンストークンがあれば返す
         if (true === isset($this->sequence_tokens[$log_group_name])
@@ -282,5 +286,37 @@ class Cloudwatch extends Struct
         }
 
         return null;
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureKey(): string
+    {
+        return 'aws';
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureDefaults(): array
+    {
+        return [];
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureRequires(): array
+    {
+        return [
+            'cloudwatchlogs',
+        ];
     }
 }

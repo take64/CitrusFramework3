@@ -1,4 +1,3 @@
-
 DATE=`date +%Y-%m-%d`
 DATETIME = `date +%Y-%m-%d_%H-%M-%S`
 
