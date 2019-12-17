@@ -97,6 +97,16 @@ return [
                 'webhook_url' => 'https://hooks.slack.com/services/YYYYYYYYYYY',
             ],
         ],
+        'aws' => [
+            'cloudwatchlogs' => [
+                'region' => 'ap-northeast-1',
+                'version' => 'latest',
+                'credentials' => [
+                    'key' => 'hogehoge',
+                    'secret' => 'fugafuga',
+                ],
+            ],
+        ],
     ],
     'example.com' => [
         'application' => [

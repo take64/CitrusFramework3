@@ -19,7 +19,7 @@ use Citrus\Struct;
  */
 class Cloudwatch extends Struct implements LogType
 {
-    /** @var \Citrus\Aws\Cloudwatch クラウドウォッチ */
+    /** @var \Citrus\Aws\CloudwatchLogs クラウドウォッチ */
     protected $cloudwatch;
 
     /** @var array AWS接続用パラメーター */
@@ -51,7 +51,7 @@ class Cloudwatch extends Struct implements LogType
     {
         $this->bind($configure);
 
-        $this->cloudwatch = new \Citrus\Aws\Cloudwatch();
+        $this->cloudwatch = new \Citrus\Aws\CloudwatchLogs();
     }
 
 
