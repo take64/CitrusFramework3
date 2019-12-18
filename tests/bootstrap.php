@@ -14,4 +14,5 @@ $configure_path = dirname(__DIR__). '/tests/citrus-configure.php';
 \Citrus\Session::factory();
 
 // ロガー初期化
-\Citrus\Logger::initialize(\Citrus\Configure::$CONFIGURES);
+$configures = include($configure_path);
+\Citrus\Logger::getInstance()->loadConfigures($configures);

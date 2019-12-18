@@ -253,7 +253,7 @@ class Configure
         Message::getInstance()->loadConfigures($configures);
 
         // ロガー処理
-        Logger::initialize($configures);
+        Logger::getInstance()->loadConfigures($configures);
 
         // アプリケーション
         Application::getInstance()->loadConfigures($configures);

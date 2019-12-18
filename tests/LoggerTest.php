@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Test;
 
-use Citrus\Configure\ConfigureException;
 use Citrus\Logger;
+use Citrus\Logger\LogType;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,7 +46,7 @@ class LoggerTest extends TestCase
     {
         parent::tearDown();
 
-        if (Logger::LOG_TYPE_FILE === $this->logger->configures['type'])
+        if (LogType::FILE === $this->logger->configures['type'])
         {
             // ディレクトリがあったら削除
             $this->forceRemove($this->logger->configures['directory']);
