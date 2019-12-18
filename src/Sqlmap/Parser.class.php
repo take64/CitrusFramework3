@@ -12,6 +12,7 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
 use Citrus\Database\Column;
+use Citrus\Database\DSN;
 use DOMDocument;
 use DOMElement;
 use DOMNodeList;
@@ -94,7 +95,7 @@ class Parser
         // keyword replace
         if (empty($parameter->schema) === true)
         {
-            $parameter->schema = Configure::$CONFIGURE_ITEM->database->schema;
+            $parameter->schema = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES)->schema;
         }
         if ($parameter->schema)
         {

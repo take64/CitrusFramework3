@@ -9,6 +9,7 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
 use Citrus\Database\Column;
+use Citrus\Database\DSN;
 use Citrus\Database\Result;
 use PDO;
 use PDOException;
@@ -47,7 +48,7 @@ class Executor
 
         try
         {
-            $dsn = Configure::$CONFIGURE_ITEM->database;
+            $dsn = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES);
             self::$HANDLER = new PDO(
                 $dsn->toString(),
                 $dsn->username,

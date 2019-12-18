@@ -70,7 +70,7 @@ class Logger extends Configurable
      */
     public static function trace($value)
     {
-        self::getInstance()->output(Level::TRACE, $value, func_get_args());
+        self::sharedInstance()->output(Level::TRACE, $value, func_get_args());
     }
 
 
@@ -82,7 +82,7 @@ class Logger extends Configurable
      */
     public static function debug($value)
     {
-        self::getInstance()->output(Level::DEBUG, $value, func_get_args());
+        self::sharedInstance()->output(Level::DEBUG, $value, func_get_args());
     }
 
 
@@ -94,7 +94,7 @@ class Logger extends Configurable
      */
     public static function info($value)
     {
-        self::getInstance()->output(Level::INFO, $value, func_get_args());
+        self::sharedInstance()->output(Level::INFO, $value, func_get_args());
     }
 
 
@@ -106,7 +106,7 @@ class Logger extends Configurable
      */
     public static function warn($value)
     {
-        self::getInstance()->output(Level::WARNING, $value, func_get_args());
+        self::sharedInstance()->output(Level::WARNING, $value, func_get_args());
     }
 
 
@@ -118,7 +118,7 @@ class Logger extends Configurable
      */
     public static function error($value)
     {
-        self::getInstance()->output(Level::ERROR, $value, func_get_args());
+        self::sharedInstance()->output(Level::ERROR, $value, func_get_args());
     }
 
 
@@ -130,7 +130,7 @@ class Logger extends Configurable
      */
     public static function fatal($value)
     {
-        self::getInstance()->output(Level::FATAL, $value, func_get_args());
+        self::sharedInstance()->output(Level::FATAL, $value, func_get_args());
     }
 
 

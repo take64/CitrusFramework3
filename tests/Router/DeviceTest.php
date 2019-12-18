@@ -30,7 +30,7 @@ class DeviceTest extends TestCase
 
         // 生成
         /** @var Device $device */
-        $device = Device::getInstance()->loadConfigures($configures);
+        $device = Device::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $device_list = [

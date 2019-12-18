@@ -40,7 +40,7 @@ class GenerateCommand extends Command
         $table_name = $this->parameter('table_name');
         $class_prefix = $this->parameter('class_prefix');
 
-        $generate = Generate::getInstance()->loadConfigures($this->configures);
+        $generate = Generate::sharedInstance()->loadConfigures($this->configures);
 
         // 実行
         switch ($type)

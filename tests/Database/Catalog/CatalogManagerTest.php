@@ -86,7 +86,7 @@ class CatalogManagerTest extends TestCase
     public function 生成したテーブル情報が取得できる()
     {
         // インスタンスの生成
-        $migration = Migration::getInstance()->loadConfigures($this->configures);
+        $migration = Migration::sharedInstance()->loadConfigures($this->configures);
         /** @var DSN $dsn */
         $dsn = DSN::getInstance()->loadConfigures($migration->configures);
         // バージョンマネージャー

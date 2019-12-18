@@ -10,9 +10,12 @@ declare(strict_types=1);
 
 namespace Citrus;
 
+use Citrus\Configure\Application;
 use Citrus\Controller\Page;
 use Citrus\Document\Router;
 use Citrus\Http\Header;
+use Citrus\Router\Item;
+use Citrus\Router\Rule;
 
 /**
  * ゲートウェイ処理
@@ -82,7 +85,7 @@ class Gateway
             $ucfirst_device_code  = ucfirst(strtolower($device_code));
 
             // 頭文字だけ大文字で後は小文字のAPPLICATION_CD
-            $ucfirst_application_id = ucfirst(Configure::$CONFIGURE_ITEM->application->id);
+            $ucfirst_application_id = ucfirst(Application::sharedInstance()->id);
 
             // 末尾を取り除く
             $ucfirst_document_code = array_pop($ucfirst_document_codes);
@@ -106,8 +109,8 @@ class Gateway
         {
             // 404でリダイレクトの様に振る舞う
             Header::status404();
-            Session::$router = Router::parseURL(
-                Configure::$CONFIGURE_ITEM->routing->error404
+            Session::$router = Item::parse(
+                Rule::sharedInstance()->error404
             );
             self::controller();
         }

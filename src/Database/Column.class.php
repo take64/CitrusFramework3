@@ -38,7 +38,7 @@ class Column extends Struct
      */
     public function __construct()
     {
-        $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+        $this->schema = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES)->schema;
     }
 
 
@@ -141,7 +141,7 @@ class Column extends Struct
     {
         if (is_null($this->schema) === true)
         {
-            $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+            $this->schema = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES)->schema;
         }
         if (is_null($timestamp) === true)
         {
@@ -162,7 +162,7 @@ class Column extends Struct
     {
         if (is_null($this->schema) === true)
         {
-            $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+            $this->schema = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES)->schema;
         }
         if (is_null($timestamp) === true)
         {

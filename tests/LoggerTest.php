@@ -34,7 +34,7 @@ class LoggerTest extends TestCase
         parent::setUp();
 
         // ロガー初期化はbootstrapでしている
-        $this->logger = Logger::getInstance();
+        $this->logger = Logger::sharedInstance();
     }
 
 

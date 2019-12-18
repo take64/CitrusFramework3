@@ -108,9 +108,9 @@ class Pagecode
         }
 
         // アプリケーションパス
-        $app_path = Application::getInstance()->path;
+        $app_path = Application::sharedInstance()->path;
         // パス定義
-        $paths = Paths::getInstance();
+        $paths = Paths::sharedInstance();
 
         // パスが絶対パスの場合
         if (true === file_exists($javascript))
@@ -176,9 +176,9 @@ class Pagecode
         }
 
         // アプリケーションパス
-        $app_path = Application::getInstance()->path;
+        $app_path = Application::sharedInstance()->path;
         // パス定義
-        $paths = Paths::getInstance();
+        $paths = Paths::sharedInstance();
 
         // パスが絶対パスの場合
         if (true === file_exists($stylesheet))
@@ -268,7 +268,7 @@ class Pagecode
     public function replaceMinJavascript(): self
     {
         // アプリケーションパス
-        $app_path = Application::getInstance()->path;
+        $app_path = Application::sharedInstance()->path;
 
         // ファイルリストを生成して反映
         $this->javascripts = Collection::stream($this->javascripts)->map(function ($ky, $vl) use ($app_path) {
@@ -303,7 +303,7 @@ class Pagecode
     public function replaceMinStylesheet(): self
     {
         // アプリケーションパス
-        $app_path = Application::getInstance()->path;
+        $app_path = Application::sharedInstance()->path;
 
         // ファイルリストを生成して反映
         $this->stylesheets = Collection::stream($this->stylesheets)->map(function ($ky, $vl) use ($app_path) {

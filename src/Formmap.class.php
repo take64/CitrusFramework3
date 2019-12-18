@@ -77,7 +77,7 @@ class Formmap extends Configurable
         if (false === file_exists($path))
         {
             // ファイル名だけの場合を考慮する
-            $path = sprintf('%s/%s', Configure::$DIR_BUSINESS_FORMMAP, basename($path));
+            $path = sprintf('%s/%s', $this->configures['path'], basename($path));
             if (false === file_exists($path))
             {
                 throw new FormmapException(sprintf('Formmap定義ファイル「%s」が存在しません', $path));
@@ -339,6 +339,7 @@ class Formmap extends Configurable
     protected function configureRequires(): array
     {
         return [
+            'path',
             'cache',
         ];
     }

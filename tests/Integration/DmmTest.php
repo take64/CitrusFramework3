@@ -30,7 +30,7 @@ class DmmTest extends TestCase
 
         // 生成
         /** @var Dmm $dmm */
-        $dmm = Dmm::getInstance()->loadConfigures($configures);
+        $dmm = Dmm::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['dmm']['api_id'], $dmm->configures['api_id']);

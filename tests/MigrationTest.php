@@ -83,7 +83,7 @@ class MigrationTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        Migration::getInstance()->loadConfigures($this->configures);
+        Migration::sharedInstance()->loadConfigures($this->configures);
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));
@@ -101,7 +101,7 @@ class MigrationTest extends TestCase
         $name = 'CreateTableUsers';
 
         // インスタンス生成と実行
-        $migration = Migration::getInstance()->loadConfigures($this->configures);
+        $migration = Migration::sharedInstance()->loadConfigures($this->configures);
         $migration->generate($name);
 
         // ファイルができている
@@ -118,7 +118,7 @@ class MigrationTest extends TestCase
     public function マイグレーション_両方向実行()
     {
         // インスタンスの生成
-        $migration = Migration::getInstance()->loadConfigures($this->configures);
+        $migration = Migration::sharedInstance()->loadConfigures($this->configures);
         /** @var DSN $dsn */
         $dsn = DSN::getInstance()->loadConfigures($migration->configures);
         // 検算用PDO

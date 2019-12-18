@@ -31,7 +31,7 @@ class ItemTest extends TestCase
 
         // 生成
         /** @var Device $router_device */
-        $router_device = Device::getInstance()->loadConfigures($configures);
+        $router_device = Device::sharedInstance()->loadConfigures($configures);
 
         // URLパス設計
         $device = 'pc';

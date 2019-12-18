@@ -14,12 +14,14 @@ use Citrus\CitrusException;
 use Citrus\Configure;
 use Citrus\Configure\Application;
 use Citrus\Configure\ConfigureException;
+use Citrus\Configure\Paths;
 use Citrus\Document\Pagecode;
 use Citrus\Formmap;
 use Citrus\Http\Header;
 use Citrus\Library\Smarty3;
 use Citrus\Message;
 use Citrus\Router\Item;
+use Citrus\Router\Rule;
 use Citrus\Session;
 use Citrus\Struct;
 use Exception;
@@ -54,13 +56,13 @@ class Page extends Struct
             $router = clone Session::$router;
             // 実行アクション
             $actionName = $router->action;
-            if (method_exists($this, $actionName) === false)
+            if (false === method_exists($this, $actionName))
             {
                 $actionName = 'none';
                 $router->action = $actionName;
-                if (method_exists($this, $actionName) === false)
+                if (false === method_exists($this, $actionName))
                 {
-                    $router404 = $router->parse(Configure::$CONFIGURE_ITEM->routing->error404);
+                    $router404 = $router->parse(Rule::sharedInstance()->error404);
                     $actionName = $router404->action;
                     $router->document = $router404->document;
                     $router->action = $actionName;
@@ -81,9 +83,8 @@ class Page extends Struct
 
             // form値のbind
             $this->callFormmap()->bind();
-
             // テンプレート当て込み
-            $message = Message::getInstance();
+            $message = Message::sharedInstance();
             $this->callSmarty()->assign('router', Session::$router);
             $this->callSmarty()->assign('pagecode', $this->callPagecode());
             $this->callSmarty()->assign('formmap', $this->callFormmap());
@@ -139,8 +140,8 @@ class Page extends Struct
         }
 
         // テンプレート読み込み
-        $template_path  = Configure::$CONFIGURE_ITEM->paths->callTemplate('/Page') . '/' . implode('/', $templateArray).'.tpl';
-        if (file_exists($template_path) === false)
+        $template_path  = Paths::sharedInstance()->callTemplate('/Page') . '/' . implode('/', $templateArray).'.tpl';
+        if (false === file_exists($template_path))
         {
             throw new CitrusException(sprintf('[%s]のテンプレートが存在しません。', $template_path));
         }
@@ -193,7 +194,7 @@ class Page extends Struct
     {
         if (true === is_null($this->pagecode))
         {
-            $app = Application::getInstance();
+            $app = Application::sharedInstance();
             $pagecode = new Pagecode();
             $pagecode->site_id = $app->id;
             $pagecode->site_title = $app->name;
@@ -216,7 +217,7 @@ class Page extends Struct
     {
         if (true === is_null($this->formmap))
         {
-            $this->formmap = Formmap::getInstance()
+            $this->formmap = Formmap::sharedInstance()
                 ->loadConfigures(Configure::$CONFIGURES);
         }
         return $this->formmap;
@@ -273,7 +274,7 @@ class Page extends Struct
         }
 
         // プラグイン
-        $this->callSmarty()->addPluginsDir([Configure::$CONFIGURE_ITEM->paths->callTemplate('/Plug')]);
+        $this->callSmarty()->addPluginsDir([Paths::sharedInstance()->callTemplate('/Plug')]);
     }
 
 

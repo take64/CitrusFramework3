@@ -105,7 +105,7 @@ class Session extends Struct
         self::$filedata = new Item($_FILES);
         self::$server   = new Item($_SERVER);
         self::$request  = new Item($_REQUEST);
-        self::$router   = Router::getInstance()->factory($_REQUEST);
+        self::$router   = Router::sharedInstance()->factory($_REQUEST);
 
         session_regenerate_id(true);
     }

@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Citrus\Library;
 
-use Citrus\Configure;
+use Citrus\Configure\Paths;
 
 /**
  * Smarty3ラッパー
@@ -23,9 +23,10 @@ class Smarty3 extends \Smarty
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplateDir(Configure::$CONFIGURE_ITEM->paths->callTemplate());
-        $this->setCompileDir(Configure::$CONFIGURE_ITEM->paths->callCompile());
-        $this->setCacheDir(Configure::$CONFIGURE_ITEM->paths->callCache());
+        $paths = Paths::sharedInstance();
+        $this->setTemplateDir($paths->callTemplate());
+        $this->setCompileDir($paths->callCompile());
+        $this->setCacheDir($paths->callCache());
         $this->caching = 0;
         $this->addPluginsDir([dirname(__FILE__) . '/smarty3_plugins']);
     }
