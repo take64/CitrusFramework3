@@ -30,7 +30,7 @@ class ApplicationTest extends TestCase
 
         // 生成
         /** @var Application $application */
-        $application = Application::getInstance()->loadConfigures($configures);
+        $application = Application::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['application']['id'], $application->id);

@@ -93,7 +93,7 @@ class GenerateTest extends TestCase
     public function 設定ファイル通りにディレクトリを生成()
     {
         // インスタンス生成と実行
-        Migration::getInstance()->loadConfigures($this->configures);
+        Migration::sharedInstance()->loadConfigures($this->configures);
 
         // ディレクトリができている
         $this->assertTrue(is_dir($this->output_dir));
@@ -109,11 +109,11 @@ class GenerateTest extends TestCase
     {
         // テーブル生成
         $name = 'CreateTableUsers';
-        $migration = Migration::getInstance()->loadConfigures($this->configures);
+        $migration = Migration::sharedInstance()->loadConfigures($this->configures);
         $migration->up($name);
 
         // ファイル生成
-        $generate = Generate::getInstance()->loadConfigures($this->configures);
+        $generate = Generate::sharedInstance()->loadConfigures($this->configures);
         $generate->all('users', 'User');
 
         // ファイル生成されている

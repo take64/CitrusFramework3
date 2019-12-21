@@ -38,7 +38,7 @@ class Message extends Configurable
      */
     public static function exists(): bool
     {
-        return (0 < count(self::getInstance()->callItems()));
+        return (0 < count(self::sharedInstance()->callItems()));
     }
 
 
@@ -50,11 +50,11 @@ class Message extends Configurable
      */
     public static function callItems(): array
     {
-        if (true === self::getInstance()->isSession())
+        if (true === self::sharedInstance()->isSession())
         {
             return (Session::$session->call(self::SESSION_KEY) ?? []);
         }
-        return self::getInstance()->items;
+        return self::sharedInstance()->items;
     }
 
 
@@ -67,11 +67,11 @@ class Message extends Configurable
      */
     public static function registItems(array $items): void
     {
-        if (true === self::getInstance()->isSession())
+        if (true === self::sharedInstance()->isSession())
         {
             Session::$session->regist(self::SESSION_KEY, $items);
         }
-        self::getInstance()->items = $items;
+        self::sharedInstance()->items = $items;
     }
 
 
@@ -84,7 +84,7 @@ class Message extends Configurable
      */
     public static function callItemsOfTag(string $tag): array
     {
-        return Collection::stream(self::getInstance()->callItems())->filter(function ($ky, $vl) use ($tag) {
+        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($ky, $vl) use ($tag) {
             // タグが一致しているかどうか
             /** @var Item $vl */
             return ($vl->tag === $tag);
@@ -101,7 +101,7 @@ class Message extends Configurable
      */
     public static function callItemsOfType(string $type): array
     {
-        return Collection::stream(self::getInstance()->callItems())->filter(function ($ky, $vl) use ($type) {
+        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($ky, $vl) use ($type) {
             // タイプが一致しているかどうか
             /** @var Item $vl */
             return ($vl->type === $type);
@@ -117,7 +117,7 @@ class Message extends Configurable
      */
     public static function callMessages(): array
     {
-        return self::getInstance()->callItemsOfType(Item::TYPE_MESSAGE);
+        return self::sharedInstance()->callItemsOfType(Item::TYPE_MESSAGE);
     }
 
 
@@ -129,7 +129,7 @@ class Message extends Configurable
      */
     public static function callErrors(): array
     {
-        return self::getInstance()->callItemsOfType(Item::TYPE_ERROR);
+        return self::sharedInstance()->callItemsOfType(Item::TYPE_ERROR);
     }
 
 
@@ -141,7 +141,7 @@ class Message extends Configurable
      */
     public static function callSuccesses(): array
     {
-        return self::getInstance()->callItemsOfType(Item::TYPE_SUCCESS);
+        return self::sharedInstance()->callItemsOfType(Item::TYPE_SUCCESS);
     }
 
 
@@ -153,7 +153,7 @@ class Message extends Configurable
      */
     public static function callWarnings(): array
     {
-        return self::getInstance()->callItemsOfType(Item::TYPE_WARNING);
+        return self::sharedInstance()->callItemsOfType(Item::TYPE_WARNING);
     }
 
 
@@ -170,7 +170,7 @@ class Message extends Configurable
         $results = [];
 
         // 走査
-        $items = self::getInstance()->callItems();
+        $items = self::sharedInstance()->callItems();
         foreach ($items as $ky => $vl)
         {
             // タイプの合うものだけ取得して削除
@@ -182,7 +182,7 @@ class Message extends Configurable
         }
 
         // 再設定
-        self::getInstance()->registItems($items);
+        self::sharedInstance()->registItems($items);
 
         return $results;
     }
@@ -196,7 +196,7 @@ class Message extends Configurable
      */
     public static function popMessages(): array
     {
-        return self::getInstance()->popItemsForType(Item::TYPE_MESSAGE);
+        return self::sharedInstance()->popItemsForType(Item::TYPE_MESSAGE);
     }
 
 
@@ -208,7 +208,7 @@ class Message extends Configurable
      */
     public static function popErrors(): array
     {
-        return self::getInstance()->popItemsForType(Item::TYPE_ERROR);
+        return self::sharedInstance()->popItemsForType(Item::TYPE_ERROR);
     }
 
 
@@ -220,7 +220,7 @@ class Message extends Configurable
      */
     public static function popSuccesses(): array
     {
-        return self::getInstance()->popItemsForType(Item::TYPE_SUCCESS);
+        return self::sharedInstance()->popItemsForType(Item::TYPE_SUCCESS);
     }
 
 
@@ -232,7 +232,7 @@ class Message extends Configurable
      */
     public static function popWarnings(): array
     {
-        return self::getInstance()->popItemsForType(Item::TYPE_WARNING);
+        return self::sharedInstance()->popItemsForType(Item::TYPE_WARNING);
     }
 
 
@@ -246,13 +246,13 @@ class Message extends Configurable
     public static function addItem(Item $item): void
     {
         // 取得
-        $items = self::getInstance()->callItems();
+        $items = self::sharedInstance()->callItems();
 
         // 追加
         $items[] = $item;
 
         // 再設定
-        self::getInstance()->registItems($items);
+        self::sharedInstance()->registItems($items);
     }
 
 
@@ -267,7 +267,7 @@ class Message extends Configurable
      */
     public static function addMessage(string $description, string $name = null, string $tag = null): void
     {
-        self::getInstance()->addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
+        self::sharedInstance()->addItem(new Item($description, Item::TYPE_MESSAGE, $name, false, $tag));
     }
 
 
@@ -282,7 +282,7 @@ class Message extends Configurable
      */
     public static function addError(string $description, string $name = null, string $tag = null): void
     {
-        self::getInstance()->addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
+        self::sharedInstance()->addItem(new Item($description, Item::TYPE_ERROR, $name, false, $tag));
     }
 
 
@@ -297,7 +297,7 @@ class Message extends Configurable
      */
     public static function addSuccess(string $description, string $name = null, string $tag = null): void
     {
-        self::getInstance()->addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
+        self::sharedInstance()->addItem(new Item($description, Item::TYPE_SUCCESS, $name, false, $tag));
     }
 
 
@@ -312,7 +312,7 @@ class Message extends Configurable
      */
     public static function addWarning(string $description, string $name = null, string $tag = null): void
     {
-        self::getInstance()->addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
+        self::sharedInstance()->addItem(new Item($description, Item::TYPE_WARNING, $name, false, $tag));
     }
 
 
@@ -325,10 +325,10 @@ class Message extends Configurable
     public static function removeAll(): void
     {
         // プロパティから削除
-        self::getInstance()->items = [];
+        self::sharedInstance()->items = [];
 
         // セッションから削除
-        if (true === self::getInstance()->isSession())
+        if (true === self::sharedInstance()->isSession())
         {
             Session::$session->remove(self::SESSION_KEY);
         }
@@ -345,14 +345,14 @@ class Message extends Configurable
     public static function removeOfTag(string $tag = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream(self::getInstance()->callItems())->remove(function ($ky, $vl) use ($tag) {
+        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($ky, $vl) use ($tag) {
             // タグが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $tag);
         })->toList();
 
         // 再設定
-        self::getInstance()->registItems($items);
+        self::sharedInstance()->registItems($items);
     }
 
 
@@ -366,14 +366,14 @@ class Message extends Configurable
     public static function removeOftype(string $type = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream(self::getInstance()->callItems())->remove(function ($ky, $vl) use ($type) {
+        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($ky, $vl) use ($type) {
             // タイプが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $type);
         })->toList();
 
         // 再設定
-        self::getInstance()->registItems($items);
+        self::sharedInstance()->registItems($items);
     }
 
 
@@ -385,7 +385,7 @@ class Message extends Configurable
      */
     public static function isSession(): bool
     {
-        return self::getInstance()->configures['enable_session'];
+        return self::sharedInstance()->configures['enable_session'];
     }
 
 

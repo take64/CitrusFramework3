@@ -15,6 +15,9 @@ $database = [
     'schema'    => 'public',
     'username'  => 'citrus',
     'password'  => 'hogehoge',
+    'options'   => [
+        PDO::ATTR_PERSISTENT => true,
+    ],
 ];
 
 
@@ -69,6 +72,7 @@ return [
             'enable_session' => true,
         ],
         'formmap' => [
+            'path' => $dir_base . '/Business/Formmap',
             'cache' => false,
         ],
         'authentication' => [

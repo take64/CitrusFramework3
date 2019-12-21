@@ -14,19 +14,20 @@ use Citrus\Citrus;
 use Citrus\Configure;
 use Citrus\Database\Column\Base;
 use Citrus\Sqlmap\Condition;
-use Citrus\Struct;
+use Citrus\Variable\Structs;
 
 /**
  * データベースカラム情報
  */
-class Column extends Struct
+class Column
 {
     use Base;
+    use Structs;
 
 
 
     /** @var string schema */
-    public $schema = null;
+    public $schema;
 
     /** @var Condition condition */
     public $condition;
@@ -38,7 +39,7 @@ class Column extends Struct
      */
     public function __construct()
     {
-        $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+        $this->schema = DSN::getInstance()->schema;
     }
 
 
@@ -141,7 +142,7 @@ class Column extends Struct
     {
         if (is_null($this->schema) === true)
         {
-            $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+            $this->schema = DSN::getInstance()->schema;
         }
         if (is_null($timestamp) === true)
         {
@@ -162,7 +163,7 @@ class Column extends Struct
     {
         if (is_null($this->schema) === true)
         {
-            $this->schema = Configure::$CONFIGURE_ITEM->database->schema;
+            $this->schema = DSN::getInstance()->schema;
         }
         if (is_null($timestamp) === true)
         {
@@ -203,15 +204,6 @@ class Column extends Struct
                 $this->$ky = null;
             }
         }
-    }
-
-
-
-    /**
-     * bind column
-     */
-    public function bindColumn()
-    {
     }
 
 

@@ -31,7 +31,7 @@ class PathsTest extends TestCase
 
         // 生成
         /** @var Paths $paths */
-        $paths = Paths::getInstance()->loadConfigures($configures);
+        $paths = Paths::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['paths']['cache'], $paths->cache);

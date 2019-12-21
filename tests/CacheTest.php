@@ -29,6 +29,6 @@ class CacheTest extends TestCase
         $configures = require(dirname(__DIR__) . '/tests/citrus-configure.php');
 
         // 生成(例外が発生しない)
-        Cache::getInstance()->loadConfigures($configures);
+        Cache::sharedInstance()->loadConfigures($configures);
     }
 }

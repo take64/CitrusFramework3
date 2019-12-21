@@ -31,7 +31,7 @@ class RouterTest extends TestCase
 
         // 生成
         /** @var Rule $rule */
-        $rule = Rule::getInstance()->loadConfigures($configures);
+        $rule = Rule::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['rule']['default'], $rule->default);
@@ -53,7 +53,7 @@ class RouterTest extends TestCase
 
         // 生成
         /** @var Router $router */
-        $router = Router::getInstance()->loadConfigures($configures);
+        $router = Router::sharedInstance()->loadConfigures($configures);
 
         // URLパス設計
         $device = 'pc';

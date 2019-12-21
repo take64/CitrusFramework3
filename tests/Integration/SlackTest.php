@@ -30,7 +30,7 @@ class SlackTest extends TestCase
 
         // 生成
         /** @var Slack $slack */
-        $slack = Slack::getInstance()->loadConfigures($configures);
+        $slack = Slack::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['slack']['hogehoge']['webhook_url'], $slack->webhookURL('hogehoge'));

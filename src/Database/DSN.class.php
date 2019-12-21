@@ -55,6 +55,9 @@ class DSN extends Configurable
     /** @var string */
     public $password;
 
+    /** @var array */
+    public $options;
+
 
 
     /**

@@ -44,7 +44,12 @@ abstract class Configurable
         // ドメイン設定されていない
         if (false === $is_domainable)
         {
-            $defaults = ($configures[$this->configureKey()] ?? []);
+            // ドメイン設定されていなくてもdefault設定はされている場合がある
+            $defaults = (
+                $configures['default'][$this->configureKey()]
+                ?? $configures[$this->configureKey()]
+                ?? []
+            );
         }
         // ドメイン設定されている
         else

@@ -206,7 +206,7 @@ class Paths extends Configurable
      */
     private function replace(string $search, string $append_path = null): string
     {
-        $domain = Application::getInstance()->domain;
+        $domain = Application::sharedInstance()->domain;
         return str_replace('{#domain#}', $domain, $search) . $append_path;
     }
 }

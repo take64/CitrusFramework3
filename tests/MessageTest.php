@@ -31,7 +31,7 @@ class MessageTest extends TestCase
         $configures = require(dirname(__DIR__) . '/tests/citrus-configure.php');
 
         // 生成(例外が発生しない)
-        Message::getInstance()->loadConfigures($configures);
+        Message::sharedInstance()->loadConfigures($configures);
     }
 
 
@@ -45,11 +45,11 @@ class MessageTest extends TestCase
         $configures = require(dirname(__DIR__) . '/tests/citrus-configure.php');
 
         // 生成(例外が発生しない)
-        Message::getInstance()->loadConfigures($configures);
+        Message::sharedInstance()->loadConfigures($configures);
 
         // メッセージ設定
         $description = '成功した';
-        Message::getInstance()->addSuccess($description);
+        Message::sharedInstance()->addSuccess($description);
 
         // メッセージ取得
         $items = Message::callItems();

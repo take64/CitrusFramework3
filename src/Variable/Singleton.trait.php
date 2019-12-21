@@ -22,7 +22,7 @@ trait Singleton
      *
      * @return self
      */
-    public static function getInstance(): self
+    public static function sharedInstance(): self
     {
         if (true === is_null(static::$singleton))
         {

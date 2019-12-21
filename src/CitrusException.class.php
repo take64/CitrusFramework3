@@ -38,10 +38,10 @@ class CitrusException extends Exception
      * CitrusException converter
      *
      * @param Exception $e
-     * @return CitrusException
+     * @return self
      */
     public static function convert(\Exception $e)
     {
-        return new static($e->getMessage(), $e->getCode(), $e->getPrevious());
+        return new self($e->getMessage(), $e->getCode(), $e->getPrevious());
     }
 }

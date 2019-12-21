@@ -30,7 +30,7 @@ class RuleTest extends TestCase
 
         // 生成
         /** @var Rule $routing */
-        $routing = Rule::getInstance()->loadConfigures($configures);
+        $routing = Rule::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertSame($configures['default']['rule']['default'], $routing->default);

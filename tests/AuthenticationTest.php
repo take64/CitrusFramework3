@@ -31,7 +31,7 @@ class AuthenticationTest extends TestCase
 
         // 生成
         /** @var Authentication $authentication */
-        $authentication = Authentication::getInstance()->loadConfigures($configures);
+        $authentication = Authentication::sharedInstance()->loadConfigures($configures);
 
         // 検証
         $this->assertInstanceOf(Database::class, $authentication->protocol);

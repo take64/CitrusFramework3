@@ -40,7 +40,7 @@ class FormmapTest extends TestCase
         // 設定配列
         $configures = require(dirname(__DIR__). '/tests/citrus-configure.php');
         // formmapインスタンス
-        $this->formmap = Formmap::getInstance()->loadConfigures($configures);
+        $this->formmap = Formmap::sharedInstance()->loadConfigures($configures);
     }
 
 

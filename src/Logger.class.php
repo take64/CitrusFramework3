@@ -11,8 +11,7 @@ declare(strict_types=1);
 namespace Citrus;
 
 use Citrus\Configure\Configurable;
-use Citrus\Configure\ConfigureException;
-use Citrus\Logger\Cloudwatch;
+use Citrus\Logger\CloudWatchLogs;
 use Citrus\Logger\File;
 use Citrus\Logger\Level;
 use Citrus\Logger\LogType;
@@ -26,52 +25,40 @@ class Logger extends Configurable
 {
     use Singleton;
 
-    /** @var string logger type file */
-    const LOG_TYPE_FILE = 'file';
-
-    /** @var string logger type php syslog */
-    const LOG_TYPE_SYSLOG = 'syslog';
-
-    /** @var string logger type cloudwatch */
-    const LOG_TYPE_CLOUDWATCH = 'cloudwatch';
-
     /** @var LogType ログタイプ別のインスタンス */
     public $logType;
 
 
 
     /**
-     * 初期化
-     *
-     * @param array $configures 設定配列
-     * @return void
-     * @throws ConfigureException|\Exception
+     * {@inheritDoc}
+     * @throws \Exception
      */
-    public static function initialize(array $configures = []): void
+    public function loadConfigures(array $configures = []): Configurable
     {
-        /** @var Logger $logger インスタンス */
-        $logger = self::getInstance();
-        // 設定読み込み
-        $logger->loadConfigures($configures);
+        // 設定配列の読み込み
+        parent::loadConfigures($configures);
 
         // タイプによって生成インスタンスを分ける
-        switch ($logger->configures['type'])
+        switch ($this->configures['type'])
         {
             // file
-            case self::LOG_TYPE_FILE:
-                $logger->logType = new File($logger->configures);
+            case LogType::FILE:
+                $this->logType = new File($this->configures);
                 break;
             // syslog
-            case self::LOG_TYPE_SYSLOG:
-                $logger->logType = new Syslog($logger->configures);
+            case LogType::SYSLOG:
+                $this->logType = new Syslog($this->configures);
                 break;
             // AWS CloudWatch
-            case self::LOG_TYPE_CLOUDWATCH:
-                $logger->logType = new Cloudwatch($logger->configures);
+            case LogType::CLOUDWATCHLOGS:
+                $this->logType = new CloudWatchLogs($this->configures);
                 break;
             default:
                 throw new \Exception('Loggerの生成に失敗しました');
         }
+
+        return $this;
     }
 
 
@@ -83,7 +70,7 @@ class Logger extends Configurable
      */
     public static function trace($value)
     {
-        self::getInstance()->output(Level::TRACE, $value, func_get_args());
+        self::sharedInstance()->output(Level::TRACE, $value, func_get_args());
     }
 
 
@@ -95,7 +82,7 @@ class Logger extends Configurable
      */
     public static function debug($value)
     {
-        self::getInstance()->output(Level::DEBUG, $value, func_get_args());
+        self::sharedInstance()->output(Level::DEBUG, $value, func_get_args());
     }
 
 
@@ -107,7 +94,7 @@ class Logger extends Configurable
      */
     public static function info($value)
     {
-        self::getInstance()->output(Level::INFO, $value, func_get_args());
+        self::sharedInstance()->output(Level::INFO, $value, func_get_args());
     }
 
 
@@ -119,7 +106,7 @@ class Logger extends Configurable
      */
     public static function warn($value)
     {
-        self::getInstance()->output(Level::WARNING, $value, func_get_args());
+        self::sharedInstance()->output(Level::WARNING, $value, func_get_args());
     }
 
 
@@ -131,7 +118,7 @@ class Logger extends Configurable
      */
     public static function error($value)
     {
-        self::getInstance()->output(Level::ERROR, $value, func_get_args());
+        self::sharedInstance()->output(Level::ERROR, $value, func_get_args());
     }
 
 
@@ -143,7 +130,7 @@ class Logger extends Configurable
      */
     public static function fatal($value)
     {
-        self::getInstance()->output(Level::FATAL, $value, func_get_args());
+        self::sharedInstance()->output(Level::FATAL, $value, func_get_args());
     }
 
 
@@ -230,7 +217,7 @@ class Logger extends Configurable
         ];
 
         // ファイルの場合
-        if (self::LOG_TYPE_FILE === $type)
+        if (LogType::FILE === $type)
         {
             $defaults += [
                 'owner' => posix_getpwuid(posix_geteuid())['name'],
@@ -257,7 +244,7 @@ class Logger extends Configurable
         ];
 
         // ファイルの場合
-        if (self::LOG_TYPE_FILE === $type)
+        if (LogType::FILE === $type)
         {
             $requires += [
                 'directory',

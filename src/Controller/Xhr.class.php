@@ -478,7 +478,7 @@ class Xhr
     {
         if (is_null($this->formmap) === true)
         {
-            $this->formmap = Formmap::getInstance()
+            $this->formmap = Formmap::sharedInstance()
                 ->loadConfigures(Configure::$CONFIGURES);
         }
         return $this->formmap;

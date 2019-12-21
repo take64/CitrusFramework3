@@ -42,10 +42,10 @@ class Router extends Configurable
         parent::loadConfigures($configures);
 
         // デバイス
-        $this->device = Device::getInstance()->loadConfigures($configures);
+        $this->device = Device::sharedInstance()->loadConfigures($configures);
 
         // アクセス設定
-        $this->rule = Rule::getInstance()->loadConfigures($configures);
+        $this->rule = Rule::sharedInstance()->loadConfigures($configures);
 
         return $this;
     }

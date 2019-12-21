@@ -10,13 +10,15 @@ declare(strict_types=1);
 
 namespace Citrus\Logger;
 
-use Citrus\Struct;
+use Citrus\Variable\Structs;
 
 /**
  * ファイル出力ロガー
  */
-class File extends Struct implements LogType
+class File implements LogType
 {
+    use Structs;
+
     /** @var string */
     public $directory;
 
@@ -49,8 +51,9 @@ class File extends Struct implements LogType
      * @param string $level  ログレベル
      * @param mixed  $value  ログ内容
      * @param array  $params パラメーター
+     * @return void
      */
-    public function output(string $level, $value, array $params = [])
+    public function output(string $level, $value, array $params = []): void
     {
         $_directory = $this->directory;
         $_filename  = $this->filename;

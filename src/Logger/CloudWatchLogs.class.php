@@ -11,16 +11,18 @@ declare(strict_types=1);
 namespace Citrus\Logger;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
-use Citrus\Struct;
-
+use Citrus\Variable\Dates;
+use Citrus\Variable\Structs;
 
 /**
- * CloudWatch出力ロガー
+ * CloudWatchLogs出力ロガー
  */
-class Cloudwatch extends Struct implements LogType
+class CloudWatchLogs implements LogType
 {
-    /** @var \Citrus\Aws\CloudwatchLogs クラウドウォッチ */
-    protected $cloudwatch;
+    use Structs;
+
+    /** @var \Citrus\Integration\Aws\CloudwatchLogs クラウドウォッチ */
+    protected $cloudwatchLogs;
 
     /** @var array AWS接続用パラメーター */
     protected $aws = [];
@@ -51,7 +53,7 @@ class Cloudwatch extends Struct implements LogType
     {
         $this->bind($configure);
 
-        $this->cloudwatch = new \Citrus\Aws\CloudwatchLogs();
+        $this->cloudwatchLogs = new \Citrus\Integration\Aws\CloudwatchLogs();
     }
 
 
@@ -72,10 +74,11 @@ class Cloudwatch extends Struct implements LogType
      * @param string $level  ログレベル
      * @param mixed  $value  ログ内容
      * @param array  $params パラメーター
+     * @return void
      */
-    public function output(string $level, $value, array $params = [])
+    public function output(string $level, $value, array $params = []): void
     {
-        if (is_string($value) === true)
+        if (true === is_string($value))
         {
             $value = vsprintf($value, $params) . PHP_EOL;
         }
@@ -83,7 +86,7 @@ class Cloudwatch extends Struct implements LogType
         $format = [
             'messages' => $value,
             'level' => $level,
-            'datetime' => new \DateTime(),
+            'datetime' => Dates::now(),
         ];
 
         $this->buffers[] = [
@@ -102,8 +105,10 @@ class Cloudwatch extends Struct implements LogType
 
     /**
      * ログ書き出し
+     *
+     * @return void
      */
-    private function flush()
+    private function flush(): void
     {
         // バッファがない場合はスルー
         if (true === empty($this->buffers))
@@ -111,7 +116,7 @@ class Cloudwatch extends Struct implements LogType
             return;
         }
 
-        $this->cloudwatch->flush($this->group, $this->stream, $this->buffers, true);
+        $this->cloudwatchLogs->flush($this->group, $this->stream, $this->buffers, true);
         $this->buffers = [];
     }
 }
