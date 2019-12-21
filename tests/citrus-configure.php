@@ -15,6 +15,9 @@ $database = [
     'schema'    => 'public',
     'username'  => 'citrus',
     'password'  => 'hogehoge',
+    'options'   => [
+        PDO::ATTR_PERSISTENT => true,
+    ],
 ];
 
 

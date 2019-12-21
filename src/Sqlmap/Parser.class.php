@@ -3,16 +3,18 @@
 declare(strict_types=1);
 
 /**
- * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
+ * @copyright   Copyright 2019, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
  * @license     http://www.citrus.tk/
  */
 
 namespace Citrus\Sqlmap;
 
-use Citrus\Configure;
 use Citrus\Database\Column;
 use Citrus\Database\DSN;
+use Citrus\Sqlmap\Parser\Dynamic;
+use Citrus\Sqlmap\Parser\Statement;
+use Citrus\Variable\Strings;
 use DOMDocument;
 use DOMElement;
 use DOMNodeList;
@@ -24,129 +26,152 @@ use DOMXPath;
 class Parser
 {
     /** @var DOMDocument dom document */
-    public $dom;
+    private $dom;
 
     /** @var DOMXPath dom xpath */
-    public $xpath;
+    private $xpath;
 
     /** @var Statement statement */
     public $statement;
 
     /** @var Column parameter */
-    public $parameter;
+    private $parameter;
 
     /** @var array parameters */
     public $parameter_list = [];
 
-    /** @var string sqlmap path */
-    public $_path;
+    /** @var string Sqlmapのパス */
+    private $path;
 
-    /** @var string transaction name */
-    public $_transaction;
+    /** @var string Sqlmap内の対象ID */
+    private $statement_id;
 
-    /** @var string sqlmap inner id */
-    public $_id;
-
-    /** @var Column sqlmap parameter */
-    public $_parameter;
+    /** @var DSN DSN情報 */
+    private $dsn;
 
 
 
     /**
-     * sqlmap xml parser
+     * パースして結果を取得
      *
-     * @param string                    $path
-     * @param string                    $transaction
-     * @param string                    $id
-     * @param Column|null $parameter
+     * @param string $sqlmap_path  Sqlmapのパス
+     * @param string $statement_id Sqlmap内の対象ID
+     * @param Column $parameter    受付パラメタ
+     * @param DSN    $dsn          DSN情報
+     * @return Parser
+     * @throws SqlmapException
      */
-    public function parse(string $path, string $transaction, string $id, Column $parameter = null)
+    public static function generate(string $sqlmap_path, string $statement_id, Column $parameter, DSN $dsn): Parser
     {
-        $this->_path = $path;
-        $this->_transaction = $transaction;
-        $this->_id = $id;
-        $this->_parameter = $parameter;
+        $self = new self();
+        $self->path = $sqlmap_path;
+        $self->statement_id = $statement_id;
+        $self->parameter = $parameter;
+        $self->dsn = $dsn;
+        $self->parse();
+        return $self;
+    }
 
-        // initialize domdocument
+
+
+    /**
+     * Sqlmapのパース
+     * @throws SqlmapException
+     */
+    public function parse()
+    {
+        // DOMの初期化
         $this->dom = new DOMDocument();
-        $this->dom->load(realpath($path));
+        $this->dom->load(realpath($this->path));
         $this->xpath = new DOMXPath($this->dom);
-        $nodeList = $this->xpath->query('/sqlMap/'.$transaction."[@id='".$id."']");
-        if ($nodeList->length == 0)
+        $nodeList = $this->xpath->query(sprintf("/sqlMap/*[@id='%s']", $this->statement_id));
+        // 見つからない場合
+        if (0 === $nodeList->length)
         {
-            trigger_error(sprintf('Warning: Undefined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
+            throw new SqlmapException(sprintf(' Sqlmapファイル「%s」に「%s」の定義がありません', $this->path, $this->statement_id));
         }
-        else if ($nodeList->length > 1)
+        // 逆に1つ以上見つかった場合
+        if (1 < $nodeList->length)
         {
-            trigger_error(sprintf('Warning: Duplicate defined SQLMAP transaction "%s" in %s', $id, $path), E_USER_WARNING);
+            throw new SqlmapException(sprintf(' Sqlmapファイル「%s」に「%s」が複数定義されています', $this->path, $this->statement_id));
         }
-        $element = $this->xpath->query('/sqlMap/'.$transaction."[@id='".$id."']")->item(0);
+        $element = $nodeList->item(0);
 
-        // statement
+        // ステートメントの生成
         $this->statement = new Statement($element->attributes);
 
-        // parameter class & map
-        $this->parameter = $parameter;
-
-        // select nodes
-        $nodes                  = $element->childNodes;
+        // ノードのパース
+        $nodes = $element->childNodes;
         $this->statement->query = $this->_nodes($nodes);
 
-        // keyword replace
-        if (empty($parameter->schema) === true)
+        // キーワードの置換
+        if (true === Strings::isEmpty($this->parameter->schema))
         {
-            $parameter->schema = DSN::getInstance()->loadConfigures(Configure::$CONFIGURES)->schema;
+            $this->parameter->schema = $this->dsn->schema;
         }
-        if ($parameter->schema)
+        if (false === Strings::isEmpty($this->parameter->schema))
         {
-            $this->statement->query = str_replace('{SCHEMA}', '"'.$parameter->schema.'".', $this->statement->query);
+            $this->statement->query = str_replace('{SCHEMA}', '"'.$this->parameter->schema.'".', $this->statement->query);
         }
+        // スキーマ制度がない場合に除去
+        $this->statement->query = str_replace('{SCHEMA}', '', $this->statement->query);
 
-        // parameters
-        $_parameter_list= $this->parameter_list;
-        $_query         = $this->statement->query;
+        // パラメータの抽出
+        $parameter_list= $this->parameter_list;
+        $query         = $this->statement->query;
 
-        // dynamic parameter
-        if (strrpos($_query, '#') !== false)
+        // 動的パラメータ
+        if (false !== strrpos($query, '#'))
         {
-            preg_match_all('/#[a-zA-Z0-9_\-\>\.]*#/', $_query, $matches, PREG_PATTERN_ORDER);
+            // パラメータ構文を抽出
+            preg_match_all('/#[a-zA-Z0-9_\-\>\.]*#/', $query, $matches, PREG_PATTERN_ORDER);
 
+            // マッチしたパラメータの当て込み
             foreach ($matches[0] as $one)
             {
-                $match_code     = str_replace('#', '', $one);
-                $replace_code   = ':'.str_replace('.', '__', $match_code);
-                $_parameter_list[$replace_code] = $this->callProperty($this->parameter, $match_code);
-                // query in pattern
-                if (is_array($_parameter_list[$replace_code]) === true)
+                $match_code = str_replace('#', '', $one);
+                $replace_code = (':' . str_replace('.', '__', $match_code));
+                $parameter_list[$replace_code] = $this->callNestPropertyValue($this->parameter, $match_code);
+                // パラメータにリテラルではなく配列が入っていた場合
+                if (true === is_array($parameter_list[$replace_code]))
                 {
                     $array_replace_codes = [];
-                    foreach ($_parameter_list[$replace_code] as $ary_ky => $ary_vl)
+                    foreach ($parameter_list[$replace_code] as $ary_ky => $ary_vl)
                     {
-                        $array_replace_codes[] = $replace_code.'_'.$ary_ky;
-                        $_parameter_list[$replace_code.'_'.$ary_ky] = $ary_vl;
+                        $replace_key = sprintf('%s_%s', $replace_code, $ary_ky);
+                        $array_replace_codes[] = $replace_key;
+                        // パラメータとして再設定
+                        $parameter_list[$replace_key] = $ary_vl;
                     }
-                    unset($_parameter_list[$replace_code]);
+                    // 再設定したので、既存の配列からは削除
+                    unset($parameter_list[$replace_code]);
+                    // IN句の IN (?, ?, ?)を想定している
                     $replace_code = implode(', ', $array_replace_codes);
                 }
-                $_query = str_replace($one, $replace_code, $_query);
+                $query = str_replace($one, $replace_code, $query);
             }
         }
 
-        // static parameter
-        if (strrpos($_query, '$') !== false)
+        // staticなパラメータ
+        if (false !== strrpos($query, '$'))
         {
-            preg_match_all('/\$[a-zA-Z0-9_\-\>]*\$/', $_query, $matches, PREG_PATTERN_ORDER);
+            // パラメータ構文を抽出
+            preg_match_all('/\$[a-zA-Z0-9_\-\>]*\$/', $query, $matches, PREG_PATTERN_ORDER);
+
+            // マッチしたパラメータの置換
             foreach ($matches[0] as $one)
             {
-                $match_code     = str_replace('$', '', $one);
-                $_query = str_replace($one, $this->callProperty($this->parameter, $match_code), $_query);
+                $match_code = str_replace('$', '', $one);
+                $query = str_replace($one, $this->callNestPropertyValue($this->parameter, $match_code), $query);
             }
         }
-        $_query = strtr($_query, ["\r"=>' ', "\n"=>' ', "\t"=>' ', '    ' => ' ', '  ' => ' ']);
+
+        // 余計な空白などを削除
+        $query = strtr($query, ["\r"=>' ', "\n"=>' ', "\t"=>' ', '    ' => ' ', '  ' => ' ']);
 
         // parameters
-        $this->parameter_list   = $_parameter_list;
-        $this->statement->query = $_query;
+        $this->parameter_list = $parameter_list;
+        $this->statement->query = $query;
     }
 
 
@@ -155,6 +180,7 @@ class Parser
      * replace sqlmap parameter
      *
      * @param Column|null $parameter
+     * @deprecated
      */
     public function replaceParameter(Column $parameter = null)
     {
@@ -169,25 +195,46 @@ class Parser
 
 
     /**
-     * generate sqlmap xml parser
+     * node 要素汎用処理
      *
-     * @param string                    $path
-     * @param string                    $transaction
-     * @param string                    $id
-     * @param Column|null $parameter
-     * @return Parser
+     * @param DOMNodeList  $nodes
+     * @param Dynamic|null $dynamic
+     * @return string
      */
-    public static function generateParser(string $path, string $transaction, string $id, Column $parameter = null): Parser
+    protected function _nodes(DOMNodeList $nodes, Dynamic $dynamic = null): string
     {
-        $parser = new static();
-        $parser->parse($path, $transaction, $id, $parameter);
-        return $parser;
+        $size = $nodes->length;
+        for ($i = 0; $i < $size; $i++)
+        {
+            $item = $nodes->item($i);
+
+            // なければ生成
+            $dynamic = ($dynamic ?: new Dynamic());
+            switch ($item->nodeName)
+            {
+                case '#text':
+                    $text_query = self::_textQuery($item->nodeValue);
+                    $dynamic->concatenateString($text_query);
+                    break;
+                case '#cdata-section':
+                    $cdata_query = self::_cdataQuery($item->nodeValue);
+                    $dynamic->concatenateString($cdata_query);
+                    break;
+                case '#comment':
+                    // 処理なし
+                    continue;
+                default:
+                    $item_node = $this->{'_'.$item->nodeName}($item);
+                    $dynamic->concatenate($item_node);
+
+            }
+        }
+        return $dynamic->query;
     }
 
 
 
     /**
-     * text node parser
      * テキストノード処理
      *
      * @param string $text
@@ -196,7 +243,7 @@ class Parser
     protected static function _text(string $text): Dynamic
     {
         $dynamic = new Dynamic();
-        $dynamic->query = ' '.trim($text);
+        $dynamic->query = (' ' . trim($text));
 
         return $dynamic;
     }
@@ -204,7 +251,6 @@ class Parser
 
 
     /**
-     * cdata node parser
      * CDATAノード処理
      *
      * @param string $cdata
@@ -213,7 +259,7 @@ class Parser
     protected static function _cdata(string $cdata): Dynamic
     {
         $dynamic = new Dynamic();
-        $dynamic->query = ' '.trim($cdata);
+        $dynamic->query = (' ' . trim($cdata));
 
         return $dynamic;
     }
@@ -221,36 +267,33 @@ class Parser
 
 
     /**
-     * text node parser
-     * テキストノード処理
+     * テキストノードのクエリ処理
      *
      * @param string $text
      * @return string
      */
     protected static function _textQuery(string $text): string
     {
-        return ' '. trim($text);
+        return (' ' . trim($text));
     }
 
 
 
     /**
-     * cdata node parser
-     * CDATAノード処理
+     * CDATAノードのクエリ処理
      *
      * @param string $cdata
      * @return string
      */
     protected static function _cdataQuery(string $cdata): string
     {
-        return ' '. trim($cdata);
+        return (' ' . trim($cdata));
     }
 
 
 
     /**
-     * dynamic element node parser
-     * ダイナミックエレメント処理
+     * ダイナミックノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -266,8 +309,7 @@ class Parser
 
 
     /**
-     * isNull element node parser
-     * isNullエレメント処理
+     * isNullノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -276,8 +318,8 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
-        if (is_null($property) === true || (is_string($property) === true && strtolower($property) == 'null'))
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
+        if (true === is_null($property) or (true === is_string($property) and 'null' === strtolower($property)))
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
@@ -287,8 +329,7 @@ class Parser
 
 
     /**
-     * isNotNull element node parser
-     * isNotNullエレメント処理
+     * isNotNullノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -297,30 +338,20 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if (is_null($property) === false)
+        if (false === is_null($property) or (true === is_string($property) and 'null' !== strtolower($property)))
         {
-            if (is_string($property) === true)
-            {
-                if (strtolower($property) != 'null')
-                {
-                    $dynamic->query = $this->_nodes($element->childNodes);
-                }
-            }
-            else
-            {
-                $dynamic->query = $this->_nodes($element->childNodes);
-            }
+            $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isEmpty element node parser
-     * isEmptyエレメント処理
+     * isEmptyノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -329,20 +360,22 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        // プロパティ値の取得
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if (empty($property) === true)
+        // emptyかどうかなので'empty()'メソッドを使う
+        if (true === empty($property))
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isNotEmpty element node parser
-     * isNotEmptyエレメント処理
+     * isNotEmptyノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -351,20 +384,20 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if (empty($property) === false)
+        if (false === empty($property))
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isEqual element node parser
-     * isEqualエレメント処理
+     * isEqualノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -373,21 +406,21 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $compare = ($dynamic->compare_property  ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
         if ($property == $compare)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isNotEqual element node parser
-     * isNotEqualエレメント処理
+     * isNotEqualノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -397,18 +430,20 @@ class Parser
         $dynamic = new Dynamic($element->attributes);
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
         if ($property != $compare)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
+
+
     /**
-     * isGreaterThan element node parser
-     * isGreaterThanエレメント処理
+     * isGreaterThanノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -419,18 +454,18 @@ class Parser
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
 
-        if ($this->parameter->{$dynamic->property} > $compare)
+        if ($compare < $this->parameter->{$dynamic->property})
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isGreaterEqual element node parser
-     * isGreaterEqualエレメント処理
+     * isGreaterEqualノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -441,18 +476,18 @@ class Parser
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
 
-        if ($this->parameter->{$dynamic->property} >= $compare)
+        if ($compare <= $this->parameter->{$dynamic->property})
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isLessThan element node parser
-     * isLessThanエレメント処理
+     * isLessThanノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -463,18 +498,18 @@ class Parser
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
 
-        if ($this->parameter->{$dynamic->property} < $compare)
+        if ($compare > $this->parameter->{$dynamic->property})
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isLessEqual element node parser
-     * isLessEqualエレメント処理
+     * isLessEqualノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -485,7 +520,7 @@ class Parser
 
         $compare = ($dynamic->compare_property ? $this->parameter->{$dynamic->compare_property} : $dynamic->compare_value);
 
-        if ($this->parameter->{$dynamic->property} <= $compare)
+        if ($compare >= $this->parameter->{$dynamic->property})
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
@@ -496,8 +531,7 @@ class Parser
 
 
     /**
-     * isNumeric element node parser
-     * isNumericエレメント処理
+     * isNumericノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -506,20 +540,20 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if (is_numeric($property) === true)
+        if (true === is_numeric($property))
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * isDatetime element node parser
-     * isDatetimeエレメント処理
+     * isDatetimeノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -528,12 +562,13 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if (strtotime($property) !== false)
+        if (false !== strtotime($property))
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
@@ -541,7 +576,7 @@ class Parser
 
     /**
      * isTrue element node parser
-     * isTrueエレメント処理
+     * isTrueノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
@@ -550,75 +585,30 @@ class Parser
     {
         $dynamic = new Dynamic($element->attributes);
 
-        $property = $this->callProperty($this->parameter, $dynamic->property);
+        $property = $this->callNestPropertyValue($this->parameter, $dynamic->property);
 
-        if ($property === true)
+        if (true === $property)
         {
             $dynamic->query = $this->_nodes($element->childNodes);
         }
+
         return $dynamic;
     }
 
 
 
     /**
-     * node element general parser
-     * node エレメント汎用処理
-     *
-     * @param DOMNodeList              $nodes
-     * @param Dynamic|null $dynamic
-     * @return string
-     */
-    protected function _nodes(DOMNodeList $nodes, Dynamic $dynamic = null)
-    {
-        $size = $nodes->length;
-        for ($i = 0; $i < $size; $i++)
-        {
-            $item = $nodes->item($i);
-
-            if (is_null($dynamic) === true)
-            {
-                $dynamic = new Dynamic();
-            }
-
-            if ($item->nodeName == '#text')
-            {
-                $text_query = self::_textQuery($item->nodeValue);
-                $dynamic->concatenateString($text_query);
-            }
-            else if ($item->nodeName == '#cdata-section')
-            {
-                $cdata_query = self::_cdataQuery($item->nodeValue);
-                $dynamic->concatenateString($cdata_query);
-            }
-            else if ($item->nodeName == '#comment')
-            {
-                // 処理なし
-                continue;
-            }
-            else
-            {
-                $item_node = $this->{'_'.$item->nodeName}($item);
-                $dynamic->concatenate($item_node);
-            }
-        }
-        return $dynamic->query;
-    }
-
-
-
-    /**
      * include element node parser
-     * includeエレメント処理
+     * includeノード処理
      *
      * @param DOMElement $element
      * @return Dynamic
+     * @throws SqlmapException
      */
     protected function _include(DOMElement $element): Dynamic
     {
         $dynamic = new Dynamic($element->attributes);
-        $include = new Parser();
-        $include->parse($this->_path, $this->_transaction, $dynamic->refid, $this->_parameter);
+        $include = Parser::generate($this->path, $dynamic->refid, $this->parameter, $this->dsn);
         $dynamic->query = $include->statement->query;
         $this->parameter_list += $include->parameter_list;
 
@@ -628,18 +618,17 @@ class Parser
 
 
     /**
-     * call nested property
      * ネストの深いプロパティーを取得する。
      *
-     * @param Column $parameter
-     * @param string|null          $property
-     * @return string|null
+     * @param Column      $parameter ex.) Userオブジェクト
+     * @param string|null $property  ex.) user.condition.user_id
+     * @return mixed ex.) user_idの値
      */
-    private function callProperty(Column $parameter, string $property)
+    private function callNestPropertyValue(Column $parameter, string $property)
     {
-        $property_list  = explode('.', $property);
+        $properties = explode('.', $property);
         $result = $parameter;
-        foreach ($property_list as $one)
+        foreach ($properties as $one)
         {
             $result = $result->$one;
         }

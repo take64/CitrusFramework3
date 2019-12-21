@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -7,8 +10,9 @@
 
 namespace Citrus\Sqlmap;
 
-use Citrus\NVL;
-
+/**
+ * 共通条件
+ */
 trait Condition
 {
     /** @var string keyword */
@@ -30,6 +34,7 @@ trait Condition
     public $is_count = false;
 
 
+
     /**
      * constructor.
      */
@@ -38,7 +43,7 @@ trait Condition
         $properties = get_object_vars($this);
         foreach ($properties as $ky => $vl)
         {
-            if (in_array($ky, ['schema', 'condition']) === false)
+            if (false === in_array($ky, ['schema', 'condition']))
             {
                 $this->$ky = null;
             }
@@ -53,20 +58,16 @@ trait Condition
      * @param int|null $page
      * @param int|null $limit
      */
-    public function pageLimit(int $page = null, int $limit = null)
+    public function pageLimit(int $page = 1, int $limit = 10)
     {
         // page
-        $page = NVL::coalesceNull($page, $this->page, 1);
         $this->page = $page;
 
         // limit
-        $limit = NVL::coalesceNull($limit, $this->limit, 10);
         $this->limit = $limit;
 
         // offset
-        $this->offset = NVL::coalesceNull($this->offset, function () use ($page, $limit) {
-            return $limit * ($page - 1);
-        });
+        $this->offset = ($this->offset ?: ($limit * ($page - 1)));
     }
 
 
@@ -78,14 +79,16 @@ trait Condition
      */
     public function toLike($property = null)
     {
-        if (is_array($property) === true)
+        // 配列であれば順次再起
+        if (true === is_array($property))
         {
             foreach ($property as $one)
             {
                 $this->toLike($one);
             }
         }
-        elseif (is_string($this->$property) === true)
+        // 文字列であれば設定
+        if (true === is_string($this->$property))
         {
             $this->$property = self::like($this->$property);
         }
@@ -100,7 +103,7 @@ trait Condition
      */
     public function toLikePrefix(string $property = null)
     {
-        if (is_string($this->$property) === true)
+        if (true === is_string($this->$property))
         {
             $this->$property = self::likePrefix($this->$property);
         }
@@ -115,7 +118,7 @@ trait Condition
      */
     public function toLikeSuffix(string $property = null)
     {
-        if (is_string($this->$property) === true)
+        if (true === is_string($this->$property))
         {
             $this->$property = self::likeSuffix($this->$property);
         }
@@ -127,16 +130,16 @@ trait Condition
      * 曖昧一致
      *
      * @param string|null $property
-     * @return string
+     * @return string|null
      */
-    public static function like(string $property = null): string
+    public static function like(string $property = null): ?string
     {
-        if (is_string($property) === true)
+        if (true === is_string($property))
         {
             return str_replace(
                 '%%',
                 '%',
-                '%' . $property . '%'
+                ('%' . $property . '%')
             );
         }
         return null;
@@ -148,16 +151,16 @@ trait Condition
      * 前方一致
      *
      * @param string|null $property
-     * @return string
+     * @return string|null
      */
-    public static function likePrefix(string $property = null): string
+    public static function likePrefix(string $property = null): ?string
     {
-        if (is_string($property) === true)
+        if (true === is_string($property))
         {
             return str_replace(
                 '%%',
                 '%',
-                '%' . $property
+                ('%' . $property)
             );
         }
         return null;
@@ -169,16 +172,16 @@ trait Condition
      * 後方一致
      *
      * @param string|null $property
-     * @return string
+     * @return string|null
      */
-    public static function likeSuffix(string $property = null): string
+    public static function likeSuffix(string $property = null): ?string
     {
-        if (is_string($property) === true)
+        if (true === is_string($property))
         {
             return str_replace(
                 '%%',
                 '%',
-                $property . '%'
+                ($property . '%')
             );
         }
         return null;
