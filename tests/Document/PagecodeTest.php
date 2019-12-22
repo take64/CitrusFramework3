@@ -87,12 +87,14 @@ class PagecodeTest extends TestCase
         $resources = [
             '/Part/Pc/dummy.css', // 直接指定
             '/cf-lib/library.css', // ライブラリ指定
+            '/Javascript/Library/cf-lib/library.css', // JSライブラリ内のCSS指定
         ];
         // 読み込みが期待されるStylesheet
         $expected_resources = [
             '/Stylesheet/hoge.example.com/Part/Pc/dummy.css',   // 直接指定
             '/Stylesheet/Library/cf-lib/library.css',           // ライブラリ指定
             '/Stylesheet/hoge.example.com/Page/Pc/Home.css',    // 自動読み込み指定
+            '/Javascript/Library/cf-lib/library.css',           // JSライブラリ内のCSS指定
         ];
 
         // 読み込み処理を通すと、自動読み込みも読み込まれる
