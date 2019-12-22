@@ -14,6 +14,8 @@ use Citrus\Authentication\Database;
 use Citrus\Authentication\Item;
 use Citrus\Authentication\Protocol;
 use Citrus\Configure\Configurable;
+use Citrus\Database\Connection;
+use Citrus\Database\DSN;
 use Citrus\Session\SessionException;
 use Citrus\Variable\Singleton;
 
@@ -55,7 +57,8 @@ class Authentication extends Configurable
         // 認証プロバイダ
         if (self::TYPE_DATABASE === $this->configures['type'])
         {
-            $this->protocol = new Database();
+            $connection = new Connection(DSN::getInstance()->loadConfigures($this->configures));
+            $this->protocol = new Database($connection);
         }
 
         return $this;
@@ -128,13 +131,13 @@ class Authentication extends Configurable
     public static function generateToken(string $key = null): string
     {
         // セッションが無効 もしくは 存在しない場合
-        if (Session::status() !== PHP_SESSION_ACTIVE)
+        if (PHP_SESSION_ACTIVE !== Session::status())
         {
             throw new SessionException('セッションが無効 もしくは 存在しません。');
         }
 
         // アルゴリズムチェック
-        if (in_array(self::$TOKEN_ALGO, hash_algos()) === false)
+        if (false === in_array(self::$TOKEN_ALGO, hash_algos()))
         {
             throw new CitrusException('未定義のtoken生成アルゴリズムです。');
         }

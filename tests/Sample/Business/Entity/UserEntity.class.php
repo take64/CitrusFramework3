@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Test\Sample\Business\Entity;
 
-use Citrus\Sqlmap\ResultSet\ResultClass;
+use Citrus\Database\ResultSet\ResultClass;
 use Test\Sample\Integration\Property\UserProperty;
 
 class UserEntity extends UserProperty implements ResultClass

@@ -89,11 +89,6 @@ class Session extends Struct
             }
             session_id($citrus_ticket_key);
         }
-        else
-        {
-            // sessing session id
-            session_id();
-        }
 
         // connect session
         session_start();
@@ -108,6 +103,7 @@ class Session extends Struct
         self::$router   = Router::sharedInstance()->factory($_REQUEST);
 
         session_regenerate_id(true);
+        self::$sessionId = session_id();
     }
 
 

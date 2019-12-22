@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Sqlmap\ResultSet;
+namespace Citrus\Database\ResultSet;
 
 /**
  * 結果クラスの抽象実装
