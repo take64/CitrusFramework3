@@ -12,6 +12,7 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
 use Citrus\Database\Connection\Connection;
+use Citrus\Database\Connection\ConnectionPool;
 use Citrus\Database\DatabaseException;
 use Citrus\Database\ResultSet\ResultSet;
 
@@ -40,6 +41,8 @@ class Client
      */
     public function __construct(Connection $connection = null, string $sqlmap_path = null)
     {
+        // 指定がなければデフォルト
+        $connection = ($connection ?: ConnectionPool::callDefault());
         // 設定して接続もしてしまう
         if (false === is_null($connection))
         {
@@ -59,6 +62,7 @@ class Client
      * @param Parser $parser
      * @return ResultSet
      * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function select(Parser $parser): ResultSet
     {
@@ -76,6 +80,7 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function insert(Parser $parser): int
     {
@@ -96,6 +101,7 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function update(Parser $parser): int
     {
@@ -116,6 +122,7 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function delete(Parser $parser): int
     {
@@ -142,6 +149,7 @@ class Client
      * @param Parser $parser
      * @return \PDOStatement
      * @throws SqlmapException
+     * @throws DatabaseException
      */
     private function prepareAndBind(Parser $parser): \PDOStatement
     {
@@ -152,7 +160,9 @@ class Client
         $statement = $handle->prepare($parser->statement->query);
         if (false === $statement)
         {
-            throw SqlmapException::pdoErrorInfo($handle->errorInfo());
+            /** @var SqlmapException $e */
+            $e = SqlmapException::pdoErrorInfo($handle->errorInfo());
+            throw $e;
         }
 
         // パラメータ設定
