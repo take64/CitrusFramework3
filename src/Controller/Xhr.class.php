@@ -161,7 +161,7 @@ class Xhr
             $condition->pageLimit();
 
             // call list
-            $list = $this->callService()->facesSummaries($condition);
+            $list = $this->callService()->facesSummaries($condition)->toList();
             $count = 0;
 
             // data exist
@@ -169,16 +169,16 @@ class Xhr
             {
                 // call count
                 $count = $this->callService()->count($condition);
-                // modify
-                foreach ($list as &$one)
+                /** @var Column[] $list */
+                foreach ($list as $ky => $vl)
                 {
-                    $one->remove($this->remove_column);
-                    $one->removeIsEmpty($this->remove_column_summaries_is_empty);
-                    $one->null2blank();
+                    $list[$ky]->remove($this->remove_column);
+                    $list[$ky]->removeIsEmpty($this->remove_column_summaries_is_empty);
+                    $list[$ky]->null2blank();
                 }
             }
 
-            $result = new Result($list->toList());
+            $result = new Result($list);
             $result->pager = new Pager($condition->page, $count, $condition->limit, 7);
         }
 
@@ -305,7 +305,7 @@ class Xhr
         $condition->pageLimit();
 
         // call list
-        $list = $this->callService()->facesSelections($condition);
+        $list = $this->callService()->facesSelections($condition)->toList();
         $count = 0;
 
         // data exist
@@ -313,21 +313,21 @@ class Xhr
         {
             // call count
             $count = $this->callService()->count($condition);
-            // modify
-            foreach ($list as &$one)
+            /** @var Column[] $list */
+            foreach ($list as $ky => $vl)
             {
-                $one->remove([
+                $list[$ky]->remove([
                     'status',
                     'schema',
                     'resisted_at',
                     'modified_at',
                     'condition',
                     ]);
-                $one->null2blank();
+                $list[$ky]->null2blank();
             }
         }
 
-        $result = new Result($list->toList());
+        $result = new Result($list);
         $result->pager = new Pager($condition->page, $count, $condition->limit, 7);
 
         return $result;
