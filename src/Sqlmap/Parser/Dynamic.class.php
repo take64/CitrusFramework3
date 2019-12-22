@@ -59,8 +59,8 @@ class Dynamic
             'refid' => 'refid',
             'prepend' => 'prepend',
             'property' => 'property',
-            'compareProperty' => 'compareProperty',
-            'compareValue' => 'compareValue',
+            'compareProperty' => 'compare_property',
+            'compareValue' => 'compare_value',
         ];
 
         $items = Xml::toList($attributes);
