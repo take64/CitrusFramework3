@@ -8,8 +8,10 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Sqlmap\ResultSet;
+namespace Citrus\Database\ResultSet;
 
+use Countable;
+use IteratorAggregate;
 use PDO;
 use PDOStatement;
 
@@ -18,7 +20,7 @@ use PDOStatement;
  *
  * @see https://docs.oracle.com/javase/jp/8/docs/api/java/sql/ResultSet.html
  */
-class ResultSet implements \IteratorAggregate
+class ResultSet implements IteratorAggregate, Countable
 {
     /** @var PDOStatement */
     private $statement;
@@ -81,6 +83,30 @@ class ResultSet implements \IteratorAggregate
             $row->bindColumn();
         }
         return $results;
+    }
+
+
+
+    /**
+     * 件数取得
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->execute()->fetchAll());
+    }
+
+
+
+    /**
+     * 1件取得
+     *
+     * @return $this->result_class型
+     */
+    public function one()
+    {
+        return $this->getIterator()->current();
     }
 
 

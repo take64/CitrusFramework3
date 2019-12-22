@@ -13,7 +13,6 @@ namespace Test\Integration;
 use Citrus\Configure\ConfigureException;
 use Citrus\Message;
 use Citrus\Message\Item;
-use Citrus\Session;
 use PHPUnit\Framework\TestCase;
 
 /**

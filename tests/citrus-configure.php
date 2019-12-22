@@ -77,6 +77,7 @@ return [
         ],
         'authentication' => [
             'type' => 'database',
+            'database' => $database,
         ],
         'migration' => [
             'database' => $database,

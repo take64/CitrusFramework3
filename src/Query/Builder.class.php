@@ -11,10 +11,13 @@ declare(strict_types=1);
 namespace Citrus\Query;
 
 use Citrus\Database\Column;
+use Citrus\Database\Connection;
+use Citrus\Database\Executor;
+use Citrus\Database\QueryPack;
+use Citrus\Database\ResultSet\ResultSet;
 use Citrus\NVL;
 use Citrus\Sqlmap\Condition;
-use Citrus\Sqlmap\Executor;
-use Citrus\Sqlmap\Statement;
+use Citrus\Sqlmap\Parser\Statement;
 
 /**
  * クエリビルダ
@@ -35,7 +38,6 @@ class Builder
     /** query type delete */
     const QUERY_TYPE_DELETE = 'delete';
 
-
     /** @var Statement $statement */
     public $statement = null;
 
@@ -45,14 +47,29 @@ class Builder
     /** @var string $query_type */
     public $query_type = self::QUERY_TYPE_SELECT;
 
+    /** @var Connection */
+    public $connection;
+
+
+
+    /**
+     * constructor.
+     *
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
 
 
     /**
      * build select statement
      *
-     * @param string                    $table_name
+     * @param string      $table_name
      * @param Column|null $condition
-     * @param array|null                $columns
+     * @param array|null  $columns
      * @return Builder
      */
     public function select(string $table_name, Column $condition = null, array $columns = null): Builder
@@ -68,12 +85,17 @@ class Builder
             return implode(', ', $columns);
         });
 
+        // テーブル名
+        if (false === is_null($condition->schema))
+        {
+            $table_name .= sprintf('%s.%s', $condition->schema, $table_name);
+        }
         // ベースクエリー
-        $query = sprintf('SELECT %s FROM %s.%s', $select_context, $condition->schema, $table_name);
+        $query = sprintf('SELECT %s FROM %s', $select_context, $table_name);
 
         // 検索条件,取得条件
         $_parameters = [];
-        if (is_null($condition) === false)
+        if (false === is_null($condition))
         {
             // 検索条件
             $properties = $condition->properties();
@@ -90,25 +112,25 @@ class Builder
                 $_parameters[$bind_ky] = $vl;
             }
             // 検索条件がある場合
-            if (empty($wheres) === false)
+            if (false === empty($wheres))
             {
                 $query = sprintf('%s WHERE %s', $query, implode(' AND ', $wheres));
             }
 
             // 取得条件
             $condition_traits = class_uses($condition);
-            if (array_key_exists('CitrusSqlmapCondition', $condition_traits) === true)
+            if (true === array_key_exists('CitrusSqlmapCondition', $condition_traits))
             {
                 /** @var Condition $condition */
 
                 // 順序
-                if (is_null($condition->orderby) === false)
+                if (false === is_null($condition->orderby))
                 {
                     $query = sprintf('%s ORDER BY %s', $query, $condition->orderby);
                 }
 
                 // 制限
-                if (is_null($condition->limit) === false)
+                if (false === is_null($condition->limit))
                 {
                     $ky = 'limit';
                     $query = sprintf('%s LIMIT :%s', $query, $ky);
@@ -155,7 +177,7 @@ class Builder
         $properties = $value->properties();
         foreach ($properties as $ky => $vl)
         {
-            if (is_null($vl) === true)
+            if (true === is_null($vl))
             {
                 continue;
             }
@@ -165,9 +187,14 @@ class Builder
             $_parameters[$bind_ky] = $vl;
         }
 
+        // テーブル名
+        if (false === is_null($value->schema))
+        {
+            $table_name .= sprintf('%s.%s', $value->schema, $table_name);
+        }
+
         // クエリ
-        $query = sprintf('INSERT INTO %s.%s (%s) VALUES (%s);',
-            $value->schema,
+        $query = sprintf('INSERT INTO %s (%s) VALUES (%s);',
             $table_name,
             implode(',', array_keys($columns)),
             implode(',', array_values($columns))
@@ -230,9 +257,14 @@ class Builder
             $_parameters[$bind_ky] = $vl;
         }
 
+        // テーブル名
+        if (false === is_null($condition->schema))
+        {
+            $table_name .= sprintf('%s.%s', $condition->schema, $table_name);
+        }
+
         // クエリ
-        $query = sprintf('UPDATE %s.%s SET %s WHERE %s;',
-            $value->schema,
+        $query = sprintf('UPDATE %s SET %s WHERE %s;',
             $table_name,
             implode(', ', array_values($columns)),
             implode(' AND ', array_values($wheres))
@@ -277,9 +309,14 @@ class Builder
             $_parameters[$bind_ky] = $vl;
         }
 
+        // テーブル名
+        if (false === is_null($condition->schema))
+        {
+            $table_name .= sprintf('%s.%s', $condition->schema, $table_name);
+        }
+
         // クエリ
-        $query = sprintf('DELETE FROM %s.%s WHERE %s;',
-            $condition->schema,
+        $query = sprintf('DELETE FROM %s WHERE %s;',
             $table_name,
             implode(',', array_values($wheres))
         );
@@ -295,32 +332,37 @@ class Builder
     /**
      * execute
      *
-     * @return array|bool|Column[]|null
+     * @param string|null $result_class
+     * @return array|bool|Column[]|null|ResultSet
+     * @throws \Citrus\Database\DatabaseException
      */
-    public function execute()
+    public function execute(string $result_class = null)
     {
         $result = null;
 
         // optimize parameters
         $_parameters = self::optimizeParameter($this->statement->query, $this->parameters);
 
+        // クエリパック
+        $queryPack = QueryPack::pack($this->statement->query, $this->parameters, $result_class);
+
         switch ($this->query_type)
         {
             // select
             case self::QUERY_TYPE_SELECT:
-                $result = Executor::select($this->statement, $_parameters);
+                $result = (new Executor($this->connection))->select($queryPack);
                 break;
             // insert
             case self::QUERY_TYPE_INSERT:
-                $result = Executor::insert($this->statement, $_parameters);
+                $result = (new Executor($this->connection))->insert($queryPack);
                 break;
             // update
             case self::QUERY_TYPE_UPDATE:
-                $result = Executor::update($this->statement, $_parameters);
+                $result = (new Executor($this->connection))->update($queryPack);
                 break;
             // delete
             case self::QUERY_TYPE_DELETE:
-                $result = Executor::delete($this->statement, $_parameters);
+                $result = (new Executor($this->connection))->delete($queryPack);
                 break;
             default:
         }
