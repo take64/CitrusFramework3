@@ -60,7 +60,7 @@ trait Size
     {
         // 入力がある場合のみチェックする。
         // null もしくは 空文字 はスルー
-        if (true === Strings::isEmpty($element->value) or true === is_null($element->max))
+        if (true === is_null($element->max) or true === Strings::isEmpty($element->value))
         {
             return;
         }
@@ -89,7 +89,7 @@ trait Size
     {
         // 入力がある場合のみチェックする。
         // null もしくは 空文字 はスルー
-        if (true === Strings::isEmpty($element->value) or true === is_null($element->min))
+        if (true === is_null($element->min) or true === Strings::isEmpty($element->value))
         {
             return;
         }
