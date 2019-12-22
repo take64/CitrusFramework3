@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Citrus\Query;
 
 use Citrus\Database\Column;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
 use Citrus\Database\Executor;
 use Citrus\Database\QueryPack;
 use Citrus\Database\ResultSet\ResultSet;

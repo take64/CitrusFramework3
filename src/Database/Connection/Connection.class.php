@@ -8,9 +8,10 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Citrus\Database;
+namespace Citrus\Database\Connection;
 
-use Citrus\Sqlmap\SqlmapException;
+use Citrus\Database\DSN;
+use Citrus\Database\DatabaseException;
 use PDO;
 
 /**
@@ -52,7 +53,7 @@ class Connection
      * データベース接続
      *
      * @return void
-     * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function connect(): void
     {
@@ -74,7 +75,7 @@ class Connection
         }
         catch (\PDOException $e)
         {
-            throw new SqlmapException($e->getMessage(), $e->getCode());
+            throw new DatabaseException($e->getMessage(), $e->getCode());
         }
     }
 
@@ -96,13 +97,13 @@ class Connection
      * ハンドルの取得
      *
      * @return PDO
-     * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function callHandle(): PDO
     {
         if (true === is_null($this->handle))
         {
-            throw new SqlmapException('データベース接続が取得できません。');
+            throw new DatabaseException('データベース接続が取得できません。');
         }
         return $this->handle;
     }
@@ -159,7 +160,7 @@ class Connection
      *
      * @param callable $transaction
      * @return void
-     * @throws SqlmapException
+     * @throws DatabaseException
      */
     public function transaction(callable $transaction): void
     {
@@ -176,8 +177,8 @@ class Connection
         {
             // ロールバック
             $this->rollback();
-            /** @var SqlmapException $e */
-            $e = SqlmapException::convert($e);
+            /** @var DatabaseException $e */
+            $e = DatabaseException::convert($e);
             throw $e;
         }
     }

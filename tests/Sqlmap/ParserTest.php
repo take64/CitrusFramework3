@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Test\Sqlmap;
 
 use Citrus\Configure\ConfigureException;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
 use Citrus\Database\DSN;
 use Citrus\Sqlmap\SqlmapException;
 use PDO;
@@ -51,7 +51,7 @@ class ParserTest extends TestCase
         parent::setUp();
 
         // 出力ディレクトリ
-        $this->output_dir = __DIR__ . '/Integration';
+        $this->output_dir = __DIR__ . '/temp';
         $this->sqlite_file = $this->output_dir . '/test.sqlite';
 
         // 設定配列

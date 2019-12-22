@@ -11,8 +11,8 @@ declare(strict_types=1);
 namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
-use Citrus\Database\Connection;
-use Citrus\Database\Executor;
+use Citrus\Database\Connection\Connection;
+use Citrus\Database\DatabaseException;
 use Citrus\Database\ResultSet\ResultSet;
 
 /**
@@ -34,15 +34,18 @@ class Client
     /**
      * constructor.
      *
-     * @param Connection  $connection  接続情報
-     * @param string|null $sqlmap_path SQLMAPのファイルパス
-     * @throws SqlmapException
+     * @param Connection|null $connection  接続情報
+     * @param string|null     $sqlmap_path SQLMAPのファイルパス
+     * @throws DatabaseException
      */
-    public function __construct(Connection $connection, string $sqlmap_path = null)
+    public function __construct(Connection $connection = null, string $sqlmap_path = null)
     {
-        $this->connection = $connection;
-        // 接続もしてしまう
-        $this->connection->connect();
+        // 設定して接続もしてしまう
+        if (false === is_null($connection))
+        {
+            $this->connection = $connection;
+            $this->connection->connect();
+        }
 
         // SQLMAPパスのセットアップ
         $this->setupSqlmapPath($sqlmap_path);

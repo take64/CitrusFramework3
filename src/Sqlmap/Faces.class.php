@@ -12,12 +12,17 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Database\Column;
 use Citrus\Database\ResultSet\ResultSet;
+use Citrus\Variable\Singleton;
 
 /**
  * Facesフレームで使用する処理
  */
 class Faces extends Crud
 {
+    use Singleton;
+
+
+
     /**
      * FACES向けの選択リスト
      *

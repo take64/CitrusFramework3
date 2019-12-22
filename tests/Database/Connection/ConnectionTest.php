@@ -8,17 +8,13 @@ declare(strict_types=1);
  * @license     http://www.citrus.tk/
  */
 
-namespace Test\Database;
+namespace Test\Database\Connection;
 
-use Citrus\CitrusException;
 use Citrus\Configure\ConfigureException;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
+use Citrus\Database\DatabaseException;
 use Citrus\Database\DSN;
-use Citrus\Database\Generate;
-use Citrus\Migration;
-use Citrus\Sqlmap\SqlmapException;
 use PHPUnit\Framework\TestCase;
-use Test\TestFile;
 
 /**
  * データベース接続のテスト
@@ -53,7 +49,7 @@ class ConnectionTest extends TestCase
     /**
      * @test
      * @throws ConfigureException
-     * @throws SqlmapException
+     * @throws DatabaseException
      * @doesNotPerformAssertions
      */
     public function 接続処理ができる()

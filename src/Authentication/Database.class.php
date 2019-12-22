@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Citrus\Authentication;
 
 use Citrus\Authentication;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
 use Citrus\Logger;
 use Citrus\Query\Builder;
 use Citrus\Session;

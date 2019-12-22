@@ -14,9 +14,8 @@ use Citrus\Authentication;
 use Citrus\Authentication\Database;
 use Citrus\Authentication\Item;
 use Citrus\Configure\ConfigureException;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
 use Citrus\Database\DSN;
-use Citrus\Session;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
