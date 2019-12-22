@@ -222,7 +222,7 @@ class Parser
                     break;
                 case '#comment':
                     // 処理なし
-                    continue;
+                    break;
                 default:
                     $item_node = $this->{'_'.$item->nodeName}($item);
                     $dynamic->concatenate($item_node);
