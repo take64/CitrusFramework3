@@ -31,7 +31,7 @@ class Service
 
 
     /**
-     * call summary record list
+     * 概要リスト(複数)
      *
      * @param Column $condition
      * @return ResultSet
@@ -45,7 +45,7 @@ class Service
 
 
     /**
-     * call summary record
+     * 概要リスト(単一)
      *
      * @param Column $condition
      * @return ResultClass
@@ -59,7 +59,7 @@ class Service
 
 
     /**
-     * call detail record
+     * 詳細リスト(複数)
      *
      * @param Column $condition
      * @return ResultSet
@@ -73,7 +73,7 @@ class Service
 
 
     /**
-     * call detail record
+     * 詳細リスト(単一)
      *
      * @param Column $condition
      * @return ResultClass
@@ -87,12 +87,11 @@ class Service
 
 
     /**
-     * call count
+     * カウントクエリの実行
      *
      * @param Column $condition
      * @return int
      * @throws SqlmapException
-     * @deprecated
      */
     public function count(Column $condition)
     {
@@ -132,7 +131,7 @@ class Service
 
 
     /**
-     * call name record
+     * 名称リスト(複数)
      *
      * @param Column $condition
      * @return Result[]
@@ -141,13 +140,27 @@ class Service
      */
     public function names(Column $condition)
     {
-        return $this->callDao()->names($condition);
+        return $this->callDao()->name($condition);
     }
 
 
 
     /**
-     * call name list
+     * call detail record
+     *
+     * @param Column $condition
+     * @return Column
+     * @throws SqlmapException
+     */
+    public function name(Column $condition)
+    {
+        return $this->callDao()->name($condition)->one();
+    }
+
+
+
+    /**
+     * 名称リスト(id => name)
      *
      * @param Column $condition
      * @return array
@@ -170,28 +183,13 @@ class Service
 
 
     /**
-     * call detail record
-     *
-     * @param Column $condition
-     * @return Column
-     * @throws SqlmapException
-     * @deprecated
-     */
-    public function name(Column $condition)
-    {
-        return $this->callDao()->name($condition);
-    }
-
-
-
-    /**
-     * regist record
+     * 登録
      *
      * @param Column $entity
-     * @return bool
+     * @return int
      * @throws SqlmapException
      */
-    public function regist(Column $entity)
+    public function regist(Column $entity): int
     {
         // column complete
         $entity->completeRegistColumn();
@@ -202,13 +200,13 @@ class Service
 
 
     /**
-     * modify record
+     * 編集
      *
      * @param Column $entity
-     * @return bool
+     * @return int
      * @throws SqlmapException
      */
-    public function modify(Column $entity)
+    public function modify(Column $entity): int
     {
         // column complete
         $entity->completeModifyColumn();
@@ -219,13 +217,13 @@ class Service
 
 
     /**
-     * remove record
+     * 削除
      *
      * @param Column $condition
-     * @return bool
+     * @return int
      * @throws SqlmapException
      */
-    public function remove(Column $condition)
+    public function remove(Column $condition): int
     {
         return $this->callDao()->remove($condition);
     }
