@@ -35,9 +35,9 @@ class Client
     /**
      * constructor.
      *
-     * @param Connection|null $connection  接続情報
-     * @param string|null     $sqlmap_path SQLMAPのファイルパス
-     * @throws DatabaseException
+     * @param Connection|null $connection 接続情報
+     * @param string|null $sqlmap_path SQLMAPのファイルパス
+     * @throws SqlmapException
      */
     public function __construct(Connection $connection = null, string $sqlmap_path = null)
     {
@@ -47,7 +47,16 @@ class Client
         if (false === is_null($connection))
         {
             $this->connection = $connection;
-            $this->connection->connect();
+            try
+            {
+                $this->connection->connect();
+            }
+            catch (DatabaseException $e)
+            {
+                /** @var SqlmapException $e */
+                $e = SqlmapException::convert($e);
+                throw $e;
+            }
         }
 
         // SQLMAPパスのセットアップ
@@ -62,7 +71,6 @@ class Client
      * @param Parser $parser
      * @return ResultSet
      * @throws SqlmapException
-     * @throws DatabaseException
      */
     public function select(Parser $parser): ResultSet
     {
@@ -80,7 +88,6 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
-     * @throws DatabaseException
      */
     public function insert(Parser $parser): int
     {
@@ -101,7 +108,6 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
-     * @throws DatabaseException
      */
     public function update(Parser $parser): int
     {
@@ -122,7 +128,6 @@ class Client
      * @param Parser $parser
      * @return int
      * @throws SqlmapException
-     * @throws DatabaseException
      */
     public function delete(Parser $parser): int
     {
@@ -149,12 +154,21 @@ class Client
      * @param Parser $parser
      * @return \PDOStatement
      * @throws SqlmapException
-     * @throws DatabaseException
      */
     private function prepareAndBind(Parser $parser): \PDOStatement
     {
         // ハンドル
-        $handle = $this->connection->callHandle();
+        $handle = null;
+        try
+        {
+            $handle = $this->connection->callHandle();
+        }
+        catch (DatabaseException $e)
+        {
+            /** @var SqlmapException $e */
+            $e = SqlmapException::convert($e);
+            throw $e;
+        }
 
         // プリペア実行
         $statement = $handle->prepare($parser->statement->query);

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright   Copyright 2017, CitrusFramework. All Rights Reserved.
  * @author      take64 <take64@citrus.tk>
@@ -9,11 +12,15 @@ namespace Citrus;
 
 use Citrus\Database\Column;
 use Citrus\Database\Result;
-use Citrus\Sqlmap\Client;
+use Citrus\Database\ResultSet\ResultClass;
+use Citrus\Database\ResultSet\ResultSet;
 use Citrus\Sqlmap\Crud;
 use Citrus\Sqlmap\SqlmapException;
 use Citrus\Variable\Singleton;
 
+/**
+ * サービス処理
+ */
 class Service
 {
     use Singleton;
@@ -27,12 +34,12 @@ class Service
      * call summary record list
      *
      * @param Column $condition
-     * @return Column[]
+     * @return ResultSet
      * @throws SqlmapException
      */
     public function summaries(Column $condition)
     {
-        return $this->callDao()->summaries($condition);
+        return $this->callDao()->summary($condition);
     }
 
 
@@ -41,12 +48,40 @@ class Service
      * call summary record
      *
      * @param Column $condition
-     * @return Column
+     * @return ResultClass
      * @throws SqlmapException
      */
     public function summary(Column $condition)
     {
-        return $this->callDao()->summary($condition);
+        return $this->callDao()->summary($condition)->one();
+    }
+
+
+
+    /**
+     * call detail record
+     *
+     * @param Column $condition
+     * @return ResultSet
+     * @throws SqlmapException
+     */
+    public function details(Column $condition)
+    {
+        return $this->callDao()->detail($condition);
+    }
+
+
+
+    /**
+     * call detail record
+     *
+     * @param Column $condition
+     * @return ResultClass
+     * @throws SqlmapException
+     */
+    public function detail(Column $condition)
+    {
+        return $this->callDao()->detail($condition)->one();
     }
 
 
@@ -57,6 +92,7 @@ class Service
      * @param Column $condition
      * @return int
      * @throws SqlmapException
+     * @deprecated
      */
     public function count(Column $condition)
     {
@@ -71,6 +107,7 @@ class Service
      * @param Column $condition
      * @return Column
      * @throws SqlmapException
+     * @deprecated
      */
     public function last(Column $condition)
     {
@@ -85,6 +122,7 @@ class Service
      * @param Column $condition
      * @return bool
      * @throws SqlmapException
+     * @deprecated
      */
     public function exist(Column $condition)
     {
@@ -99,6 +137,7 @@ class Service
      * @param Column $condition
      * @return Result[]
      * @throws SqlmapException
+     * @deprecated
      */
     public function names(Column $condition)
     {
@@ -113,6 +152,7 @@ class Service
      * @param Column $condition
      * @return array
      * @throws SqlmapException
+     * @deprecated
      */
     public function nameForList(Column $condition)
     {
@@ -135,38 +175,11 @@ class Service
      * @param Column $condition
      * @return Column
      * @throws SqlmapException
+     * @deprecated
      */
     public function name(Column $condition)
     {
         return $this->callDao()->name($condition);
-    }
-
-
-
-    /**
-     * call detail record
-     *
-     * @param Column $condition
-     * @return Column[]
-     * @throws SqlmapException
-     */
-    public function details(Column $condition)
-    {
-        return $this->callDao()->details($condition);
-    }
-
-
-
-    /**
-     * call detail record
-     *
-     * @param Column $condition
-     * @return Column
-     * @throws SqlmapException
-     */
-    public function detail(Column $condition)
-    {
-        return $this->callDao()->detail($condition);
     }
 
 
@@ -220,81 +233,12 @@ class Service
 
 
     /**
-     * call summary record list
-     *
-     * @param Column $condition
-     * @return Column[]
-     * @throws SqlmapException
-     */
-    public function facesSelections(Column $condition)
-    {
-        return $this->callDao()->facesSelections($condition);
-    }
-
-
-
-    /**
-     * call summary record list
-     *
-     * @param Column $condition
-     * @return Column[]
-     * @throws SqlmapException
-     */
-    public function facesSummaries(Column $condition)
-    {
-        return $this->callDao()->facesSummaries($condition);
-    }
-
-
-
-    /**
-     * call summary record
-     *
-     * @param Column $condition
-     * @return Column
-     * @throws SqlmapException
-     */
-    public function facesSummary(Column $condition)
-    {
-        return $this->callDao()->facesSummary($condition);
-    }
-
-
-
-    /**
-     * call detail record
-     *
-     * @param Column $condition
-     * @return Column[]
-     * @throws SqlmapException
-     */
-    public function facesDetails(Column $condition)
-    {
-        return $this->callDao()->facesDetails($condition);
-    }
-
-
-
-    /**
-     * call detail record
-     *
-     * @param Column $condition
-     * @return Column
-     * @throws SqlmapException
-     */
-    public function facesDetail(Column $condition)
-    {
-        return $this->callDao()->facesDetail($condition);
-    }
-
-
-
-    /**
      * call name record
      *
      * @param Column $condition
      * @return array
      * @throws SqlmapException
+     * @deprecated
      */
     public function nameSummaries(Column $condition)
     {
@@ -309,6 +253,7 @@ class Service
      * @param Column $condition
      * @return Column
      * @throws SqlmapException
+     * @deprecated
      */
     public function nameSummary(Column $condition)
     {
@@ -323,6 +268,7 @@ class Service
      * @param Column $condition
      * @return int
      * @throws SqlmapException
+     * @deprecated
      */
     public function nameCount(Column $condition)
     {
@@ -340,10 +286,7 @@ class Service
      */
     public function callDao()
     {
-        if(is_null($this->dao) === true)
-        {
-            $this->dao = new Client();
-        }
+        $this->dao = ($this->dao ?: new Crud());
         return $this->dao;
     }
 }
