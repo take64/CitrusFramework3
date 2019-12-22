@@ -12,7 +12,8 @@ namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
 use Citrus\Database\Connection;
-use Citrus\Sqlmap\ResultSet\ResultSet;
+use Citrus\Database\Executor;
+use Citrus\Database\ResultSet\ResultSet;
 
 /**
  * SQLMAPのSQL実行クライアント

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Citrus\Authentication;
 
 use Citrus\Authentication;
+use Citrus\Database\Connection;
 use Citrus\Logger;
 use Citrus\Query\Builder;
 use Citrus\Session;
@@ -38,6 +39,23 @@ CREATE INDEX IF NOT EXISTS idx_users_user_id_token ON users (user_id, token);
  */
 class Database extends Protocol
 {
+    /** @var Connection */
+    public $connection;
+
+
+
+    /**
+     * constructor.
+     *
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
+
+
     /**
      * 認証処理
      *
@@ -58,15 +76,16 @@ class Database extends Protocol
         // 対象ユーザーがいるか？
         $condition = new Item();
         $condition->user_id = $item->user_id;
-        $result = (new Builder())->select($table_name, $condition)->execute();
+        /** @var Item $result */
+        $result = (new Builder($this->connection))->select($table_name, $condition)->execute(Item::class)->one();
         // いなければ認証失敗
-        if (count($result) === 0)
+        if (true === is_null($result))
         {
             return false;
         }
 
         // パスワード照合
-        if (password_verify($item->password, $result[0]->password) === false)
+        if (false === password_verify($item->password, $result->password))
         {
             return false;
         }
@@ -78,9 +97,9 @@ class Database extends Protocol
 
         // データベースに現在のトークンと保持期間の保存
         $condition = new Item();
-        $condition->rowid = $result[0]->rowid;
-        $condition->rev = $result[0]->rev;
-        (new Builder())->update($table_name, $item, $condition)->execute();
+        $condition->rowid = $result->rowid;
+        $condition->rev = $result->rev;
+        (new Builder($this->connection))->update($table_name, $item, $condition)->execute();
         Session::$session->regist(Authentication::SESSION_KEY, $item);
         Session::commit();
 
@@ -113,12 +132,12 @@ class Database extends Protocol
     public function isAuthenticated(Item $item = null): bool
     {
         // 指定されない場合はsessionから取得
-        if (is_null($item) === true)
+        if (true === is_null($item))
         {
             $item = Session::$session->call(Authentication::SESSION_KEY);
         }
         // 認証itemが無い
-        if (is_null($item) === true)
+        if (true === is_null($item))
         {
             Logger::debug('ログアウト:認証Itemが無い');
             Logger::debug(Session::$session);
@@ -157,7 +176,7 @@ class Database extends Protocol
         $condition->user_id = $item->user_id;
         $condition->token = $item->token;
         // 更新
-        $result = (new Builder())->update($table_name, $authentic, $condition)->execute();
+        $result = (new Builder($this->connection))->update($table_name, $authentic, $condition)->execute();
 
         // 時間を延長
         /** @var Item $item */

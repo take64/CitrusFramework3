@@ -61,21 +61,6 @@ class ParserTest extends TestCase
         ];
         $this->configures = [
             'default' => [
-                'migration' => [
-                    'database' => $database,
-                    'output_dir' => $this->output_dir,
-                    'mode' => 0755,
-                    'owner' => posix_getpwuid(posix_geteuid())['name'],
-                    'group' => posix_getgrgid(posix_getegid())['name'],
-                ],
-                'integration' => [
-                    'database' => $database,
-                    'output_dir' => $this->output_dir,
-                    'mode' => 0755,
-                    'owner' => posix_getpwuid(posix_geteuid())['name'],
-                    'group' => posix_getgrgid(posix_getegid())['name'],
-                    'namespace' => 'Test',
-                ],
                 'database' => $database,
             ],
         ];

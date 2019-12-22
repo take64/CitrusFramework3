@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Citrus\Sqlmap;
 
 use Citrus\Database\Column;
-use Citrus\Sqlmap\ResultSet\ResultSet;
+use Citrus\Database\ResultSet\ResultSet;
 
 /**
  * Facesフレームで使用する処理

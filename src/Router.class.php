@@ -107,7 +107,7 @@ class Router extends Configurable
      *
      * @param string|null $url
      */
-    public function redirectURL(string $url = null)
+    public static function redirectURL(string $url = null)
     {
         if (false === is_null($url))
         {
