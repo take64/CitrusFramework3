@@ -102,7 +102,7 @@ class ResultSet implements IteratorAggregate, Countable
     /**
      * 1件取得
      *
-     * @return $this->result_class型
+     * @return ResultClass
      */
     public function one()
     {

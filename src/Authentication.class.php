@@ -14,7 +14,7 @@ use Citrus\Authentication\Database;
 use Citrus\Authentication\Item;
 use Citrus\Authentication\Protocol;
 use Citrus\Configure\Configurable;
-use Citrus\Database\Connection;
+use Citrus\Database\Connection\Connection;
 use Citrus\Database\DSN;
 use Citrus\Session\SessionException;
 use Citrus\Variable\Singleton;

@@ -12,7 +12,6 @@ namespace Citrus;
 
 use Citrus\Configure\Application;
 use Citrus\Controller\Page;
-use Citrus\Document\Router;
 use Citrus\Http\Header;
 use Citrus\Router\Item;
 use Citrus\Router\Rule;
@@ -109,7 +108,7 @@ class Gateway
         {
             // 404でリダイレクトの様に振る舞う
             Header::status404();
-            Session::$router = Item::parse(
+            Session::$router = (new Item(Router::sharedInstance()->device))->parse(
                 Rule::sharedInstance()->error404
             );
             self::controller();

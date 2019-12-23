@@ -11,8 +11,9 @@ declare(strict_types=1);
 namespace Citrus\Sqlmap;
 
 use Citrus\Configure;
-use Citrus\Database\Connection;
-use Citrus\Database\Executor;
+use Citrus\Database\Connection\Connection;
+use Citrus\Database\Connection\ConnectionPool;
+use Citrus\Database\DatabaseException;
 use Citrus\Database\ResultSet\ResultSet;
 
 /**
@@ -34,15 +35,29 @@ class Client
     /**
      * constructor.
      *
-     * @param Connection  $connection  接続情報
+     * @param Connection|null $connection 接続情報
      * @param string|null $sqlmap_path SQLMAPのファイルパス
      * @throws SqlmapException
      */
-    public function __construct(Connection $connection, string $sqlmap_path = null)
+    public function __construct(Connection $connection = null, string $sqlmap_path = null)
     {
-        $this->connection = $connection;
-        // 接続もしてしまう
-        $this->connection->connect();
+        // 指定がなければデフォルト
+        $connection = ($connection ?: ConnectionPool::callDefault());
+        // 設定して接続もしてしまう
+        if (false === is_null($connection))
+        {
+            $this->connection = $connection;
+            try
+            {
+                $this->connection->connect();
+            }
+            catch (DatabaseException $e)
+            {
+                /** @var SqlmapException $e */
+                $e = SqlmapException::convert($e);
+                throw $e;
+            }
+        }
 
         // SQLMAPパスのセットアップ
         $this->setupSqlmapPath($sqlmap_path);
@@ -143,13 +158,25 @@ class Client
     private function prepareAndBind(Parser $parser): \PDOStatement
     {
         // ハンドル
-        $handle = $this->connection->callHandle();
+        $handle = null;
+        try
+        {
+            $handle = $this->connection->callHandle();
+        }
+        catch (DatabaseException $e)
+        {
+            /** @var SqlmapException $e */
+            $e = SqlmapException::convert($e);
+            throw $e;
+        }
 
         // プリペア実行
         $statement = $handle->prepare($parser->statement->query);
         if (false === $statement)
         {
-            throw SqlmapException::pdoErrorInfo($handle->errorInfo());
+            /** @var SqlmapException $e */
+            $e = SqlmapException::pdoErrorInfo($handle->errorInfo());
+            throw $e;
         }
 
         // パラメータ設定

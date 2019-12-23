@@ -42,7 +42,7 @@ class Validation
     public static function varType(Element $element): void
     {
         // 入力がある場合のみチェックする。
-        if (true === Strings::isEmpty($element->value))
+        if (false === is_numeric($element->value) and true === Strings::isEmpty($element->value))
         {
             return;
         }

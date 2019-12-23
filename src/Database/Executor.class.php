@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Citrus\Database;
 
+use Citrus\Database\Connection\Connection;
 use Citrus\Database\ResultSet\ResultSet;
 
 /**

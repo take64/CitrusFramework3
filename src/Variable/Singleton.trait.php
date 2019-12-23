@@ -15,8 +15,6 @@ namespace Citrus\Variable;
  */
 trait Singleton
 {
-    private static $singleton;
-
     /**
      * call singleton instance
      *
@@ -24,10 +22,11 @@ trait Singleton
      */
     public static function sharedInstance(): self
     {
-        if (true === is_null(static::$singleton))
+        static $singleton;
+        if (true === is_null($singleton))
         {
-            static::$singleton = new static();
+            $singleton = new static();
         }
-        return static::$singleton;
+        return $singleton;
     }
 }

@@ -209,7 +209,7 @@ class Element extends Struct
     {
         if ($this->escape === true)
         {
-            return htmlspecialchars($this->value, ENT_QUOTES);
+            return htmlspecialchars(($this->value ?: ''), ENT_QUOTES);
         }
         return $this->value;
     }
@@ -225,7 +225,7 @@ class Element extends Struct
     {
         if ($this->escape === true)
         {
-            return htmlspecialchars($this->default, ENT_QUOTES);
+            return htmlspecialchars(($this->default ?: ''), ENT_QUOTES);
         }
         return $this->default;
     }

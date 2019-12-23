@@ -15,7 +15,9 @@ use Citrus\Configure;
 use Citrus\Configure\ConfigureException;
 use Citrus\Database\Column;
 use Citrus\Document\Pager;
+use Citrus\FacesService;
 use Citrus\Formmap;
+use Citrus\Formmap\FormmapException;
 use Citrus\Logger;
 use Citrus\Message;
 use Citrus\Message\Item;
@@ -159,7 +161,7 @@ class Xhr
             $condition->pageLimit();
 
             // call list
-            $list = $this->callService()->facesSummaries($condition);
+            $list = $this->callService()->facesSummaries($condition)->toList();
             $count = 0;
 
             // data exist
@@ -167,12 +169,12 @@ class Xhr
             {
                 // call count
                 $count = $this->callService()->count($condition);
-                // modify
-                foreach ($list as &$one)
+                /** @var Column[] $list */
+                foreach ($list as $ky => $vl)
                 {
-                    $one->remove($this->remove_column);
-                    $one->removeIsEmpty($this->remove_column_summaries_is_empty);
-                    $one->null2blank();
+                    $list[$ky]->remove($this->remove_column);
+                    $list[$ky]->removeIsEmpty($this->remove_column_summaries_is_empty);
+                    $list[$ky]->null2blank();
                 }
             }
 
@@ -191,6 +193,8 @@ class Xhr
      *
      * @return Result
      * @throws SqlmapException
+     * @throws FormmapException
+     * @throws ConfigureException
      */
     public function facesDetail(): Result
     {
@@ -200,7 +204,7 @@ class Xhr
         /** @var Column|Condition $condition */
         $condition = $this->callFormmap()->generate($this->formmap_namespace, $this->formmap_view_id);
 
-        // call detail
+        /** @var Column $detail */
         $detail = $this->callService()->facesDetail($condition);
 
         // modify
@@ -256,6 +260,8 @@ class Xhr
      *
      * @return Result
      * @throws SqlmapException
+     * @throws FormmapException
+     * @throws ConfigureException
      */
     public function remove()
     {
@@ -277,6 +283,8 @@ class Xhr
      *
      * @return Result
      * @throws SqlmapException
+     * @throws FormmapException
+     * @throws ConfigureException
      */
     public function selections()
     {
@@ -297,7 +305,7 @@ class Xhr
         $condition->pageLimit();
 
         // call list
-        $list = $this->callService()->facesSelections($condition);
+        $list = $this->callService()->facesSelections($condition)->toList();
         $count = 0;
 
         // data exist
@@ -305,17 +313,17 @@ class Xhr
         {
             // call count
             $count = $this->callService()->count($condition);
-            // modify
-            foreach ($list as &$one)
+            /** @var Column[] $list */
+            foreach ($list as $ky => $vl)
             {
-                $one->remove([
+                $list[$ky]->remove([
                     'status',
                     'schema',
                     'resisted_at',
                     'modified_at',
                     'condition',
                     ]);
-                $one->null2blank();
+                $list[$ky]->null2blank();
             }
         }
 
@@ -333,6 +341,8 @@ class Xhr
      *
      * @return Result
      * @throws SqlmapException
+     * @throws FormmapException
+     * @throws ConfigureException
      */
     public function suggests()
     {
@@ -431,14 +441,11 @@ class Xhr
     /**
      * call service
      *
-     * @return  Service
+     * @return Service|FacesService
      */
     public function callService()
     {
-        if (is_null($this->service) === true)
-        {
-            $this->service = new Service();
-        }
+        $this->service = ($this->service ?: new Service());
         return $this->service;
     }
 

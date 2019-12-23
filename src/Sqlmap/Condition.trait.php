@@ -86,6 +86,7 @@ trait Condition
             {
                 $this->toLike($one);
             }
+            return;
         }
         // 文字列であれば設定
         if (true === is_string($this->$property))

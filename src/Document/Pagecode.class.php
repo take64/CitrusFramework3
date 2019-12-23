@@ -115,6 +115,7 @@ class Pagecode
         // パスが絶対パスの場合
         if (true === file_exists($javascript))
         {
+            // 絶対パスを削除
             $path = str_replace($app_path, '', $javascript);
             $this->javascripts[] = $path;
             return $this;
@@ -124,6 +125,8 @@ class Pagecode
         $path = ($app_path . $javascript);
         if (true === file_exists($path))
         {
+            // 絶対パスを削除
+            $path = str_replace($app_path, '', $path);
             $this->javascripts[] = $path;
             return $this;
         }
@@ -183,6 +186,7 @@ class Pagecode
         // パスが絶対パスの場合
         if (true === file_exists($stylesheet))
         {
+            // 絶対パスを削除
             $path = str_replace($app_path, '', $stylesheet);
             $this->stylesheets[] = $path;
             return $this;
@@ -192,6 +196,8 @@ class Pagecode
         $path = ($app_path . $stylesheet);
         if (true === file_exists($path))
         {
+            // 絶対パスを削除
+            $path = str_replace($app_path, '', $path);
             $this->stylesheets[] = $path;
             return $this;
         }

@@ -96,7 +96,7 @@ class Column
     /**
      * to condition
      *
-     * @return Condition
+     * @return Column|Condition
      */
     public function toCondition()
     {
@@ -120,7 +120,7 @@ class Column
     /**
      * get condition
      *
-     * @return Condition
+     * @return Column|Condition
      */
     public function getCondition()
     {
