@@ -48,7 +48,8 @@
                 button: {
                     disabled: true,
                     canChangeButtonState: true
-                }
+                },
+                'class': '',
             },
             edit:{
                 faces: {
@@ -300,7 +301,7 @@
         }
         
         //load list
-        var listTable = $('<table />').attr('class', 'faces-list');
+        var listTable = $('<table />').attr('class', 'faces-list ' + options.list.class);
         if(options.list.dialog.type === 'summary' || options.list.dialog.type === 'selection') {
             if($.objectSize(options.list.columns) > 0) {
                 listTable.append('<thead><tr /></thead>');
