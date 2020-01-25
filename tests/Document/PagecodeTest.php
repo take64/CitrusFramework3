@@ -52,14 +52,16 @@ class PagecodeTest extends TestCase
 
         // 読み込みたいJavascript
         $resources = [
-            '/Part/Pc/dummy.js', // 直接指定
-            '/cf-lib/library.js', // ライブラリ指定
+            '/Part/Pc/dummy.js',            // 直接指定
+            '/cf-lib/library.js',           // ライブラリ指定
+            'https://example.com/dummy.js', // 外部リソース
         ];
         // 読み込みが期待されるJavascript
         $expected_resources = [
             '/Javascript/hoge.example.com/Part/Pc/dummy.js',// 直接指定
             '/Javascript/Library/cf-lib/library.js',        // ライブラリ指定
             '/Javascript/hoge.example.com/Page/Pc/Home.js', // 自動読み込み指定
+            'https://example.com/dummy.js',                 // 外部リソース
         ];
 
         // 読み込み処理を通すと、自動読み込みも読み込まれる
