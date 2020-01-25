@@ -155,6 +155,14 @@ class Pagecode
             return $this;
         }
 
+        // 外部リソースの場合
+        $path = $javascript;
+        if (0 === strpos($javascript, 'http'))
+        {
+            $this->javascripts[] = $path;
+            return $this;
+        }
+
         return $this;
     }
 
@@ -223,6 +231,14 @@ class Pagecode
         if (true === file_exists($path))
         {
             $this->addStylesheet($path);
+            return $this;
+        }
+
+        // 外部リソースの場合
+        $path = $stylesheet;
+        if (0 === strpos($stylesheet, 'http'))
+        {
+            $this->stylesheets[] = $path;
             return $this;
         }
 
