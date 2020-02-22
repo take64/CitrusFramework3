@@ -293,7 +293,7 @@ class Pagecode
         $app_path = Application::sharedInstance()->path;
 
         // ファイルリストを生成して反映
-        $this->javascripts = Collection::stream($this->javascripts)->map(function ($ky, $vl) use ($app_path) {
+        $this->javascripts = Collection::stream($this->javascripts)->map(function ($vl) use ($app_path) {
             // ファイル名にmin.jsが含まれる
             if (false !== strpos($vl, '.min.js'))
             {
@@ -328,7 +328,7 @@ class Pagecode
         $app_path = Application::sharedInstance()->path;
 
         // ファイルリストを生成して反映
-        $this->stylesheets = Collection::stream($this->stylesheets)->map(function ($ky, $vl) use ($app_path) {
+        $this->stylesheets = Collection::stream($this->stylesheets)->map(function ($vl) use ($app_path) {
             // ファイル名にmin.cssが含まれる
             if (false !== strpos($vl, '.min.css'))
             {

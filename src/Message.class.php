@@ -84,7 +84,7 @@ class Message extends Configurable
      */
     public static function callItemsOfTag(string $tag): array
     {
-        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($ky, $vl) use ($tag) {
+        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($vl) use ($tag) {
             // タグが一致しているかどうか
             /** @var Item $vl */
             return ($vl->tag === $tag);
@@ -101,7 +101,7 @@ class Message extends Configurable
      */
     public static function callItemsOfType(string $type): array
     {
-        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($ky, $vl) use ($type) {
+        return Collection::stream(self::sharedInstance()->callItems())->filter(function ($vl) use ($type) {
             // タイプが一致しているかどうか
             /** @var Item $vl */
             return ($vl->type === $type);
@@ -345,7 +345,7 @@ class Message extends Configurable
     public static function removeOfTag(string $tag = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($ky, $vl) use ($tag) {
+        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($vl) use ($tag) {
             // タグが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $tag);
@@ -366,7 +366,7 @@ class Message extends Configurable
     public static function removeOftype(string $type = null): void
     {
         // 削除後メッセージを取得
-        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($ky, $vl) use ($type) {
+        $items = Collection::stream(self::sharedInstance()->callItems())->remove(function ($vl) use ($type) {
             // タイプが一致しているかどうか(一致しているものが削除対象)
             /** @var Item $vl */
             return ($vl->tag === $type);

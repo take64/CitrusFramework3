@@ -36,7 +36,7 @@ class Slack extends Configurable
         // 設定配列の読み込み
         parent::loadConfigures($configures);
 
-        $this->webhook_urls = Collection::stream($this->configures)->map(function ($ky, $vl) {
+        $this->webhook_urls = Collection::stream($this->configures)->map(function ($vl) {
             return $vl['webhook_url'];
         })->toList();
 
