@@ -32,7 +32,8 @@
     "ext-openssl": "*",
     "ext-pdo": "*",
     "ext-posix": "*",
-    "take64/citrus-intersection": "^1.0",
-    "take64/citrus-collection": "^1.0"
+    "citrus-framework/collection": "^1.0",
+    "citrus-framework/configure": "^1.0",
+    "citrus-framework/intersection": "^1.0"
   }
 }
