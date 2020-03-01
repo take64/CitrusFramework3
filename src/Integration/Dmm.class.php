@@ -110,11 +110,9 @@ class Dmm extends Configurable
         $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
         $items = $data['result']['items'];
 
-        $results = Collection::stream($items)->map(function ($ky, $vl) {
+        return Collection::stream($items)->map(function ($vl) {
             return $this->convertItem($vl);
         })->toList();
-
-        return $results;
     }
 
 
@@ -166,11 +164,9 @@ class Dmm extends Configurable
         $data = json_decode($data, true, 512, JSON_OBJECT_AS_ARRAY);
         $items = ($data['result']['actress'] ?? []);
 
-        $results = Collection::stream($items)->map(function ($ky, $vl) {
+        return Collection::stream($items)->map(function ($vl) {
             return $this->convertActress($vl);
         })->toList();
-
-        return $results;
     }
 
 

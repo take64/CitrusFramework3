@@ -63,7 +63,7 @@ class Item
 
         // /で始まっている場合、
         // /で終わっている場合を考慮
-        $parts = Collection::stream($parts)->filter(function ($ky, $vl) {
+        $parts = Collection::stream($parts)->filter(function ($vl) {
             // 空の要素を排除
             return ('' !== $vl);
         })->toValues();

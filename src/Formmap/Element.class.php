@@ -171,7 +171,7 @@ class Element extends Struct
             // select
             if (ElementType::FORM_TYPE_SELECT == $tag)
             {
-                $inner_tags = Collection::stream($options)->map(function ($ky, $vl) use ($elements) {
+                $inner_tags = Collection::stream($options)->map(function ($vl, $ky) use ($elements) {
                     $selected = ($elements['value'] ?: $elements['default']);
                     return sprintf('<option value="%s" %s>%s</option>',
                         $ky,

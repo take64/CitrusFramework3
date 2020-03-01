@@ -92,7 +92,7 @@ class Router extends Configurable
         $item->parse($request['url']);
 
         // パラメータ
-        $parameters = Collection::stream($request)->filter(function ($ky, $vl) {
+        $parameters = Collection::stream($request)->filter(function ($vl, $ky) {
             return ('url' !== $ky);
         })->toList();
         $item->add('parameters', $parameters);

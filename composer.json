@@ -27,6 +27,13 @@
   },
   "require": {
     "smarty/smarty": "^3.1",
-    "aws/aws-sdk-php": "^3.129"
+    "aws/aws-sdk-php": "^3.129",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "ext-pdo": "*",
+    "ext-posix": "*",
+    "citrus-framework/collection": "^1.0",
+    "citrus-framework/configure": "^1.0",
+    "citrus-framework/intersection": "^1.0"
   }
 }

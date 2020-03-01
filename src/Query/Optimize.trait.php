@@ -36,7 +36,7 @@ trait Optimize
         unset($parameters[':condition']);
 
         // パラメータを最適化して返却
-        return Collection::stream($parameters)->filter(function ($ky, $vl) use ($query) {
+        return Collection::stream($parameters)->filter(function ($vl, $ky) use ($query) {
             return (false !== strpos($query, $ky));
         })->toList();
     }
